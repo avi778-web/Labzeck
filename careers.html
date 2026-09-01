@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LabZeck - On-Demand Services</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --dark-navy: #0f172a;
+      --bg-light: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    /* LOGO IMAGE CONTAINER */
+    .logo-wrapper {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Image ko properly scale karne ke liye */
+    }
+
+    .brand-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark-navy);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name span {
+      color: var(--primary);
+    }
+
+    .nav-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .nav-btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Hero & Search */
+    .hero {
+      text-align: center;
+      padding: 45px 20px 25px;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      color: var(--dark-navy);
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 25px;
+    }
+
+    .search-box-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 16px 20px 16px 48px;
+      font-size: 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .search-bar:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    /* Grid Layout */
+    .container {
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+      border-color: #cbd5e1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-icon {
+      font-size: 1.4rem;
+      background: #eff6ff;
+      padding: 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--dark-navy);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: #f1f5f9;
+      color: #334155;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tag:hover {
+      background: var(--primary);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Popup Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 20px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-content h3 {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: var(--dark-navy);
+    }
+
+    .modal-content p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 0.98rem;
+    }
+
+    .modal-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+
+    .modal-btn:hover { background: var(--primary-hover); }
+
+    .close-btn {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+    .close-btn:hover { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="brand-logo">
+        <div class="logo-wrapper">
+          <!-- ============================================================ -->
+          <!-- LOGO IMAGE CODE: Neeche logo.png ki jagah apni image ka path daalein -->
+          <!-- ============================================================ -->
+          <img src="c:\Users\Deepak Singh\Downloads\Labzeck\Labzeck\logo\icon.png" alt="LabZeck Logo" />
+        </div>
+        <div class="brand-name">Lab<span>Zeck</span></div>
+      </a>
+      
+      <!-- ============================================================ -->
+      <!-- GET STARTED BUTTON: Click karne par naya page open/redirect hoga -->
+      <!-- ============================================================ -->
+      <button class="nav-btn" onclick="openNewPage()">Get Started</button>
+    </div>
+  </header>
+
+  <!-- Hero & Search -->
+  <div class="hero">
+    <h1>Find Professionals & Services</h1>
+    <p>Select a category or search for required services</p>
+    <div class="search-box-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-bar" placeholder="Search service (e.g. Electrician, Developer)..." onkeyup="filterServices()" />
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">💻</span>
+          <h2 class="card-title">Tech & Digital</h2>
+        </div>
+        <div class="tag-list">
+          <span class="tag" onclick="selectService(this)">Frontend Developer</span>
+          <span class="tag" onclick="selectService(this)">Backend Developer</span>
+          <span class="tag" onclick="selectService(this)">Full-Stack Developer</span>
+          <span class="tag" onclick="selectService(this)">Logo Designer</span>
+          <span class="tag" onclick="selectService(this)">UI/UX Designer</span>
+          <span class="tag" onclick="selectService(this)">Data Entry Operator</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🛠️</span>
+          <h2 class="card-title">Repair & Maintenance</h2>
+        </div>
+        <div class="tag-list">
+          <span class="tag" onclick="selectService(this)">Electrician</span>
+          <span class="tag" onclick="selectService(this)">Plumber</span>
+          <span class="tag" onclick="selectService(this)">AC Repair</span>
+          <span class="tag" onclick="selectService(this)">TV Repair</span>
+          <span class="tag" onclick="selectService(this)">Laptop Repairer</span>
+          <span class="tag" onclick="selectService(this)">Desktop Repairer</span>
+          <span class="tag" onclick="selectService(this)">Welder</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🏗️</span>
+          <h2 class="card-title">Construction & Labor</h2>
+        </div>
+        <div class="tag-list">
+          <span class="tag" onclick="selectService(this)">Carpenter</span>
+          <span class="tag" onclick="selectService(this)">Mason</span>
+          <span class="tag" onclick="selectService(this)">Painter</span>
+          <span class="tag" onclick="selectService(this)">Construction Helper</span>
+          <span class="tag" onclick="selectService(this)">Gardener</span>
+          <span class="tag" onclick="selectService(this)">Tree Trimmer</span>
+          <span class="tag" onclick="selectService(this)">Packer</span>
+          <span class="tag" onclick="selectService(this)">Loader / Uploader</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🧹</span>
+          <h2 class="card-title">Domestic & Care</h2>
+        </div>
+        <div class="tag-list">
+          <span class="tag" onclick="selectService(this)">Maid / Housekeeper</span>
+          <span class="tag" onclick="selectService(this)">Babysitter</span>
+          <span class="tag" onclick="selectService(this)">Pet Care</span>
+          <span class="tag" onclick="selectService(this)">Tailor</span>
+          <span class="tag" onclick="selectService(this)">Barber</span>
+          <span class="tag" onclick="selectService(this)">Teacher / Tutor</span>
+          <span class="tag" onclick="selectService(this)">Delivery Person</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">🎉</span>
+          <h2 class="card-title">Events & Security</h2>
+        </div>
+        <div class="tag-list">
+          <span class="tag" onclick="selectService(this)">Chef / Cook</span>
+          <span class="tag" onclick="selectService(this)">Halwai</span>
+          <span class="tag" onclick="selectService(this)">Event Helper</span>
+          <span class="tag" onclick="selectService(this)">Watchman</span>
+          <span class="tag" onclick="selectService(this)">Security Bouncer</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="serviceModal">
+    <div class="modal-content">
+      <h3 id="selectedServiceName">Service Name</h3>
+      <p>Do you want to book or request professionals for this service on LabZeck?</p>
+      <button class="modal-btn" onclick="confirmService()">Proceed to Booking</button>
+      <button class="modal-btn close-btn" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // 1. Logo Image Lagane Ki Line:
+    // HTML me line 209 dekhein: <img src="logo.png" alt="LabZeck Logo" />
+    // Apni image ka path ya URL `logo.png` ki jagah daal dein.
+
+    // 2. Get Started Click karne par Naya Page Open karne ka Function:
+    function openNewPage() {
+      // Agar usi tab me open karna hai:
+      window.location.href = "index.html"; 
+
+      // Agar NAYE TAB (New Tab) me kholna ho to upar wali line hata kar ye use karein:
+      // window.open("login.html", "_blank");
+    }
+
+    function filterServices() {
+      let input = document.getElementById('searchInput').value.toLowerCase();
+      let tags = document.getElementsByClassName('tag');
+
+      for (let i = 0; i < tags.length; i++) {
+        let text = tags[i].innerText.toLowerCase();
+        if (text.includes(input)) {
+          tags[i].style.display = "inline-block";
+        } else {
+          tags[i].style.display = "none";
+        }
+      }
+    }
+
+    function selectService(element) {
+      let serviceName = element.innerText;
+      document.getElementById('selectedServiceName').innerText = serviceName;
+      document.getElementById('serviceModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('serviceModal').style.display = 'none';
+    }
+
+    function confirmService() {
+      let serviceName = document.getElementById('selectedServiceName').innerText;
+      alert("Selected Service: " + serviceName + "\nConnecting with nearest LabZeck professional...");
+      closeModal();
+    }
+  </script>
+</body>
+</html>
