@@ -57,22 +57,11 @@
     const { useState } = React;
 
     const LabzeckLogo = ({ className = "w-9 h-9" }) => (
-      <svg className={className} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path 
-          d="M 52,42 V 116 H 100" 
-          stroke="#0052FF" 
-          strokeWidth="38" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-        />
-        <path 
-          d="M 100,74 H 148 V 158 H 100" 
-          stroke="#38BDF8" 
-          strokeWidth="38" 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-        />
-      </svg>
+      <img 
+        src="logo.png" 
+        alt="Labzeck Logo" 
+        className={`${className} object-contain rounded-lg`}
+      />
     );
 
     function App() {
@@ -173,7 +162,7 @@
             
             {/* Pill Tag */}
             <div className="inline-flex items-center gap-2 bg-slate-900/80 border border-amber-500/30 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm mb-8 tracking-wider">
-              <span className="text-amber-400 font-extrabold">LABZECK 2.0</span>
+              <span className="text-amber-400 font-extrabold">Labzeck 2.0</span>
               <span className="text-slate-600">•</span>
               <span className="text-slate-300">DIRECT DISPATCH MATRIX</span>
             </div>
@@ -236,7 +225,7 @@
                       className="w-full p-5 sm:p-6 text-left flex items-center justify-between font-semibold text-slate-100 text-base sm:text-lg hover:text-amber-400 transition-colors"
                     >
                       <span>
-                        {faq.q.includes('LabZeck') ? (
+                        {faq.q.includes('Labzeck') ? (
                           <>Is <span className="font-bold text-amber-400">Labzeck</span> available on Android and Web?</>
                         ) : faq.q}
                       </span>
