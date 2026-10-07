@@ -1,0 +1,1 @@
+mongodb+srv://avipalmoongodb:surajpal@labzeck.l4lc5nk.mongodb.net/
