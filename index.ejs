@@ -46,12 +46,11 @@ loop
 muted
 playsinline
 class="fixed inset-0 w-full h-full object-cover z-0 opacity-80"
-
+preload="auto"
+style="display:block; visibility:visible;"
 >
 
-```
 <source src="https://www.pexels.com/download/video/8675550/" type="video/mp4">
-```
 
   </video>
 
@@ -136,8 +135,11 @@ class="fixed inset-0 w-full h-full object-cover z-0 opacity-80"
     const LabzeckLogo = ({ className = "w-9 h-9" }) => (
 
       <img
-        src="https://github.com/avi778-web/Labzeck/blob/main/Labzeck-main/Labzeck-main/Labzeck-main/icon.png?raw=true"
+        src="https://raw.githubusercontent.com/avi778-web/Labzeck/main/Labzeck-main/Labzeck-main/icon.png"
         alt="Labzeck Logo"
+        loading="eager"
+        referrerPolicy="no-referrer"
+        style={{display:"block", visibility:"visible"}}
         className={`${className} object-contain rounded-lg`}
       />
 
