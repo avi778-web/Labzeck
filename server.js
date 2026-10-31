@@ -4,18 +4,16 @@ const connectDB = require("./src/db/db");
 
 const PORT = process.env.PORT || 8000;
 
-async function startServer() {
-  try {
-    await connectDB();
-    console.log("MONGO STATUS: CONNECTED");
+function startServer() {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
 
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on http://0.0.0.0:${PORT}`);
+  connectDB()
+    .then(() => console.log("MONGO STATUS: CONNECTED"))
+    .catch((error) => {
+      console.error("MongoDB unavailable; the website will remain available:", error.message);
     });
-  } catch (error) {
-    console.error("❌ Server startup failed:", error.message);
-    process.exit(1);
-  }
 }
 
 startServer();
