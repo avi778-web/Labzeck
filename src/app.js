@@ -1,9 +1,19 @@
 const express = require("express");
 const path = require("path");
+const crypto = require("crypto");
+const Razorpay = require("razorpay");
 
 const Gmailmodel = require("./models/email.model");
 
 const app = express();
+
+function getRazorpay() {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) return null;
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+  });
+}
 
 /* =========================
    MIDDLEWARE
@@ -97,6 +107,69 @@ app.post("/api/newsletter", async (req, res) => {
       message: "Could not save your email"
     });
   }             
+});
+
+/* =========================
+   RAZORPAY PAYMENTS
+========================= */
+
+app.post("/api/payments/order", async (req, res) => {
+  try {
+    const razorpay = getRazorpay();
+    if (!razorpay) {
+      return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+    }
+
+    const amount = 74900;
+    const order = await razorpay.orders.create({
+      amount,
+      currency: "INR",
+      receipt: `sk_${Date.now()}`,
+      notes: { product: "Premium business cards", quantity: "1" }
+    });
+
+    return res.status(201).json({
+      ok: true,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      keyId: process.env.RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.error("RAZORPAY ORDER ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Unable to start payment. Please try again." });
+  }
+});
+
+app.post("/api/payments/verify", async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ ok: false, message: "Incomplete payment response" });
+    }
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (!crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(razorpay_signature))) {
+      return res.status(400).json({ ok: false, message: "Payment signature could not be verified" });
+    }
+
+    const razorpay = getRazorpay();
+    if (!razorpay) return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+    const payment = await razorpay.payments.fetch(razorpay_payment_id);
+
+    if (payment.order_id !== razorpay_order_id || payment.status !== "captured") {
+      return res.status(409).json({ ok: false, message: "Payment is not captured yet", status: payment.status });
+    }
+
+    return res.json({ ok: true, confirmed: true, paymentId: payment.id, status: payment.status });
+  } catch (error) {
+    console.error("RAZORPAY VERIFY ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Payment received but confirmation failed. Please contact support." });
+  }
 });
 
 /* =========================
