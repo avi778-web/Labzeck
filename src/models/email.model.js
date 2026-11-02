@@ -15,6 +15,6 @@ const gmailSchema = new mongoose.Schema(
   }
 );
 
-const Gmailmodel = mongoose.model("Gmail", gmailSchema, "newsletter");
+const Gmailmodel = mongoose.models.Gmail || mongoose.model("Gmail", gmailSchema, "newsletter");
 
 module.exports = Gmailmodel;

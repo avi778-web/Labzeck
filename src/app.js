@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
 
 const Gmailmodel = require("./models/email.model");
@@ -51,11 +52,12 @@ app.get("/", (req, res, next) => {
 ========================= */
 
 app.post("/api/newsletter", async (req, res) => {
-  console.log("📩 NEWSLETTER API HIT");
-  console.log("📦 DATA:", req.body);
+  console.log("NEWSLETTER API HIT");
+  console.log("NEWSLETTER DATA:", req.body);
 
   try {
-    const email = String(req.body.email || "")
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const email = String(body.email || "")
       .trim()
       .toLowerCase();
 
@@ -79,11 +81,15 @@ app.post("/api/newsletter", async (req, res) => {
 
     /* DUPLICATE CHECK */
 
-    if (!process.env.MONGO_URI) {
+    if (!process.env.MONGO_URI || mongoose.connection.readyState !== 1) {
       return res.status(503).json({
         ok: false,
         message: "Newsletter service is temporarily unavailable"
       });
+    }
+
+    if (!Gmailmodel || typeof Gmailmodel.findOne !== "function") {
+      throw new Error("Newsletter model is not initialized");
     }
 
     const existingEmail = await Gmailmodel.findOne({
@@ -204,9 +210,16 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  console.error("UNHANDLED REQUEST ERROR:", error);
-  if (res.headersSent) return next(error);
-  return res.status(500).json({ ok: false, message: "Internal server error" });
+  const err = error instanceof Error ? error : new Error(String(error));
+  console.error("UNHANDLED REQUEST ERROR:");
+  console.error(err.stack);
+  if (res.headersSent) return next(err);
+  const status = Number.isInteger(err.status) && err.status >= 400 && err.status < 500 ? err.status : 500;
+  return res.status(status).json({
+    ok: false,
+    error: err.message,
+    stack: err.stack
+  });
 });
 
 module.exports = app;
