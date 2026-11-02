@@ -204,9 +204,15 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  console.error("UNHANDLED REQUEST ERROR:", error);
-  if (res.headersSent) return next(error);
-  return res.status(500).json({ ok: false, message: "Internal server error" });
+  const err = error instanceof Error ? error : new Error(String(error));
+  console.error("UNHANDLED REQUEST ERROR:");
+  console.error(err.stack);
+  if (res.headersSent) return next(err);
+  return res.status(500).json({
+    ok: false,
+    error: err.message,
+    stack: err.stack
+  });
 });
 
 module.exports = app;
