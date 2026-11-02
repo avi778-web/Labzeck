@@ -11,9 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ============================================================
-       RESET & BASE
-    ============================================================ */
+    /* RESET & BASE */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; font-size: 16px; }
     body { font-family: 'Raleway', 'Open Sans', sans-serif; color: #333; background: #fff; overflow-x: hidden; }
@@ -21,9 +19,7 @@
     img { max-width: 100%; height: auto; display: block; }
     ul { list-style: none; }
 
-    /* ============================================================
-       VARIABLES
-    ============================================================ */
+    /* VARIABLES */
     :root {
       --primary:      #2b76a6;
       --primary-dark: #1e5580;
@@ -41,18 +37,13 @@
       --wp-green:     #25d366;
     }
 
-    /* ============================================================
-       UTILITY
-    ============================================================ */
+    /* UTILITY */
     .container      { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
     .container-fluid{ width: 100%; padding: 0 24px; }
     .section-pad    { padding: 70px 0; }
     .text-center    { text-align: center; }
     .d-flex         { display: flex; }
     .align-center   { align-items: center; }
-    .gap-8  { gap: 8px; }
-    .gap-12 { gap: 12px; }
-    .gap-20 { gap: 20px; }
 
     /* Buttons */
     .btn {
@@ -62,10 +53,10 @@
       border: 2px solid transparent; letter-spacing: .3px; font-family: inherit;
       white-space: nowrap;
     }
-    .btn-primary  { background: var(--primary);  color: #fff; border-color: var(--primary); }
+    .btn-primary  { background: var(--primary); color: #fff; border-color: var(--primary); }
     .btn-primary:hover  { background: var(--primary-dark); border-color: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(43,118,166,.35); }
-    .btn-accent   { background: var(--accent);   color: #fff; border-color: var(--accent); }
-    .btn-accent:hover   { background: var(--accent-dark);  border-color: var(--accent-dark);  transform: translateY(-1px); box-shadow: 0 4px 14px rgba(245,124,31,.35); }
+    .btn-accent   { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-accent:hover   { background: var(--accent-dark); border-color: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(245,124,31,.35); }
     .btn-white    { background: #fff; color: var(--primary); border-color: #fff; }
     .btn-white:hover    { background: #f0f7ff; }
     .btn-outline-white  { background: transparent; color: #fff; border-color: rgba(255,255,255,.7); }
@@ -73,7 +64,7 @@
     .btn-wp { background: var(--wp-green); color: #fff; border-color: var(--wp-green); font-size: 15px; padding: 12px 28px; }
     .btn-wp:hover { background: #1fba57; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,211,102,.4); }
 
-    /* Section headings */
+    /* Headings */
     .section-tag {
       display: inline-block; background: rgba(43,118,166,.1); color: var(--primary);
       font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
@@ -83,9 +74,7 @@
     .section-subtitle { font-size: 15px; color: var(--text-light); margin-bottom: 40px; line-height: 1.6; }
     .section-header   { text-align: center; }
 
-    /* ============================================================
-       ANNOUNCEMENT BAR
-    ============================================================ */
+    /* ANNOUNCEMENT BAR */
     .ann-bar {
       background: #1a2a3a; color: #fff; text-align: center;
       padding: 9px 20px; font-size: 13px; font-weight: 500;
@@ -94,9 +83,7 @@
     .ann-bar a { color: #ffd166; font-weight: 700; }
     .ann-bar strong { color: #ffd166; }
 
-    /* ============================================================
-       TOP BAR
-    ============================================================ */
+    /* TOP BAR */
     .top-bar {
       background: #fff; border-bottom: 1px solid var(--border);
       padding: 7px 0; font-size: 13px;
@@ -117,11 +104,8 @@
       background: var(--accent); color: #fff; font-weight: 700;
       padding: 5px 14px; border-radius: 4px;
     }
-    .top-links .tl-quote:hover { background: var(--accent-dark); }
 
-    /* ============================================================
-       HEADER
-    ============================================================ */
+    /* HEADER */
     .main-header {
       background: #fff; border-bottom: 2px solid var(--border);
       position: sticky; top: 0; z-index: 1000;
@@ -131,8 +115,6 @@
       display: flex; align-items: center; gap: 18px;
       padding: 12px 24px; max-width: 1340px; margin: 0 auto;
     }
-
-    /* LOGO */
     .sk-logo {
       display: flex; flex-direction: column; line-height: 1;
       text-decoration: none; flex-shrink: 0;
@@ -145,8 +127,6 @@
       font-size: 10.5px; color: var(--accent); font-weight: 700;
       letter-spacing: 1.2px; text-transform: uppercase; white-space: nowrap;
     }
-    .sk-logo-img { width: 92px; height: 38px; object-fit: contain; object-position: left center; margin-top: 4px; }
-    .f-logo-img { width: 150px; height: 78px; object-fit: contain; object-position: left center; margin-bottom: 10px; }
 
     /* NAV */
     .main-nav { display: flex; align-items: center; gap: 2px; flex: 1; }
@@ -160,7 +140,6 @@
     .ni > a:hover, .ni:hover > a { color: var(--primary); background: rgba(43,118,166,.07); }
     .ni:hover > a i { transform: rotate(180deg); }
 
-    /* MEGA MENU */
     .mega-dd {
       display: none; position: absolute; top: 100%; left: 0;
       background: #fff; border: 1px solid var(--border);
@@ -187,17 +166,6 @@
     }
     .prod-links a:hover { background: rgba(43,118,166,.08); color: var(--primary); padding-left: 16px; }
 
-    /* SIMPLE DROPDOWN */
-    .simple-dd {
-      display: none; position: absolute; top: 100%; left: 0;
-      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
-      box-shadow: 0 8px 28px rgba(0,0,0,.1); min-width: 190px; z-index: 9999; padding: 6px 0;
-    }
-    .ni:hover .simple-dd { display: block; }
-    .simple-dd a { display: block; padding: 9px 18px; font-size: 13.5px; color: var(--text); transition: all .2s; }
-    .simple-dd a:hover { background: var(--bg-light); color: var(--primary); }
-
-    /* SEARCH */
     .hdr-search { position: relative; flex: 1; max-width: 310px; }
     .hdr-search input {
       width: 100%; padding: 9px 42px 9px 16px;
@@ -209,17 +177,14 @@
     .hdr-search button {
       position: absolute; right: 0; top: 0; height: 100%; padding: 0 14px;
       background: var(--primary); border: none; border-radius: 0 25px 25px 0;
-      color: #fff; cursor: pointer; transition: background .2s;
+      color: #fff; cursor: pointer;
     }
-    .hdr-search button:hover { background: var(--primary-dark); }
 
-    /* HEADER ICONS */
     .hdr-icons { display: flex; align-items: center; gap: 4px; }
     .hdr-icon-btn {
       display: flex; align-items: center; gap: 5px; padding: 8px 11px;
       border-radius: 7px; font-size: 13px; color: var(--text);
-      transition: all .2s; cursor: pointer; background: none; border: none;
-      font-family: inherit; position: relative;
+      cursor: pointer; background: none; border: none; font-family: inherit; position: relative;
     }
     .hdr-icon-btn i { font-size: 18px; }
     .hdr-icon-btn:hover { background: var(--bg-light); color: var(--primary); }
@@ -230,109 +195,42 @@
       font-size: 10px; display: flex; align-items: center; justify-content: center;
       font-weight: 800; line-height: 1;
     }
-    .hdr-icon-btn .label-text { font-size: 12px; font-weight: 600; }
 
-    /* MOBILE TOGGLE */
     .mob-toggle {
       display: none; background: none; border: 1.5px solid var(--border);
       border-radius: 6px; cursor: pointer; padding: 7px 9px;
       flex-direction: column; gap: 5px; flex-shrink: 0;
     }
-    .mob-toggle span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all .3s; }
+    .mob-toggle span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
 
-    /* ============================================================
-       HERO SLIDER
-    ============================================================ */
-    .hero { position: relative; overflow: hidden; }
-    .slider-track { display: flex; transition: transform .65s cubic-bezier(.25,.46,.45,.94); will-change: transform; }
-    .slide {
-      min-width: 100%; position: relative; display: flex; align-items: center;
-      min-height: 490px; overflow: hidden;
+    /* HERO BANNER */
+    .hero { position: relative; overflow: hidden; width: 100%; background: #0074b7; }
+    .hero-banner-wrapper {
+      width: 100%;
+      position: relative;
+      display: block;
     }
-    .slide-1 { background: linear-gradient(135deg, #1a4b6e 0%, #2b76a6 55%, #3a9bd5 100%); }
-    .slide-2 { background: linear-gradient(135deg, #2d4a22 0%, #4a7c35 55%, #6aab45 100%); }
-    .slide-3 { background: linear-gradient(135deg, #5a1e82 0%, #8b2fc9 55%, #b55de3 100%); }
-    .slide-deco  { position: absolute; right: -80px; top: -80px; width: 480px; height: 480px; border-radius: 50%; background: rgba(255,255,255,.06); pointer-events: none; }
-    .slide-deco2 { position: absolute; right: 60px; bottom: -120px; width: 280px; height: 280px; border-radius: 50%; background: rgba(255,255,255,.05); pointer-events: none; }
-    .slide-content { position: relative; z-index: 2; padding: 60px 70px; max-width: 620px; }
-    .slide-visual {
-      position: absolute; z-index: 1; right: 5%; width: 42%; max-width: 560px;
-      height: 76%; border-radius: 18px; overflow: hidden;
-      box-shadow: 0 18px 45px rgba(0,0,0,.24); transform: rotate(2deg);
+    .hero-banner-img {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      object-fit: cover;
+      display: block;
     }
-    .slide-visual img { width: 100%; height: 100%; object-fit: cover; }
-    .slide-visual::after {
-      content: 'SK Graphics'; position: absolute; right: 16px; bottom: 14px;
-      padding: 6px 10px; border-radius: 5px; background: rgba(255,255,255,.92);
-      color: var(--primary-dark); font-size: 11px; font-weight: 800;
-    }
-    .slide-label {
-      display: inline-block; background: rgba(255,255,255,.2); color: #fff;
-      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-      padding: 5px 14px; border-radius: 20px; margin-bottom: 20px;
-    }
-    .slide-title { font-size: 42px; font-weight: 800; color: #fff; line-height: 1.18; margin-bottom: 16px; }
-    .slide-title .hi { color: #ffd166; }
-    .slide-desc { font-size: 16px; color: rgba(255,255,255,.88); margin-bottom: 32px; line-height: 1.65; }
-    .slide-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .hero-single .slider-track { transform: none !important; }
-    .hero-single .slide-2, .hero-single .slide-3,
-    .hero-single .sl-prev, .hero-single .sl-next,
-    .hero-single .sl-dots { display: none; }
-    .hero-single .slide-1 {
-      min-height: 0; height: clamp(300px, 34.25vw, 490px);
-      background: #2b76a6;
-    }
-    .single-hero-image {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center; display: block;
-    }
-    .hero-single .slide-1 .slide-content,
-    .hero-single .slide-1 .slide-visual,
-    .hero-single .slide-1 .slide-deco,
-    .hero-single .slide-1 .slide-deco2 { display: none; }
-    @media (max-width: 900px) {
-      .slide-visual { right: 3%; width: 38%; height: 58%; opacity: .35; }
-      .slide-content { max-width: 700px; }
-    }
-    @media (max-width: 600px) { .slide-visual { display: none; } }
 
-    /* Slider Controls */
-    .sl-prev, .sl-next {
-      position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
-      background: rgba(255,255,255,.2); border: 2px solid rgba(255,255,255,.5);
-      color: #fff; width: 46px; height: 46px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all .2s; backdrop-filter: blur(4px);
-    }
-    .sl-prev { left: 18px; } .sl-next { right: 18px; }
-    .sl-prev:hover, .sl-next:hover { background: rgba(255,255,255,.35); }
-    .sl-dots { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
-    .sl-dot {
-      width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,.45);
-      cursor: pointer; transition: all .25s; border: none;
-    }
-    .sl-dot.act { background: #fff; width: 26px; border-radius: 5px; }
-
-    /* ============================================================
-       FEATURES BAR
-    ============================================================ */
+    /* FEATURES BAR */
     .feat-bar { background: var(--primary); }
     .feat-bar-inner { display: flex; align-items: stretch; flex-wrap: wrap; }
     .feat-item {
       flex: 1; min-width: 180px; display: flex; align-items: center; gap: 14px;
       padding: 18px 22px; color: #fff; border-right: 1px solid rgba(255,255,255,.15);
-      transition: background .2s;
     }
     .feat-item:last-child { border-right: none; }
-    .feat-item:hover { background: rgba(255,255,255,.1); }
     .feat-item i { font-size: 24px; opacity: .9; flex-shrink: 0; }
     .feat-item h6 { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
     .feat-item p { font-size: 12px; opacity: .8; margin: 0; }
 
-    /* ============================================================
-       CATEGORIES
-    ============================================================ */
+    /* CATEGORIES & CIRCULAR LOGO */
     .cats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
@@ -346,126 +244,54 @@
     .cat-img {
       height: 165px; display: flex; align-items: center; justify-content: center;
       overflow: hidden; position: relative;
+      background: #f4f7f9;
     }
     .cat-img img {
       width: 100%; height: 100%; object-fit: cover;
       transition: transform .35s ease, filter .35s ease;
     }
     .cat-card:hover .cat-img img { transform: scale(1.06); filter: saturate(1.08); }
-    .cat-img::after {
-      content: ''; position: absolute; right: 10px; bottom: 10px; width: 52px; height: 52px;
-      border-radius: 50%; background: #070707 url('sk-graphics-logo.png') center / 122% auto no-repeat;
-      box-shadow: 0 2px 8px rgba(0,0,0,.24); opacity: .96;
+    
+    /* Circle Logo badge on product cards */
+    .cat-img .cat-circle-badge {
+      position: absolute; right: 10px; bottom: 10px; width: 44px; height: 44px;
+      border-radius: 50%; background: #111; border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,.3); z-index: 2;
     }
-    .cat-img .ci { font-size: 50px; opacity: .55; }
-    .ci-blue   { color: #1565c0; } .ci-green  { color: #2e7d32; }
-    .ci-orange { color: #e65100; } .ci-purple { color: #6a1b9a; }
-    .ci-teal   { color: #00695c; } .ci-red    { color: #b71c1c; }
-    .ci-lime   { color: #558b2f; } .ci-amber  { color: #f57f17; }
-    .ci-indigo { color: #283593; } .ci-brown  { color: #4e342e; }
-    .ci-cyan   { color: #00838f; } .ci-yellow { color: #f9a825; }
+    .cat-img .cat-circle-badge span {
+      color: #fff; font-size: 9px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase;
+    }
+
     .cat-body { padding: 15px 17px 17px; }
     .cat-body h5 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
     .cat-body p { font-size: 12.5px; color: var(--text-light); margin-bottom: 12px; line-height: 1.55; }
     .cat-body .cat-link {
       font-size: 13px; font-weight: 700; color: var(--primary);
-      display: flex; align-items: center; gap: 5px; transition: gap .2s;
+      display: flex; align-items: center; gap: 5px;
     }
-    .cat-body .cat-link:hover { gap: 10px; }
 
-    /* BG colours for category tiles */
-    .bg-c1 { background: linear-gradient(135deg,#e3f2fd,#bbdefb); }
-    .bg-c2 { background: linear-gradient(135deg,#fff3e0,#ffe0b2); }
-    .bg-c3 { background: linear-gradient(135deg,#e8f5e9,#c8e6c9); }
-    .bg-c4 { background: linear-gradient(135deg,#f3e5f5,#e1bee7); }
-    .bg-c5 { background: linear-gradient(135deg,#e0f7fa,#b2ebf2); }
-    .bg-c6 { background: linear-gradient(135deg,#fce4ec,#f8bbd0); }
-    .bg-c7 { background: linear-gradient(135deg,#f1f8e9,#dcedc8); }
-    .bg-c8 { background: linear-gradient(135deg,#fff8e1,#ffecb3); }
-    .bg-c9 { background: linear-gradient(135deg,#e8eaf6,#c5cae9); }
-    .bg-c10{ background: linear-gradient(135deg,#efebe9,#d7ccc8); }
-    .bg-c11{ background: linear-gradient(135deg,#e0f2f1,#b2dfdb); }
-    .bg-c12{ background: linear-gradient(135deg,#fff9c4,#fff59d); }
-
-    /* ============================================================
-       PROMO STRIP
-    ============================================================ */
+    /* PROMO STRIP */
     .promo-strip { background: linear-gradient(90deg,#f57c1f,#ff9a3c); padding: 22px 0; }
     .promo-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
     .promo-text h4 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 4px; }
     .promo-text p  { font-size: 14px; opacity: .92; color: #fff; margin: 0; }
     .promo-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
-    /* ============================================================
-       HOW IT WORKS - INTERACTIVE PROCESS
-    ============================================================ */
-    .how-works { padding: 78px 0; background: linear-gradient(180deg,#f8fbff 0%,#eef5fb 100%); }
-    .process-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; align-items: stretch; }
-    .process-card {
-      position: relative; display: flex; flex-direction: column; min-width: 0;
-      padding: 24px; border: 1px solid rgba(255,255,255,.9); border-radius: 20px;
-      background: rgba(255,255,255,.78); box-shadow: 0 12px 34px rgba(35,75,110,.1);
-      backdrop-filter: blur(14px); transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-    }
-    .process-card:hover { transform: translateY(-6px); box-shadow: 0 18px 42px rgba(35,75,110,.16); border-color: rgba(43,118,166,.35); }
-    .process-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-    .process-badge { width: 40px; height: 40px; flex: 0 0 40px; display: grid; place-items: center; border-radius: 13px; color: #fff; font-size: 16px; font-weight: 800; }
-    .process-card:nth-child(1) .process-badge { background: linear-gradient(135deg,#2b76a6,#36a4d8); }
-    .process-card:nth-child(2) .process-badge { background: linear-gradient(135deg,#7b4fd1,#a66df0); }
-    .process-card:nth-child(3) .process-badge { background: linear-gradient(135deg,#e77927,#f5aa38); }
-    .process-card:nth-child(4) .process-badge { background: linear-gradient(135deg,#159b70,#42c58d); }
-    .process-icon { width: 22px; height: 22px; color: var(--primary); stroke-width: 2; }
-    .process-card:nth-child(2) .process-icon { color: #7b4fd1; }
-    .process-card:nth-child(3) .process-icon { color: #df7625; }
-    .process-card:nth-child(4) .process-icon { color: #159b70; }
-    .process-card h5 { font-size: 17px; font-weight: 800; color: var(--text); margin: 0; line-height: 1.25; }
-    .process-card > p { color: var(--text-light); font-size: 13px; line-height: 1.6; margin: 0 0 18px; }
-    .process-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: auto; }
-    .process-field { display: flex; flex-direction: column; gap: 5px; }
-    .process-field label { color: var(--text-muted); font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; }
-    .process-field select { width: 100%; padding: 9px 26px 9px 10px; border: 1px solid var(--border); border-radius: 9px; color: var(--text); background: #fff; font: 600 12px inherit; outline: none; }
-    .process-field select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(43,118,166,.12); }
-    .drop-zone { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 125px; padding: 15px; border: 1.5px dashed #bca8ec; border-radius: 13px; background: linear-gradient(135deg,rgba(123,79,209,.06),rgba(255,255,255,.7)); text-align: center; cursor: pointer; transition: all .2s ease; }
-    .drop-zone:hover, .drop-zone.is-dragover { border-color: #7b4fd1; background: rgba(123,79,209,.12); }
-    .drop-zone svg { width: 27px; height: 27px; color: #7b4fd1; margin-bottom: 6px; }
-    .drop-zone strong { color: var(--text); font-size: 12px; }
-    .drop-zone span { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
-    .file-preview { display: none; align-items: center; gap: 9px; margin-top: 10px; padding: 9px 10px; border-radius: 9px; background: #f1edff; color: #5d3e9e; font-size: 11px; }
-    .file-preview.show { display: flex; }
-    .file-preview svg { width: 17px; height: 17px; flex: 0 0 17px; }
-    .file-status { margin-left: auto; color: #159b70; font-weight: 800; }
-    .design-help { width: 100%; margin-top: 11px; padding: 9px 12px; border: 1px solid #d7c9f6; border-radius: 9px; background: #fff; color: #6a46b4; font: 700 12px inherit; cursor: pointer; transition: background .2s; }
-    .design-help:hover { background: #f1edff; }
-    .proof-card { padding: 13px; border-radius: 12px; background: #fff; border: 1px solid #f0dfc7; }
-    .proof-head { display: flex; align-items: center; gap: 9px; padding-bottom: 10px; border-bottom: 1px solid #f1eee8; }
-    .proof-head svg { width: 23px; height: 23px; color: #df7625; }
-    .proof-head strong { font-size: 12px; color: var(--text); }
-    .proof-head small { display: block; color: var(--text-muted); font-size: 10px; margin-top: 2px; }
-    .check-list { display: grid; gap: 8px; padding: 12px 0; }
-    .check-row { display: flex; align-items: center; justify-content: space-between; color: var(--text-light); font-size: 12px; }
-    .check-row span:last-child { display: inline-flex; align-items: center; gap: 4px; color: #159b70; font-size: 11px; font-weight: 800; }
-    .check-row svg { width: 15px; height: 15px; }
-    .approve-btn { width: 100%; padding: 10px 12px; border: 0; border-radius: 9px; background: #df7625; color: #fff; font: 800 12px inherit; cursor: pointer; transition: filter .2s, transform .2s; }
-    .approve-btn:hover { filter: brightness(.95); transform: translateY(-1px); }
-    .approve-btn.approved { background: #159b70; }
-    .delivery-badge { display: inline-flex; align-items: center; gap: 7px; width: fit-content; padding: 7px 10px; border-radius: 999px; background: #e5f8f0; color: #127b5b; font-size: 11px; font-weight: 800; margin-bottom: 17px; }
-    .delivery-badge svg { width: 15px; height: 15px; }
-    .tracking { display: grid; gap: 13px; margin-top: auto; }
-    .track-row { display: flex; align-items: center; gap: 9px; color: var(--text-light); font-size: 11px; }
-    .track-dot { width: 12px; height: 12px; flex: 0 0 12px; border-radius: 50%; background: #159b70; box-shadow: 0 0 0 4px #dcf5eb; }
-    .track-dot.pending { background: #c5d0d8; box-shadow: 0 0 0 4px #edf1f3; }
-    .track-line { width: 1px; height: 12px; margin-left: 5px; margin-top: -13px; background: #bce8d5; }
+    /* HOW IT WORKS */
     .legacy-how-works { padding: 70px 0; background: var(--bg-light); }
     .legacy-how-works .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 30px; position: relative; }
     .legacy-how-works .step-card { text-align: center; position: relative; z-index: 1; }
-    .legacy-how-works .step-num { width: 54px; height: 54px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin: 0 auto 18px; border: 4px solid #fff; box-shadow: 0 4px 14px rgba(43,118,166,.3); }
+    .legacy-how-works .step-num {
+      width: 54px; height: 54px; background: var(--primary); color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;
+      margin: 0 auto 18px; border: 4px solid #fff; box-shadow: 0 4px 14px rgba(43,118,166,.3);
+    }
     .legacy-how-works .step-card h5 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
     .legacy-how-works .step-card p { font-size: 13px; color: var(--text-light); line-height: 1.65; }
 
-    /* ============================================================
-       WHY CHOOSE US
-    ============================================================ */
-    .why-us { padding: 70px 0; background: var(--bg-light); }
+    /* WHY CHOOSE US */
+    .why-us { padding: 70px 0; background: #fff; }
     .why-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
     .why-left-mini { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 28px; }
     .why-mini-stat { text-align: center; }
@@ -474,7 +300,7 @@
     .why-desc { font-size: 14.5px; color: var(--text-light); line-height: 1.8; margin-bottom: 24px; }
     .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     .why-card {
-      background: #fff; border-radius: var(--radius-lg); padding: 22px;
+      background: var(--bg-light); border-radius: var(--radius-lg); padding: 22px;
       display: flex; gap: 16px; border: 1.5px solid var(--border); transition: all .3s;
     }
     .why-card:hover { box-shadow: var(--shadow-hov); border-color: var(--primary); transform: translateY(-3px); }
@@ -486,101 +312,21 @@
     .why-con h5 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
     .why-con p  { font-size: 13px; color: var(--text-light); line-height: 1.6; }
 
-    /* ============================================================
-       STATS
-    ============================================================ */
-    .stats-sec { padding: 58px 0; background: var(--primary); }
-    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 30px; }
-    .stat-item { text-align: center; color: #fff; }
-    .stat-num { font-size: 44px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
-    .stat-num sup { font-size: 22px; }
-    .stat-lbl { font-size: 14px; opacity: .85; font-weight: 500; }
-
-    /* ============================================================
-       TESTIMONIALS
-    ============================================================ */
-    .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
-    .testi-card {
-      background: var(--bg-light); border-radius: var(--radius-lg);
-      padding: 26px; border: 1.5px solid var(--border); transition: all .3s; position: relative;
-    }
-    .testi-card::before {
-      content: '"'; position: absolute; top: 14px; right: 22px;
-      font-size: 72px; color: var(--primary); opacity: .12; font-family: Georgia, serif; line-height: 1;
-    }
-    .testi-card:hover { box-shadow: var(--shadow-hov); border-color: var(--primary); }
-    .stars i { color: #f5a623; font-size: 13px; }
-    .stars { margin-bottom: 12px; display: flex; gap: 3px; }
-    .testi-text { font-size: 13.5px; color: var(--text-light); line-height: 1.72; margin-bottom: 18px; font-style: italic; }
-    .testi-author { display: flex; align-items: center; gap: 12px; }
-    .ava {
-      width: 42px; height: 42px; border-radius: 50%; background: var(--primary);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 16px; font-weight: 700; flex-shrink: 0;
-    }
-    .ava-info h6 { font-size: 14px; font-weight: 700; margin-bottom: 1px; }
-    .ava-info span { font-size: 12px; color: var(--text-muted); }
-
-    /* ============================================================
-       CLIENTS
-    ============================================================ */
-    .clients-sec { padding: 48px 0; background: #fff; border-top: 1px solid var(--border); }
-    .clients-title { text-align: center; font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 28px; }
-    .clients-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 36px 54px; }
-    .c-logo { font-size: 17px; font-weight: 800; color: #bbb; letter-spacing: -.5px; transition: color .2s; font-family: 'Open Sans', sans-serif; }
-    .c-logo:hover { color: var(--primary); }
-
-    /* ============================================================
-       NEWSLETTER
-    ============================================================ */
-    .newsletter { padding: 60px 0; background: linear-gradient(135deg, #1a4b6e, #2b76a6); }
-    .nl-inner { max-width: 600px; margin: 0 auto; text-align: center; }
-    .nl-inner h3 { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 10px; }
-    .nl-inner p  { font-size: 15px; color: rgba(255,255,255,.85); margin-bottom: 28px; }
-    .nl-form { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; flex-wrap: wrap; }
-    .nl-form input {
-      flex: 1; min-width: 200px; padding: 12px 18px;
-      border: 2px solid rgba(255,255,255,.3); border-radius: 8px;
-      background: rgba(255,255,255,.15); color: #fff; font-family: inherit;
-      font-size: 14px; outline: none; transition: border-color .2s;
-    }
-    .nl-form input::placeholder { color: rgba(255,255,255,.6); }
-    .nl-form input:focus { border-color: rgba(255,255,255,.7); }
-    .nl-form button {
-      padding: 12px 22px; background: var(--accent); color: #fff;
-      border: none; border-radius: 8px; font-weight: 700; font-size: 14px;
-      cursor: pointer; transition: background .2s; font-family: inherit;
-    }
-    .nl-form button:hover { background: var(--accent-dark); }
-
-    /* ============================================================
-       FOOTER
-    ============================================================ */
+    /* FOOTER */
     footer { background: #1a2a3a; color: rgba(255,255,255,.8); }
     .footer-main { padding: 56px 0 38px; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
-
     .f-logo { display: flex; flex-direction: column; line-height: 1.1; margin-bottom: 14px; }
     .f-logo .fn { font-size: 22px; font-weight: 800; color: #fff; }
     .f-logo .fs { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .f-desc { font-size: 13.5px; color: rgba(255,255,255,.62); line-height: 1.72; margin-bottom: 20px; }
-
-    /* Social icons */
     .f-social { display: flex; gap: 9px; flex-wrap: wrap; }
     .f-soc-icon {
-      width: 36px; height: 36px; border-radius: 8px;
-      background: rgba(255,255,255,.09); display: flex; align-items: center;
-      justify-content: center; color: rgba(255,255,255,.72); font-size: 15px;
-      transition: all .2s; text-decoration: none;
+      width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,.09);
+      display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.72);
+      font-size: 15px; transition: all .2s;
     }
-    .f-soc-icon:hover { color: #fff; }
-    .f-soc-icon.fb:hover  { background: #1877f2; }
-    .f-soc-icon.ig:hover  { background: linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
-    .f-soc-icon.tw:hover  { background: #1da1f2; }
-    .f-soc-icon.li:hover  { background: #0077b5; }
-    .f-soc-icon.yt:hover  { background: #ff0000; }
-    .f-soc-icon.wa:hover  { background: var(--wp-green); }
-
+    .f-soc-icon:hover { color: #fff; background: var(--primary); }
     .f-col h6 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 18px; text-transform: uppercase; letter-spacing: .8px; }
     .f-col ul li { margin-bottom: 9px; }
     .f-col ul li a { font-size: 13.5px; color: rgba(255,255,255,.62); transition: all .2s; display: flex; align-items: center; gap: 7px; }
@@ -589,311 +335,83 @@
     .f-contact-item { display: flex; gap: 11px; margin-bottom: 13px; font-size: 13.5px; color: rgba(255,255,255,.62); }
     .f-contact-item i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
     .f-contact-item a { color: rgba(255,255,255,.85); }
-    .f-contact-item a:hover { color: #fff; }
-
     .footer-bot {
       border-top: 1px solid rgba(255,255,255,.1); padding: 16px 0;
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
-    .footer-bot p { font-size: 13px; color: rgba(255,255,255,.45); margin: 0; }
-    .footer-bot a { color: rgba(255,255,255,.55); margin: 0 7px; font-size: 13px; }
-    .footer-bot a:hover { color: #fff; }
-    .pay-icons { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
-    .pay-badge { background: rgba(255,255,255,.12); border-radius: 4px; padding: 4px 9px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.7); }
+    .footer-bot p { font-size: 13px; color: rgba(255,255,255,.45); }
 
-    /* ============================================================
-       CART MODAL
-    ============================================================ */
-    .cart-overlay {
+    /* CART & MODALS */
+    .cart-overlay, .order-overlay, .mug-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.5);
-      z-index: 2000; display: none; align-items: flex-start; justify-content: flex-end;
+      z-index: 2000; display: none; align-items: center; justify-content: center;
     }
-    .cart-overlay.open { display: flex; }
+    .cart-overlay { justify-content: flex-end; }
+    .cart-overlay.open, .order-overlay.open, .mug-overlay.open { display: flex; }
     .cart-panel {
       width: min(420px, 95vw); height: 100vh; background: #fff;
       display: flex; flex-direction: column; box-shadow: -4px 0 40px rgba(0,0,0,.2);
-      animation: slideIn .3s ease;
     }
-    @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    .cart-hdr {
+    .cart-hdr, .om-hdr {
       display: flex; align-items: center; justify-content: space-between;
       padding: 18px 20px; border-bottom: 1px solid var(--border);
     }
-    .cart-hdr h3 { font-size: 18px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
-    .cart-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-light); padding: 4px 8px; border-radius: 4px; }
-    .cart-close:hover { background: var(--bg-light); }
+    .cart-close, .om-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); }
     .cart-body { flex: 1; overflow-y: auto; padding: 16px; }
     .cart-empty { text-align: center; padding: 50px 20px; color: var(--text-muted); }
-    .cart-empty i { font-size: 52px; margin-bottom: 14px; opacity: .3; }
-    .cart-empty p { font-size: 15px; }
-    .cart-item {
-      display: flex; gap: 14px; padding: 14px 0;
-      border-bottom: 1px solid var(--border); align-items: flex-start;
-    }
-    .cart-item-icon {
-      width: 58px; height: 58px; border-radius: 8px; background: var(--bg-light);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; color: var(--primary);
-    }
-    .cart-item-info { flex: 1; min-width: 0; }
-    .cart-item-info h5 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-    .cart-item-info .ci-detail { font-size: 12.5px; color: var(--text-muted); margin-bottom: 6px; }
-    .cart-item-info .ci-price { font-size: 14px; font-weight: 800; color: var(--primary); }
-    .cart-item-qty { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-    .qty-btn {
-      width: 28px; height: 28px; border: 1.5px solid var(--border);
-      border-radius: 6px; background: #fff; cursor: pointer;
-      font-size: 16px; display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-    }
-    .qty-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .qty-val { font-size: 14px; font-weight: 700; min-width: 24px; text-align: center; }
-    .cart-item-del { background: none; border: none; color: #e53935; cursor: pointer; font-size: 16px; padding: 4px; }
-    .cart-item-del:hover { opacity: .7; }
     .cart-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
     .cart-total { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 16px; font-weight: 700; }
-    .cart-total span:last-child { color: var(--primary); font-size: 18px; }
-    .cart-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 14px; margin-bottom: 10px; }
-    .cart-footer .btn i { font-size: 18px; }
+    .cart-footer .btn { width: 100%; margin-bottom: 8px; justify-content: center; }
 
-    /* ============================================================
-       ORDER MODAL (name + address form)
-    ============================================================ */
-    .order-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.55);
-      z-index: 3000; display: none; align-items: center; justify-content: center; padding: 16px;
+    .order-modal, .mug-modal {
+      background: #fff; border-radius: var(--radius-lg); width: min(500px, 94%);
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.25);
     }
-    .order-overlay.open { display: flex; }
-    .order-modal {
-      background: #fff; border-radius: var(--radius-lg);
-      width: min(500px, 100%); max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25); animation: popIn .3s ease;
-    }
-    @keyframes popIn { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .om-hdr { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .om-hdr h3 { font-size: 18px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 10px; }
-    .om-hdr h3 i { color: var(--wp-green); }
-    .om-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-light); }
     .om-body { padding: 20px 24px; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .form-group input, .form-group textarea, .form-group select {
       width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-      border-radius: var(--radius); font-family: inherit; font-size: 14px; color: var(--text);
-      outline: none; transition: border-color .2s; resize: vertical;
+      border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none;
     }
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus { border-color: var(--primary); }
-    .om-summary { background: var(--bg-light); border-radius: var(--radius); padding: 14px; margin-bottom: 16px; }
-    .om-summary h6 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
-    .om-sum-item { display: flex; justify-content: space-between; font-size: 13.5px; margin-bottom: 6px; }
-    .mug-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 3100;
-      display: none; align-items: center; justify-content: center; padding: 16px;
-    }
-    .mug-overlay.open { display: flex; }
-    .mug-modal { background: #fff; border-radius: var(--radius-lg); width: min(560px, 100%); max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.25); animation: popIn .3s ease; }
-    .mug-choice { display: flex; gap: 12px; align-items: flex-start; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 13px; margin-bottom: 10px; cursor: pointer; transition: all .2s; }
-    .mug-choice:hover, .mug-choice.selected { border-color: var(--primary); background: rgba(43,118,166,.06); }
-    .mug-choice input { margin-top: 3px; accent-color: var(--primary); }
-    .mug-choice strong { display: block; font-size: 13.5px; margin-bottom: 3px; }
-    .mug-choice small { color: var(--text-light); font-size: 12px; line-height: 1.45; }
-    .mug-upload { display: none; margin: 14px 0 4px; padding: 14px; border: 1.5px dashed var(--primary); border-radius: var(--radius); background: #f7fbff; }
-    .mug-upload.show { display: block; }
-    .legacy-fields { display: none !important; }
-    .legacy-fields + .om-footer { display: none !important; }
-    .mug-upload label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
-    .mug-upload input { width: 100%; font-size: 13px; }
-    .order-upload { padding: 13px; border: 1.5px dashed var(--primary); border-radius: var(--radius); background: #f7fbff; }
-    .order-upload label { display: block; font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 7px; }
-    .order-upload input { width: 100%; font-size: 13px; }
-    .upload-help { display: block; color: var(--text-light); font-size: 11.5px; line-height: 1.45; margin-top: 6px; }
-    .radio-stack { display: grid; gap: 8px; }
-    .radio-option { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-light); }
-    .radio-option input { accent-color: var(--primary); }
-    .form-note { margin: -4px 0 16px; padding: 10px 12px; border-left: 3px solid var(--accent); background: #fff8ef; color: var(--text-light); font-size: 12px; line-height: 1.45; }
-    .location-box { margin-top: 10px; padding: 11px 12px; border: 1px dashed var(--primary); border-radius: var(--radius); background: #f7fbff; }
-    .location-btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 0; border-radius: 6px; background: var(--primary); color: #fff; font: 700 12px inherit; cursor: pointer; }
-    .location-btn:disabled { opacity: .65; cursor: wait; }
-    .location-status { display: block; margin-top: 7px; color: var(--text-light); font-size: 11.5px; line-height: 1.4; }
-    .location-status.success { color: #16804f; }
-    .location-status.error { color: #b42318; }
-    .asset-preview { display: none; align-items: center; gap: 12px; margin-top: 12px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
-    .asset-preview.show { display: flex; }
-    .asset-preview img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; background: var(--bg-light); }
-    .asset-preview-info { min-width: 0; flex: 1; }
-    .asset-preview-info strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; }
-    .asset-preview-info small { color: var(--text-light); font-size: 11px; }
-    .asset-preview-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
-    .asset-preview-actions button { border: 0; background: none; padding: 0; color: var(--primary); cursor: pointer; font: 700 11px inherit; }
-    .asset-preview-actions button.remove { color: #c62828; }
-    .preview-overlay { position: fixed; inset: 0; z-index: 5000; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(0,0,0,.78); }
-    .preview-overlay.open { display: flex; }
-    .preview-overlay img { max-width: min(100%, 900px); max-height: 88vh; object-fit: contain; border-radius: 8px; }
-    .preview-overlay button { position: absolute; top: 18px; right: 22px; border: 0; background: #fff; color: #222; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; }
-    .payment-card { margin-top: 16px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
-    .payment-card h6 { margin-bottom: 10px; color: var(--text); font-size: 12px; text-transform: uppercase; letter-spacing: .8px; }
-    .payment-options { display: grid; gap: 8px; }
-    .payment-option { display: flex; gap: 9px; align-items: center; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .payment-option:has(input:checked) { border-color: var(--primary); background: rgba(43,118,166,.06); }
-    .summary-breakdown { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 12.5px; }
-    .summary-breakdown div { display: flex; justify-content: space-between; margin-top: 5px; }
-    .om-sum-item span:last-child { font-weight: 700; color: var(--primary); }
     .om-footer { padding: 16px 24px 20px; border-top: 1px solid var(--border); }
-    .om-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 14px; }
+    .om-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 12px; }
 
-    /* ============================================================
-       FLOATING BUTTONS
-    ============================================================ */
+    /* FLOATING BUTTONS */
     .wp-float {
-      position: fixed; bottom: 80px; right: 24px;
-      width: 52px; height: 52px; background: var(--wp-green); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 26px; z-index: 999;
-      box-shadow: 0 4px 16px rgba(37,211,102,.45); transition: all .3s; text-decoration: none;
+      position: fixed; bottom: 80px; right: 24px; width: 52px; height: 52px;
+      background: var(--wp-green); border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; color: #fff; font-size: 26px;
+      z-index: 999; box-shadow: 0 4px 16px rgba(37,211,102,.45);
     }
-    .wp-float:hover { transform: scale(1.1); }
     .btt-btn {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 44px; height: 44px; background: var(--primary); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 16px; cursor: pointer; z-index: 999;
-      box-shadow: 0 4px 14px rgba(43,118,166,.4); opacity: 0; transform: translateY(16px);
-      transition: all .3s; border: none;
+      position: fixed; bottom: 24px; right: 24px; width: 44px; height: 44px;
+      background: var(--primary); border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; color: #fff; font-size: 16px;
+      cursor: pointer; z-index: 999; border: none;
     }
-    .btt-btn.vis { opacity: 1; transform: translateY(0); }
-    .btt-btn:hover { background: var(--primary-dark); transform: translateY(-2px) !important; }
 
-    /* ============================================================
-       SCROLLBAR
-    ============================================================ */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
-
-    /* ============================================================
-       MOBILE MENU
-    ============================================================ */
-    .mob-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,.5);
-      z-index: 1100; display: none;
-    }
-    .mob-overlay.open { display: block; }
-    .mob-panel {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 290px;
-      background: #fff; z-index: 1200; overflow-y: auto;
-      box-shadow: 4px 0 30px rgba(0,0,0,.15); animation: mobIn .3s ease;
-    }
-    @keyframes mobIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-    .mob-hdr {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--primary);
-    }
-    .mob-hdr .mh-logo { color: #fff; }
-    .mob-hdr .mh-logo .mn { font-size: 18px; font-weight: 800; }
-    .mob-hdr .mh-logo .ms { font-size: 10px; opacity: .8; letter-spacing: 1px; }
-    .mob-hdr button { background: none; border: none; color: #fff; font-size: 22px; cursor: pointer; }
-    .mob-links { padding: 8px 0; }
-    .mob-link, .mob-acc-toggle {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 18px; font-size: 14.5px; font-weight: 600; color: var(--text);
-      border-bottom: 1px solid var(--border); transition: all .2s; cursor: pointer;
-    }
-    .mob-link:hover, .mob-acc-toggle:hover { background: var(--bg-light); color: var(--primary); }
-    .mob-sub-con { display: none; background: var(--bg-light); }
-    .mob-sub-con.open { display: block; }
-    .mob-sub-con a {
-      display: block; padding: 10px 18px 10px 30px;
-      font-size: 13.5px; color: var(--text-light); border-bottom: 1px solid #eee; transition: all .2s;
-    }
-    .mob-sub-con a:hover { color: var(--primary); padding-left: 36px; }
-    .mob-contact { padding: 16px 18px; border-top: 2px solid var(--border); }
-    .mob-contact p { font-size: 13.5px; color: var(--text-light); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .mob-contact a { color: var(--primary); font-weight: 700; }
-
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
-    @media (max-width: 1100px) {
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-      .process-grid { grid-template-columns: repeat(2,1fr); }
-      .legacy-how-works .steps-grid { grid-template-columns: repeat(2,1fr); }
-      .testi-grid { grid-template-columns: repeat(2,1fr); }
-      .why-layout { grid-template-columns: 1fr; gap: 40px; }
-    }
-    @media (max-width: 900px) {
-      .stats-grid { grid-template-columns: repeat(2,1fr); }
-      .hdr-search { display: none; }
-      .slide-content { padding: 40px 48px; }
-      .slide-title { font-size: 34px; }
-    }
     @media (max-width: 768px) {
-      .main-nav { display: none; }
+      .main-nav, .top-bar { display: none; }
       .mob-toggle { display: flex; }
-      .top-bar { display: none; }
-      .ann-bar { font-size: 12px; gap: 8px; }
-      .slide { min-height: 360px; }
-      .slide-content { padding: 30px 24px; }
-      .slide-title { font-size: 26px; }
-      .slide-desc { font-size: 14px; margin-bottom: 22px; }
-      .slide-actions .btn { padding: 9px 16px; font-size: 13px; }
-      .cats-grid { grid-template-columns: repeat(2,1fr); gap: 14px; }
-      .testi-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr; }
-      .process-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
-      .legacy-how-works .steps-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-      .section-title { font-size: 23px; }
-      .section-pad { padding: 50px 0; }
-      .feat-item { min-width: 160px; padding: 14px 16px; }
+      .footer-grid, .why-layout, .legacy-how-works .steps-grid { grid-template-columns: 1fr; }
+      .cats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
     }
-    @media (max-width: 500px) {
-      .hdr-inner { padding: 9px 12px; gap: 7px; }
-      .sk-logo .sk-name { font-size: 20px; }
-      .sk-logo .sk-sub { font-size: 8px; letter-spacing: .8px; }
-      .hdr-icons { margin-left: auto; gap: 0; }
-      .hdr-icons .hdr-icon-btn { padding: 6px; }
-      .hdr-icons .hdr-icon-btn:first-child { display: none; }
-      .hdr-icon-btn i { font-size: 17px; }
-      .mob-toggle { padding: 6px 7px; }
-      .hero-single .slide-1 {
-        height: auto; min-height: 0; aspect-ratio: 1896 / 649;
-      }
-      .hero-single .single-hero-image { object-fit: contain; }
+    @media (max-width: 480px) {
       .cats-grid { grid-template-columns: 1fr; }
-      .process-grid { grid-template-columns: 1fr; }
-      .legacy-how-works .steps-grid { grid-template-columns: 1fr; }
-      .slide-content { padding: 24px 18px; }
-      .slide-title { font-size: 22px; }
-      .slide-actions { gap: 8px; }
-      .slide-actions .btn { padding: 9px 14px; font-size: 12.5px; }
-      .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-      .promo-inner { flex-direction: column; text-align: center; }
-      .nl-form { flex-direction: column; }
-      .nl-form input { min-width: unset; }
-      .footer-bot { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .hdr-inner { padding: 10px 14px; }
-      .sk-logo .sk-name { font-size: 20px; }
-      .ann-bar { display: none; }
-      .why-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- =====================================================================
-     ANNOUNCEMENT BAR
-====================================================================== -->
+<!-- ANNOUNCEMENT BAR -->
 <div class="ann-bar">
   <i class="fas fa-tag"></i>
   <span>🎉 Get <strong>10% OFF</strong> on your first order — Code: <strong>PRINT10</strong></span>
   <a href="#products">Shop Now →</a>
 </div>
 
-<!-- =====================================================================
-     TOP BAR
-====================================================================== -->
+<!-- TOP BAR -->
 <div class="top-bar">
   <div class="container-fluid">
     <div class="top-bar-inner">
@@ -905,148 +423,58 @@
       <div class="top-links">
         <a href="#products">All Products</a>
         <a href="#order-direct">Direct Order</a>
-        <a href="#get-quote" class="tl-quote">Get a Quote</a>
+        <a href="#contact" class="tl-quote">Get a Quote</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- =====================================================================
-     MAIN HEADER
-====================================================================== -->
+<!-- MAIN HEADER -->
 <header class="main-header">
   <div class="hdr-inner">
-    <!-- Logo -->
-    <a href="#home" class="sk-logo" aria-label="SK Graphics home">
+    <a href="#home" class="sk-logo">
       <span class="sk-name">SK Graphics</span>
+      <span class="sk-sub">Custom Printing &amp; Branding</span>
     </a>
 
-    <!-- Desktop Nav -->
-    <nav class="main-nav" id="mainNav">
-      <!-- Products Mega Menu -->
+    <nav class="main-nav">
       <div class="ni">
         <a href="#products">Our Products <i class="fas fa-angle-down"></i></a>
         <div class="mega-dd">
           <div class="mega-left">
-            <ul id="megaLeftList">
-              <li class="act" data-panel="p-print" onmouseenter="showPanel('p-print',this)">
-                <a href="#products">Print Products <i class="fas fa-angle-right"></i></a>
-              </li>
-              <li data-panel="p-wide" onmouseenter="showPanel('p-wide',this)">
-                <a href="#products">Wide Format &amp; Display <i class="fas fa-angle-right"></i></a>
-              </li>
-              <li data-panel="p-promo" onmouseenter="showPanel('p-promo',this)">
-                <a href="#products">Promotional Products <i class="fas fa-angle-right"></i></a>
-              </li>
-              <li data-panel="p-cloth" onmouseenter="showPanel('p-cloth',this)">
-                <a href="#products">Clothing &amp; Fabrics <i class="fas fa-angle-right"></i></a>
-              </li>
-              <li data-panel="p-photo" onmouseenter="showPanel('p-photo',this)">
-                <a href="#products">Photo Products <i class="fas fa-angle-right"></i></a>
-              </li>
-              <li data-panel="p-pack" onmouseenter="showPanel('p-pack',this)">
-                <a href="#products">Packaging <i class="fas fa-angle-right"></i></a>
-              </li>
+            <ul>
+              <li class="act"><a href="#products">Print Products <i class="fas fa-angle-right"></i></a></li>
             </ul>
           </div>
           <div class="mega-right">
-            <div class="sub-panel act" id="p-print">
-              <h6>Print Products</h6>
+            <div class="sub-panel act">
+              <h6>All Categories</h6>
               <div class="prod-links">
-                <a href="#" onclick="addToCart('Business Cards',99)">Business Cards</a>
-                <a href="#" onclick="addToCart('Letterheads',149)">Letterheads</a>
-                <a href="#" onclick="addToCart('Flyers',199)">Flyers</a>
-                <a href="#" onclick="addToCart('Folders',349)">Folders</a>
-                <a href="#" onclick="addToCart('Envelopes',249)">Envelopes</a>
-                <a href="#" onclick="addToCart('Brochures',299)">Brochures</a>
-                <a href="#" onclick="addToCart('Stickers & Labels',149)">Stickers / Labels</a>
-                <a href="#" onclick="addToCart('CD/DVD Jackets',199)">CD / DVD Jackets</a>
-                <a href="#" onclick="addToCart('Certificates',129)">Certificates</a>
-                <a href="#" onclick="addToCart('ID Cards & Straps',179)">ID Cards &amp; Straps</a>
-                <a href="#" onclick="addToCart('Invitations',249)">Invitations</a>
-                <a href="#" onclick="addToCart('Books & Booklets',499)">Books &amp; Booklets</a>
-                <a href="#" onclick="addToCart('Notepads',199)">Notepads</a>
-                <a href="#" onclick="addToCart('Calendars & Planners',349)">Calendars &amp; Planners</a>
-                <a href="#" onclick="addToCart('Tags',99)">Tags</a>
-                <a href="#" onclick="addToCart('Invoices & Vouchers',299)">Invoices &amp; Vouchers</a>
-                <a href="#" onclick="addToCart('Stamps',149)">Stamps</a>
-                <a href="#" onclick="addToCart('Menu Cards',229)">Menu Cards</a>
-              </div>
-            </div>
-            <div class="sub-panel" id="p-wide">
-              <h6>Wide Format &amp; Display</h6>
-              <div class="prod-links">
-                <a href="#" onclick="addToCart('Posters & Banners',599)">Posters &amp; Banners</a>
-                <a href="#" onclick="addToCart('Canvas Printing',799)">Canvas Printing</a>
-                <a href="#" onclick="addToCart('Roll-Up Banners',1299)">Roll-Up Banners</a>
-                <a href="#" onclick="addToCart('Pop-Up Displays',2499)">Pop-Up Displays</a>
-                <a href="#" onclick="addToCart('Canopy / Demo Tent',4999)">Canopy / Demo Tent</a>
-                <a href="#" onclick="addToCart('Wallpapers',899)">Wallpapers</a>
-              </div>
-            </div>
-            <div class="sub-panel" id="p-promo">
-              <h6>Promotional Products</h6>
-              <div class="prod-links">
-                <a href="#" onclick="addToCart('Custom Mugs',199)">Custom Mugs</a>
-                <a href="#" onclick="addToCart('Mouse Pads',149)">Mouse Pads</a>
-                <a href="#" onclick="addToCart('Custom Pillows',349)">Custom Pillows</a>
-                <a href="#" onclick="addToCart('Diaries / Notebook',299)">Diaries / Notebook</a>
-                <a href="#" onclick="addToCart('Branded Pens',49)">Branded Pens</a>
-                <a href="#" onclick="addToCart('Caps',199)">Caps</a>
-                <a href="#" onclick="addToCart('USB Flash Drives',349)">USB Flash Drives</a>
-                <a href="#" onclick="addToCart('Powerbanks',599)">Powerbanks</a>
-                <a href="#" onclick="addToCart('Promotional Bags',399)">Promotional Bags</a>
-              </div>
-            </div>
-            <div class="sub-panel" id="p-cloth">
-              <h6>Clothing &amp; Fabrics</h6>
-              <div class="prod-links">
-                <a href="#" onclick="addToCart('Custom T-Shirts',299)">Custom T-Shirts</a>
-                <a href="#" onclick="addToCart('Canvas Printing',799)">Canvas Printing</a>
-                <a href="#" onclick="addToCart('Custom Pillows',349)">Custom Pillows</a>
-                <a href="#" onclick="addToCart('Caps',199)">Caps</a>
-              </div>
-            </div>
-            <div class="sub-panel" id="p-photo">
-              <h6>Photo Products</h6>
-              <div class="prod-links">
-                <a href="#" onclick="addToCart('Photobooks',799)">Photobooks</a>
-                <a href="#" onclick="addToCart('Custom Mugs',199)">Custom Mugs</a>
-                <a href="#" onclick="addToCart('Custom Pillows',349)">Custom Pillows</a>
-                <a href="#" onclick="addToCart('Canvas Printing',799)">Canvas Printing</a>
-                <a href="#" onclick="addToCart('Caps',199)">Caps</a>
-              </div>
-            </div>
-            <div class="sub-panel" id="p-pack">
-              <h6>Packaging</h6>
-              <div class="prod-links">
-                <a href="#" onclick="addToCart('Fancy Boxes',499)">Fancy Boxes</a>
-                <a href="#" onclick="addToCart('Carry Bags',299)">Carry Bags</a>
-                <a href="#" onclick="addToCart('Custom Packaging',599)">Custom Packaging</a>
-                <a href="#" onclick="addToCart('Product Labels',149)">Product Labels</a>
+                <a href="#products">Business Cards</a>
+                <a href="#products">Flyers &amp; Leaflets</a>
+                <a href="#products">Brochures</a>
+                <a href="#products">Posters &amp; Banners</a>
+                <a href="#products">Custom Mugs</a>
+                <a href="#products">Stickers &amp; Labels</a>
+                <a href="#products">Custom T-Shirts</a>
+                <a href="#products">Roll-Up Banners</a>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="ni"><a href="#products">All Products</a></div>
-      <div class="ni"><a href="#get-quote">Get a Quote</a></div>
-      <div class="ni"><a href="#order-direct">Direct Order</a></div>
+      <div class="ni"><a href="#how-it-works">How It Works</a></div>
+      <div class="ni"><a href="#why-us">About Us</a></div>
       <div class="ni"><a href="#contact">Contact Us</a></div>
     </nav>
 
-    <!-- Search -->
     <div class="hdr-search">
       <input type="text" placeholder="Search products...">
       <button type="button"><i class="fas fa-search"></i></button>
     </div>
 
-    <!-- Header Icons -->
     <div class="hdr-icons">
-      <a href="#" class="hdr-icon-btn" title="My Account" onclick="event.preventDefault();">
-        <i class="fas fa-user"></i>
-        <span class="label-text" style="display:none"></span>
-      </a>
       <button class="hdr-icon-btn" title="Shopping Cart" onclick="openCart()">
         <i class="fas fa-shopping-cart"></i>
         <span class="badge" id="cartBadge">0</span>
@@ -1056,117 +484,21 @@
       </a>
     </div>
 
-    <!-- Mobile Toggle -->
-    <button class="mob-toggle" id="mobToggle" onclick="openMob()">
+    <button class="mob-toggle" onclick="openCart()">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
 
-<!-- =====================================================================
-     MOBILE MENU
-====================================================================== -->
-<div class="mob-overlay" id="mobOverlay" onclick="closeMob()"></div>
-<div class="mob-panel" id="mobPanel" style="display:none">
-  <div class="mob-hdr">
-    <div class="mh-logo">
-      <div class="mn">SK Graphics</div>
-      <div class="ms">Custom Printing &amp; Branding</div>
-    </div>
-    <button onclick="closeMob()"><i class="fas fa-times"></i></button>
-  </div>
-  <div class="mob-links">
-    <div class="mob-acc-toggle" onclick="toggleMobSub(this)">
-      <span>Our Products</span><i class="fas fa-angle-down"></i>
-    </div>
-    <div class="mob-sub-con">
-      <a href="#" onclick="addToCart('Business Cards',99);closeMob()">Business Cards</a>
-      <a href="#" onclick="addToCart('Flyers',199);closeMob()">Flyers</a>
-      <a href="#" onclick="addToCart('Brochures',299);closeMob()">Brochures</a>
-      <a href="#" onclick="addToCart('Stickers & Labels',149);closeMob()">Stickers / Labels</a>
-      <a href="#" onclick="addToCart('Posters & Banners',599);closeMob()">Posters &amp; Banners</a>
-      <a href="#" onclick="addToCart('Custom Mugs',199);closeMob()">Custom Mugs</a>
-      <a href="#" onclick="addToCart('Custom T-Shirts',299);closeMob()">Custom T-Shirts</a>
-      <a href="#" onclick="addToCart('Roll-Up Banners',1299);closeMob()">Roll-Up Banners</a>
-      <a href="#" onclick="addToCart('Fancy Boxes',499);closeMob()">Fancy Boxes</a>
-      <a href="#" onclick="addToCart('Notepads',199);closeMob()">Notepads</a>
-    </div>
-    <a class="mob-link" href="#products" onclick="closeMob()"><span>All Products</span><i class="fas fa-angle-right"></i></a>
-    <a class="mob-link" href="#get-quote" onclick="closeMob()"><span>Get a Quote</span><i class="fas fa-angle-right"></i></a>
-    <a class="mob-link" href="#order-direct" onclick="closeMob()"><span>Direct Order</span><i class="fas fa-angle-right"></i></a>
-    <a class="mob-link" href="#contact" onclick="closeMob()"><span>Contact Us</span><i class="fas fa-angle-right"></i></a>
-    <button class="mob-link" style="width:100%;text-align:left;background:none;border:none;font-family:inherit;cursor:pointer;border-bottom:1px solid var(--border);" onclick="openCart();closeMob()">
-      <span>🛒 Cart (<span id="mobCartCount">0</span>)</span><i class="fas fa-angle-right"></i>
-    </button>
-  </div>
-  <div class="mob-contact">
-    <p><i class="fas fa-phone" style="color:var(--primary)"></i><a href="tel:+918447459316">+91 84474 59316</a></p>
-    <p><i class="fas fa-envelope" style="color:var(--primary)"></i><a href="mailto:shubhprinters88@gmail.com">shubhprinters88@gmail.com</a></p>
-    <a href="https://wa.me/918447459316" target="_blank" class="btn btn-wp" style="margin-top:10px;width:100%;justify-content:center;"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
-  </div>
-</div>
-
-<!-- =====================================================================
-     HERO SLIDER
-====================================================================== -->
-<section class="hero hero-single" id="home">
-  <div class="slider-track" id="sliderTrack">
-    <!-- Slide 1 -->
-    <div class="slide slide-1">
-      <div class="slide-deco"></div><div class="slide-deco2"></div>
-      <img class="single-hero-image" src="assets/sk-hero-online-print-shop.png" alt="SK Graphics online print shop" loading="eager">
-      <div class="slide-visual"><img src="assets/sk-printing-materials.png" alt="SK Graphics printed marketing materials" loading="eager"></div>
-      <div class="slide-content">
-        <span class="slide-label">✦ Premium Print Quality</span>
-        <h1 class="slide-title">One Stop <span class="hi">Print Shop</span><br>in Delhi &amp; Noida</h1>
-        <p class="slide-desc">High-quality printing for business cards, flyers, brochures, banners, mugs, t-shirts, and 100+ more products — delivered fast across India.</p>
-        <div class="slide-actions">
-          <a href="#products" class="btn btn-white">Shop Now</a>
-          <a href="#get-quote" class="btn btn-accent">Get a Quote</a>
-        </div>
-      </div>
-    </div>
-    <!-- Slide 2 -->
-    <div class="slide slide-2">
-      <div class="slide-deco"></div><div class="slide-deco2"></div>
-      <div class="slide-visual"><img src="assets/sk-tshirt.png" alt="SK Graphics branded custom t-shirt" loading="lazy"></div>
-      <div class="slide-content">
-        <span class="slide-label">✦ Corporate Branding</span>
-        <h1 class="slide-title">Custom <span class="hi">Promotional</span><br>Products</h1>
-        <p class="slide-desc">Personalized mugs, t-shirts, pens, diaries, USB drives, bags and more. Perfect for corporate gifting and brand promotion.</p>
-        <div class="slide-actions">
-          <a href="#products" class="btn btn-white">Explore Products</a>
-          <a href="#order-direct" class="btn btn-accent">Direct Order</a>
-        </div>
-      </div>
-    </div>
-    <!-- Slide 3 -->
-    <div class="slide slide-3">
-      <div class="slide-deco"></div><div class="slide-deco2"></div>
-      <div class="slide-visual"><img src="assets/sk-branding-studio.png" alt="SK Graphics branding and design studio" loading="lazy"></div>
-      <div class="slide-content">
-        <span class="slide-label">✦ Large Format Printing</span>
-        <h1 class="slide-title">Banners, Canvas<br>&amp; <span class="hi">Roll-Up Stands</span></h1>
-        <p class="slide-desc">Eye-catching wide-format prints for events, exhibitions, and retail. Superior color accuracy on premium media at competitive prices.</p>
-        <div class="slide-actions">
-          <a href="#products" class="btn btn-white">View Collection</a>
-          <a href="#get-quote" class="btn btn-accent">Get a Quote</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  <button class="sl-prev" onclick="changeSlide(-1)"><i class="fas fa-angle-left"></i></button>
-  <button class="sl-next" onclick="changeSlide(1)"><i class="fas fa-angle-right"></i></button>
-  <div class="sl-dots">
-    <button class="sl-dot act" onclick="goSlide(0)"></button>
-    <button class="sl-dot" onclick="goSlide(1)"></button>
-    <button class="sl-dot" onclick="goSlide(2)"></button>
+<!-- HERO BANNER -->
+<section class="hero" id="home">
+  <div class="hero-banner-wrapper">
+    <!-- Aapki provide ki gayi online print shop image -->
+    <img class="hero-banner-img" src="assets/sk-hero-online-print-shop.png" alt="Your Online Print Shop - SK Graphics">
   </div>
 </section>
 
-<!-- =====================================================================
-     FEATURES BAR
-====================================================================== -->
+<!-- FEATURES BAR -->
 <div class="feat-bar">
   <div class="feat-bar-inner container-fluid">
     <div class="feat-item"><i class="fas fa-medal"></i><div><h6>Premium Quality</h6><p>State-of-the-art printing</p></div></div>
@@ -1177,9 +509,7 @@
   </div>
 </div>
 
-<!-- =====================================================================
-     PRODUCT CATEGORIES
-====================================================================== -->
+<!-- PRODUCT CATEGORIES -->
 <section class="section-pad" id="products">
   <div class="container">
     <div class="section-header" style="margin-bottom:48px">
@@ -1188,64 +518,172 @@
       <p class="section-subtitle">From business essentials to promotional merchandise — we print it all with precision and speed.</p>
     </div>
     <div class="cats-grid">
-      <div class="cat-card" onclick="addToCart('Business Cards',99)">
-        <div class="cat-img bg-c1"><img src="assets/sk-business-cards.png" alt="Premium SK Graphics business cards mockup" loading="lazy"></div>
-        <div class="cat-body"><h5>Business Cards</h5><p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+      <!-- 1. Business Cards -->
+      <div class="cat-card" onclick="addToCart('Business Cards', 99)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-business-cards-7TNUxOyzsV1LU0U7Z04mmIgiBF65oN.png" alt="Business Cards" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Business Cards</h5>
+          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Flyers',199)">
-        <div class="cat-img bg-c2"><img src="assets/sk-flyers-clean.png" alt="SK Graphics full-colour flyers and leaflets" loading="lazy"></div>
-        <div class="cat-body"><h5>Flyers &amp; Leaflets</h5><p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 2. Flyers & Leaflets -->
+      <div class="cat-card" onclick="addToCart('Flyers', 199)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-printing-materials-e2CwHCAFxXWHHnEZOfx9sGy7wpzjzN.png" alt="Flyers & Leaflets" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Flyers &amp; Leaflets</h5>
+          <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Brochures',299)">
-        <div class="cat-img bg-c3"><img src="assets/sk-brochures.png" alt="SK Graphics corporate brochure and portfolio mockup" loading="lazy"></div>
-        <div class="cat-body"><h5>Brochures</h5><p>Bi-fold, tri-fold and Z-fold brochures on premium art paper.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 3. Brochures -->
+      <div class="cat-card" onclick="addToCart('Brochures', 299)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-brochures-sFlQL4XMSXccOZ4VJXwJRiyrOI4jYo.png" alt="Brochures" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Brochures</h5>
+          <p>Bi-fold, tri-fold and Z-fold brochures on premium art paper.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Posters & Banners',599)">
-        <div class="cat-img bg-c4"><img src="assets/sk-banners.png" alt="SK Graphics large format vinyl event banners" loading="lazy"></div>
-        <div class="cat-body"><h5>Posters &amp; Banners</h5><p>Vibrant large-format vinyl banners, posters, and flex prints for every event.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 4. Posters & Banners -->
+      <div class="cat-card" onclick="addToCart('Posters & Banners', 599)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-banners-hoowEt1pv06StDrobG3J3QtmBbAI8U.png" alt="Posters & Banners" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Posters &amp; Banners</h5>
+          <p>Vibrant large-format vinyl banners, posters, and flex prints for every event.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Custom Mugs',199)">
-        <div class="cat-img bg-c5"><img src="assets/sk-mugs.png" alt="Custom SK Graphics branded ceramic coffee mug" loading="lazy"></div>
-        <div class="cat-body"><h5>Custom Mugs</h5><p>Personalized ceramic mugs — ideal corporate gifts with your logo or photo.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 5. Custom Mugs -->
+      <div class="cat-card" onclick="addToCart('Custom Mugs', 199)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-mugs-2HB72ue3n80SxYgrHiwuTYaDCWiMGr.png" alt="Custom Mugs" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Custom Mugs</h5>
+          <p>Personalized ceramic mugs — ideal corporate gifts with your logo or photo.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Stickers & Labels',149)">
-        <div class="cat-img bg-c6"><img src="assets/sk-stickers.png" alt="Custom SK Graphics sticker sheet and labels" loading="lazy"></div>
-        <div class="cat-body"><h5>Stickers &amp; Labels</h5><p>Die-cut, roll, and sheet stickers in any shape — waterproof options available.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 6. Stickers & Labels -->
+      <div class="cat-card" onclick="addToCart('Stickers & Labels', 149)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-stickers-GVmHHc35TMeTWlBJNduGhkm8OOIg6v.png" alt="Stickers & Labels" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Stickers &amp; Labels</h5>
+          <p>Die-cut, roll, and sheet stickers in any shape — waterproof options available.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Custom T-Shirts',299)">
-        <div class="cat-img bg-c7"><img src="assets/sk-tshirt.png" alt="Custom SK Graphics DTG printed t-shirt" loading="lazy"></div>
-        <div class="cat-body"><h5>Custom T-Shirts</h5><p>Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 7. Custom T-Shirts -->
+      <div class="cat-card" onclick="addToCart('Custom T-Shirts', 299)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-tshirt-fcR64JdEAx3ZqloWpTFpFT9et85eg3.png" alt="Custom T-Shirts" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Custom T-Shirts</h5>
+          <p>Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Roll-Up Banners',1299)">
-        <div class="cat-img bg-c8"><img src="assets/sk-roll-up-banner.png" alt="SK Graphics retractable roll-up banner standee at exhibition" loading="lazy"></div>
-        <div class="cat-body"><h5>Roll-Up Banners</h5><p>Retractable standees for exhibitions, retail, and corporate events.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 8. Roll-Up Banners -->
+      <div class="cat-card" onclick="addToCart('Roll-Up Banners', 1299)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-roll-up-banner-AyCbZEvDN7EuKWPAt0bcAryP82DF2m.png" alt="Roll-Up Banners" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Roll-Up Banners</h5>
+          <p>Retractable standees for exhibitions, retail, and corporate events.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Diaries & Notebooks',299)">
-        <div class="cat-img bg-c9"><img src="assets/sk-notebooks.png" alt="Branded SK Graphics hardcover corporate notebooks" loading="lazy"></div>
-        <div class="cat-body"><h5>Diaries &amp; Notebooks</h5><p>Custom-branded hardcover and softcover diaries, notepads, and planners.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 9. Diaries & Notebooks -->
+      <div class="cat-card" onclick="addToCart('Diaries & Notebooks', 299)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-notebooks-2N5TmDc8OtUIgZCRNYWPwk9sL7NACv.png" alt="Diaries & Notebooks" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Diaries &amp; Notebooks</h5>
+          <p>Custom-branded hardcover and softcover diaries, notepads, and planners.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Folders',349)">
-        <div class="cat-img bg-c10"><img src="assets/sk-presentation-folders.png" alt="SK Graphics corporate presentation folders" loading="lazy"></div>
-        <div class="cat-body"><h5>Presentation Folders</h5><p>Premium printed folders for presentations, proposals, and corporate kits.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 10. Presentation Folders -->
+      <div class="cat-card" onclick="addToCart('Folders', 349)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-branding-studio-H7DWaWTOBl17sH6VAUm2fQsPZwgum6.png" alt="Presentation Folders" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Presentation Folders</h5>
+          <p>Premium printed folders for presentations, proposals, and corporate kits.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Canvas Printing',799)">
-        <div class="cat-img bg-c11"><img src="assets/sk-canvas-printing.png" alt="SK Graphics stretched canvas wall prints" loading="lazy"></div>
-        <div class="cat-body"><h5>Canvas Printing</h5><p>Photo-quality canvas prints on stretched frames for homes, offices, and gifts.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 11. Canvas Printing -->
+      <div class="cat-card" onclick="addToCart('Canvas Printing', 799)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-canvas-printing-aDVpjAbidfZJGlZgXWHb6a6mTkeicG.png" alt="Canvas Printing" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Canvas Printing</h5>
+          <p>Photo-quality canvas prints on stretched frames for homes, offices, and gifts.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
-      <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging',499)">
-        <div class="cat-img bg-c12"><img src="assets/sk-fancy-boxes.png" alt="SK Graphics fancy boxes and gift packaging" loading="lazy"></div>
-        <div class="cat-body"><h5>Fancy Boxes &amp; Packaging</h5><p>Custom packaging, gift boxes, and carry bags with premium finishing options.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div>
+
+      <!-- 12. Fancy Boxes & Packaging -->
+      <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging', 499)">
+        <div class="cat-img">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-fancy-boxes-84mFJbFTYFKfwQx6rXl1Xhz71pVNIg.png" alt="Fancy Boxes & Packaging" loading="lazy">
+          <div class="cat-circle-badge"><span>SK</span></div>
+        </div>
+        <div class="cat-body">
+          <h5>Fancy Boxes &amp; Packaging</h5>
+          <p>Custom packaging, gift boxes, and carry bags with premium finishing options.</p>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+        </div>
       </div>
     </div>
+
     <div style="text-align:center;margin-top:36px">
-      <button onclick="openCart()" class="btn btn-primary" style="padding:12px 36px;font-size:15px"><i class="fas fa-shopping-cart"></i> View Cart &amp; Order</button>
+      <button onclick="openCart()" class="btn btn-primary" style="padding:12px 36px;font-size:15px">
+        <i class="fas fa-shopping-cart"></i> View Cart &amp; Order
+      </button>
     </div>
   </div>
 </section>
 
-<!-- =====================================================================
-     PROMO STRIP
-====================================================================== -->
+<!-- PROMO STRIP -->
 <div class="promo-strip" id="order-direct">
   <div class="container promo-inner">
     <div class="promo-text">
@@ -1253,16 +691,18 @@
       <p>Special discounts for bulk quantities — branding kits, event materials, corporate gifts &amp; more.</p>
     </div>
     <div class="promo-btns">
-      <a href="https://wa.me/918447459316?text=Hi%20SK%20Graphics!%20I%20want%20to%20place%20a%20bulk%20order." target="_blank" class="btn btn-white"><i class="fab fa-whatsapp"></i> WhatsApp Us</a>
-      <a href="tel:+918447459316" class="btn btn-outline-white"><i class="fas fa-phone"></i> Call Now</a>
+      <a href="https://wa.me/918447459316?text=Hi%20SK%20Graphics!%20I%20want%20to%20place%20a%20bulk%20order." target="_blank" class="btn btn-white">
+        <i class="fab fa-whatsapp"></i> WhatsApp Us
+      </a>
+      <a href="tel:+918447459316" class="btn btn-outline-white">
+        <i class="fas fa-phone"></i> Call Now
+      </a>
     </div>
   </div>
 </div>
 
-<!-- =====================================================================
-     HOW IT WORKS
-====================================================================== -->
-<section class="how-works legacy-how-works" id="how-it-works">
+<!-- HOW IT WORKS -->
+<section class="legacy-how-works" id="how-it-works">
   <div class="container">
     <div class="section-header" style="margin-bottom:50px">
       <span class="section-tag">Simple Process</span>
@@ -1273,77 +713,35 @@
       <div class="step-card">
         <div class="step-num">1</div>
         <h5>Choose Your Product</h5>
-        <p>Browse our wide range of products. Select specifications — size, quantity, paper type, and finish.</p>
+        <p>Browse our catalog, select size, finish, and quantities.</p>
       </div>
       <div class="step-card">
         <div class="step-num">2</div>
         <h5>Upload Your Artwork</h5>
-        <p>Upload your ready print-file (PDF, AI, PSD). Need help? Our design team is ready to assist.</p>
+        <p>Upload your ready print-file or tell us your requirements on WhatsApp.</p>
       </div>
       <div class="step-card">
         <div class="step-num">3</div>
         <h5>Review &amp; Approve</h5>
-        <p>We review your file for print-readiness and send a digital proof before production starts.</p>
+        <p>We send you a digital proof before proceeding with final printing.</p>
       </div>
       <div class="step-card">
         <div class="step-num">4</div>
         <h5>Fast Delivery</h5>
-        <p>Your prints are carefully packaged and delivered pan-India in 3–7 working days.</p>
+        <p>Securely packed and delivered safely directly to your doorstep.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="how-works modern-process" id="modern-process" style="display:none">
-  <div class="container">
-    <div class="section-header" style="margin-bottom:50px">
-      <span class="section-tag">Simple Process</span>
-      <h2 class="section-title">How It Works</h2>
-      <p class="section-subtitle">Ordering is easy! Follow these 4 simple steps to get your prints delivered.</p>
-    </div>
-    <div class="process-grid">
-      <article class="process-card">
-        <div class="process-card-head"><span class="process-badge">1</span><svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h5M8 16h8"/></svg><h5>Choose Your Product</h5></div>
-        <p>Select the exact specifications for your print order.</p>
-        <div class="process-fields">
-          <div class="process-field"><label for="processSize">Size</label><select id="processSize"><option>A4</option><option>A5</option><option>A6</option><option>Custom</option></select></div>
-          <div class="process-field"><label for="processQuantity">Quantity</label><select id="processQuantity"><option>100 pcs</option><option>250 pcs</option><option>500 pcs</option><option>1,000 pcs</option></select></div>
-          <div class="process-field"><label for="processPaper">Paper Type</label><select id="processPaper"><option>Matte</option><option>Glossy</option><option>Art Card</option><option>Recycled</option></select></div>
-          <div class="process-field"><label for="processFinish">Finish</label><select id="processFinish"><option>Standard</option><option>UV Spot</option><option>Foil</option><option>Lamination</option></select></div>
-        </div>
-      </article>
-      <article class="process-card">
-        <div class="process-card-head"><span class="process-badge">2</span><svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5"/></svg><h5>Upload Your Artwork</h5></div>
-        <p>Upload a print-ready PDF, AI, or PSD file.</p>
-        <label class="drop-zone" id="artworkDropzone" for="artworkFile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13l2 2 4-4 2 2"/></svg><strong>Drop file here or browse</strong><span>.pdf, .ai, .psd up to 25 MB</span><input id="artworkFile" type="file" accept=".pdf,.ai,.psd" hidden></label>
-        <div class="file-preview" id="artworkPreview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span id="artworkName">Artwork selected</span><span class="file-status">✓ Ready</span></div>
-        <button class="design-help" type="button" onclick="alert('Our design team will contact you shortly.')">Need Design Help?</button>
-      </article>
-      <article class="process-card">
-        <div class="process-card-head"><span class="process-badge">3</span><svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m8 12 2.5 2.5L16 9"/></svg><h5>Review &amp; Approve</h5></div>
-        <p>We check your artwork and send a digital proof.</p>
-        <div class="proof-card"><div class="proof-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h5M8 16h8"/></svg><div><strong>SKG-proof-v1.pdf</strong><small>Print-readiness report</small></div></div><div class="check-list"><div class="check-row"><span>Bleed</span><span>✓ OK</span></div><div class="check-row"><span>Resolution</span><span>✓ OK</span></div><div class="check-row"><span>Margins</span><span>✓ OK</span></div></div><button class="approve-btn" id="approvePrintBtn" type="button" onclick="approvePrint()">Approve &amp; Print</button></div>
-      </article>
-      <article class="process-card">
-        <div class="process-card-head"><span class="process-badge">4</span><svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg><h5>Fast Delivery</h5></div>
-        <p>Your order is carefully packed and delivered pan-India.</p>
-        <div class="delivery-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>3–7 Working Days</div>
-        <div class="tracking"><div class="track-row"><span class="track-dot"></span><strong>Order confirmed</strong></div><div class="track-line"></div><div class="track-row"><span class="track-dot"></span><strong>In production</strong></div><div class="track-line"></div><div class="track-row"><span class="track-dot pending"></span><span>Out for delivery</span></div></div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- =====================================================================
-     WHY CHOOSE US
-====================================================================== -->
+<!-- WHY CHOOSE US -->
 <section class="why-us" id="why-us">
   <div class="container">
     <div class="why-layout">
       <div>
         <span class="section-tag">Why SK Graphics</span>
         <h2 class="section-title" style="margin-top:12px">Your Trusted Printing Partner Since 2010</h2>
-        <p class="why-desc">Based in Delhi, SK Graphics has been serving thousands of businesses, entrepreneurs, and individuals across India. We combine advanced printing technology with a passion for quality to deliver results that exceed expectations.</p>
+        <p class="why-desc">Based in Delhi NCR, SK Graphics has been serving thousands of businesses and entrepreneurs across India with high quality offset and digital printing.</p>
         <div class="why-left-mini">
           <div class="why-mini-stat"><div class="num">10+</div><div class="lbl">Years Experience</div></div>
           <div class="why-mini-stat"><div class="num">50K+</div><div class="lbl">Happy Clients</div></div>
@@ -1352,173 +750,64 @@
         <a href="#products" class="btn btn-primary">Explore All Products</a>
       </div>
       <div class="why-grid">
-        <div class="why-card"><div class="why-icon"><i class="fas fa-print"></i></div><div class="why-con"><h5>Advanced Printing Tech</h5><p>State-of-the-art offset and digital printing machines ensure crisp, vibrant results every time.</p></div></div>
-        <div class="why-card"><div class="why-icon"><i class="fas fa-bolt"></i></div><div class="why-con"><h5>Fast Turnaround</h5><p>Express production available. Most orders dispatched within 2–4 working days.</p></div></div>
-        <div class="why-card"><div class="why-icon"><i class="fas fa-rupee-sign"></i></div><div class="why-con"><h5>Competitive Pricing</h5><p>Wholesale rates, bulk discounts, and transparent pricing — no hidden charges.</p></div></div>
-        <div class="why-card"><div class="why-icon"><i class="fas fa-headset"></i></div><div class="why-con"><h5>Dedicated Support</h5><p>Expert team to assist with design files, artwork queries, and order tracking.</p></div></div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-print"></i></div>
+          <div class="why-con"><h5>High-Res Printing</h5><p>Latest offset and digital tech ensures crisp graphics every time.</p></div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon"><i class="fas fa-bolt"></i></div>
+          <div class="why-con"><h5>Fast Turnaround</h5><p>Quick dispatch and reliable doorstep shipping across India.</p></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- =====================================================================
-     STATS
-====================================================================== -->
-<section class="stats-sec">
-  <div class="container stats-grid">
-    <div class="stat-item"><div class="stat-num">50<sup>K+</sup></div><div class="stat-lbl">Happy Customers</div></div>
-    <div class="stat-item"><div class="stat-num">100<sup>+</sup></div><div class="stat-lbl">Print Products</div></div>
-    <div class="stat-item"><div class="stat-num">10<sup>+</sup></div><div class="stat-lbl">Years in Business</div></div>
-    <div class="stat-item"><div class="stat-num">99<sup>%</sup></div><div class="stat-lbl">Satisfaction Rate</div></div>
-  </div>
-</section>
-
-<!-- =====================================================================
-     TESTIMONIALS
-====================================================================== -->
-<section class="section-pad" id="reviews">
-  <div class="container">
-    <div class="section-header" style="margin-bottom:48px">
-      <span class="section-tag">Customer Reviews</span>
-      <h2 class="section-title">What Our Clients Say</h2>
-      <p class="section-subtitle">Trusted by thousands of businesses and individuals across India.</p>
-    </div>
-    <div class="testi-grid">
-      <div class="testi-card">
-        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-        <p class="testi-text">"Outstanding quality business cards! The UV coating and print sharpness was exactly what I expected. Delivery was prompt and the packaging was excellent. Highly recommend SK Graphics for all printing needs."</p>
-        <div class="testi-author"><div class="ava">R</div><div class="ava-info"><h6>Rahul Sharma</h6><span>Marketing Manager, Delhi</span></div></div>
-      </div>
-      <div class="testi-card">
-        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-        <p class="testi-text">"I ordered custom mugs and t-shirts for our annual event. The colors were vibrant and the quality was premium. The team was extremely helpful with artwork adjustments. Will definitely order again!"</p>
-        <div class="testi-author"><div class="ava" style="background:#e91e63">P</div><div class="ava-info"><h6>Priya Mehta</h6><span>HR Executive, Noida</span></div></div>
-      </div>
-      <div class="testi-card">
-        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-        <p class="testi-text">"Best prices I've found for bulk flyer printing. Order of 5,000 flyers delivered in 4 days — crisp quality, excellent color accuracy. SK Graphics is now our go-to vendor for all marketing print materials."</p>
-        <div class="testi-author"><div class="ava" style="background:#4caf50">A</div><div class="ava-info"><h6>Amit Kumar</h6><span>Business Owner, Gurgaon</span></div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- =====================================================================
-     CLIENTS
-====================================================================== -->
-<div class="clients-sec">
-  <div class="container">
-    <p class="clients-title">Trusted by Leading Brands &amp; Businesses</p>
-    <div class="clients-row">
-      <div class="c-logo">Reliance</div>
-      <div class="c-logo">HDFC Bank</div>
-      <div class="c-logo">Maruti Suzuki</div>
-      <div class="c-logo">Amul</div>
-      <div class="c-logo">Tata Group</div>
-      <div class="c-logo">Infosys</div>
-    </div>
-  </div>
-</div>
-
-<!-- =====================================================================
-     NEWSLETTER
-====================================================================== -->
-<section class="newsletter" id="get-quote">
-  <div class="container">
-    <div class="nl-inner">
-      <h3>Get a Quote or Stay Updated</h3>
-      <p>Subscribe for exclusive deals, printing tips, and early access to new products. No spam, ever.</p>
-      <form class="nl-form" onsubmit="handleNL(event)">
-        <input type="email" placeholder="Enter your email address" required>
-        <button type="submit">Subscribe</button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<!-- =====================================================================
-     FOOTER
-====================================================================== -->
+<!-- FOOTER -->
 <footer id="contact">
   <div class="footer-main">
     <div class="container">
       <div class="footer-grid">
-        <!-- Brand -->
         <div>
           <div class="f-logo"><span class="fn">SK Graphics</span><span class="fs">Custom Printing &amp; Branding</span></div>
-          <p class="f-desc">SK Graphics is a one-stop online print shop based in Delhi, offering premium quality printing for businesses and individuals across India since 2010.</p>
+          <p class="f-desc">One-stop shop for business cards, brochures, flyers, banners, cups, t-shirts, packaging & more.</p>
           <div class="f-social">
-            <a href="https://facebook.com" target="_blank" class="f-soc-icon fb" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://instagram.com" target="_blank" class="f-soc-icon ig" title="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://twitter.com" target="_blank" class="f-soc-icon tw" title="Twitter / X"><i class="fab fa-twitter"></i></a>
-            <a href="https://linkedin.com" target="_blank" class="f-soc-icon li" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://youtube.com" target="_blank" class="f-soc-icon yt" title="YouTube"><i class="fab fa-youtube"></i></a>
-            <a href="https://wa.me/918447459316" target="_blank" class="f-soc-icon wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://wa.me/918447459316" target="_blank" class="f-soc-icon"><i class="fab fa-whatsapp"></i></a>
           </div>
         </div>
-        <!-- Quick Links -->
         <div class="f-col">
           <h6>Quick Links</h6>
           <ul>
             <li><a href="#products"><i class="fas fa-angle-right"></i> All Products</a></li>
-            <li><a href="#get-quote"><i class="fas fa-angle-right"></i> Get a Quote</a></li>
-            <li><a href="#order-direct"><i class="fas fa-angle-right"></i> Direct Order</a></li>
-            <li><a href="#why-us"><i class="fas fa-angle-right"></i> About Us</a></li>
-            <li><a href="#contact"><i class="fas fa-angle-right"></i> Contact Us</a></li>
             <li><a href="#how-it-works"><i class="fas fa-angle-right"></i> How It Works</a></li>
-            <li><a href="#reviews"><i class="fas fa-angle-right"></i> Reviews</a></li>
+            <li><a href="#why-us"><i class="fas fa-angle-right"></i> About Us</a></li>
           </ul>
         </div>
-        <!-- Popular Products -->
         <div class="f-col">
-          <h6>Popular Products</h6>
+          <h6>Popular Items</h6>
           <ul>
-            <li><a href="#" onclick="addToCart('Business Cards',99)"><i class="fas fa-angle-right"></i> Business Cards</a></li>
-            <li><a href="#" onclick="addToCart('Flyers',199)"><i class="fas fa-angle-right"></i> Flyers</a></li>
-            <li><a href="#" onclick="addToCart('Brochures',299)"><i class="fas fa-angle-right"></i> Brochures</a></li>
-            <li><a href="#" onclick="addToCart('Posters & Banners',599)"><i class="fas fa-angle-right"></i> Banners</a></li>
-            <li><a href="#" onclick="addToCart('Custom Mugs',199)"><i class="fas fa-angle-right"></i> Custom Mugs</a></li>
-            <li><a href="#" onclick="addToCart('Custom T-Shirts',299)"><i class="fas fa-angle-right"></i> T-Shirts</a></li>
-            <li><a href="#" onclick="addToCart('Roll-Up Banners',1299)"><i class="fas fa-angle-right"></i> Roll-Up Banners</a></li>
+            <li><a href="#products"><i class="fas fa-angle-right"></i> Business Cards</a></li>
+            <li><a href="#products"><i class="fas fa-angle-right"></i> Custom T-Shirts</a></li>
+            <li><a href="#products"><i class="fas fa-angle-right"></i> Custom Mugs</a></li>
           </ul>
         </div>
-        <!-- Contact -->
         <div class="f-col">
           <h6>Contact Us</h6>
-          <div class="f-contact-item"><i class="fas fa-map-marker-alt"></i><span>SK Graphics, Delhi NCR, India — Serving clients Nationwide</span></div>
           <div class="f-contact-item"><i class="fas fa-phone"></i><a href="tel:+918447459316">+91 84474 59316</a></div>
           <div class="f-contact-item"><i class="fas fa-envelope"></i><a href="mailto:shubhprinters88@gmail.com">shubhprinters88@gmail.com</a></div>
-          <div class="f-contact-item"><i class="fas fa-clock"></i><span>Mon–Sat: 9:00 AM – 7:00 PM</span></div>
-          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-            <a href="https://wa.me/918447459316" target="_blank" class="btn btn-wp" style="font-size:13px;padding:9px 16px"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-            <button onclick="openCart()" class="btn btn-primary" style="font-size:13px;padding:9px 16px"><i class="fas fa-shopping-cart"></i> Cart</button>
-          </div>
         </div>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="footer-bot">
-      <p>© 2024 SK Graphics / All Rights Reserved.</p>
-      <div>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms &amp; Conditions</a>
-        <a href="#">Shipping Policy</a>
-      </div>
-      <div class="pay-icons">
-        <span class="pay-badge">VISA</span>
-        <span class="pay-badge">MasterCard</span>
-        <span class="pay-badge">Net Banking</span>
-        <span class="pay-badge">COD</span>
-      </div>
+      <p>© 2024 SK Graphics. All Rights Reserved.</p>
     </div>
   </div>
 </footer>
 
-<!-- =====================================================================
-     CART PANEL
-====================================================================== -->
-<div class="cart-overlay" id="cartOverlay" onclick="closeCartOutside(event)">
+<!-- CART PANEL -->
+<div class="cart-overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()">
   <div class="cart-panel">
     <div class="cart-hdr">
       <h3><i class="fas fa-shopping-cart" style="color:var(--primary)"></i> Your Cart</h3>
@@ -1526,947 +815,146 @@
     </div>
     <div class="cart-body" id="cartBody">
       <div class="cart-empty" id="cartEmpty">
-        <i class="fas fa-shopping-cart"></i>
-        <p>Your cart is empty.<br>Browse products and add items!</p>
+        <i class="fas fa-shopping-cart" style="font-size:40px;margin-bottom:10px;opacity:.3"></i>
+        <p>Your cart is empty.<br>Select any product to start.</p>
       </div>
     </div>
     <div class="cart-footer" id="cartFooter" style="display:none">
       <div class="cart-total"><span>Total:</span><span id="cartTotalAmt">₹0</span></div>
       <button class="btn btn-wp" onclick="openOrderModal()"><i class="fab fa-whatsapp"></i> Order via WhatsApp</button>
-      <button class="btn btn-primary" onclick="openOrderModal()" style="margin-top:0"><i class="fas fa-check"></i> Proceed to Order</button>
     </div>
   </div>
 </div>
 
-<!-- =====================================================================
-     CUSTOM MUG OPTIONS
-====================================================================== -->
-<div class="mug-overlay" id="mugOverlay" onclick="closeMugOutside(event)">
-  <div class="mug-modal">
-    <div class="om-hdr">
-      <h3 id="productModalTitle"><i class="fas fa-sliders-h" style="color:var(--accent)"></i> Customize Your Product</h3>
-      <button class="om-close" type="button" onclick="closeMugOptions()">×</button>
-    </div>
-    <div class="om-body" id="masterProductBody">
-      <form id="productCustomizationForm" onsubmit="saveProductCustomization(event)">
-        <div id="masterProductFields"></div>
-        <div class="form-note" style="margin-top:4px"><strong>Step 2: Upload artwork</strong><br>Upload your ready design, logo, photo, PDF or document. You can also share the original file in WhatsApp as a Document.</div>
-        <div class="form-group">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--primary-dark)">
-            <input id="productUploadCheck" type="checkbox" onchange="toggleProductUploads()"> <span id="productUploadLabel">Upload Logo / Photo / Ready Artwork</span>
-          </label>
-        </div>
-        <div class="mug-upload" id="productUploadBox">
-          <label id="productDesignLabel" for="productDesignFile">Design File / Ready Artwork</label>
-          <input id="productDesignFile" type="file" accept=".pdf,.ai,.psd,.png,.jpg,.jpeg,.svg">
-          <small id="productDesignFileName" class="upload-help">Upload an existing design or artwork.</small>
-          <div class="asset-preview" id="designPreview">
-            <img id="designPreviewImage" alt="Design preview">
-            <div class="asset-preview-info"><strong id="designPreviewName"></strong><small id="designPreviewMeta"></small><div class="asset-preview-actions"><button type="button" onclick="viewAssetPreview('design')">View Full Image</button><button type="button" class="remove" onclick="removeAsset('design')">Remove / Replace</button></div></div>
-          </div>
-          <label id="productPhotoLabel" for="productPhotoFile" style="margin-top:12px">Photo / Logo</label>
-          <input id="productPhotoFile" type="file" accept="image/*,.pdf,.doc,.docx">
-          <small id="productPhotoFileName" class="upload-help">Upload a photo, logo, PDF or document. It will be shared with your WhatsApp order.</small>
-          <div class="asset-preview" id="photoPreview">
-            <img id="photoPreviewImage" alt="Photo preview">
-            <div class="asset-preview-info"><strong id="photoPreviewName"></strong><small id="photoPreviewMeta"></small><div class="asset-preview-actions"><button type="button" onclick="viewAssetPreview('photo')">View Full Image</button><button type="button" class="remove" onclick="removeAsset('photo')">Remove / Replace</button></div></div>
-          </div>
-        </div>
-        <div class="om-footer" style="padding-left:0;padding-right:0;border-top:0">
-          <button id="productSubmitButton" class="btn btn-primary" type="submit"><i class="fas fa-check"></i> Add Customized Product</button>
-        </div>
-      </form>
-    </div>
-    <div class="om-body legacy-fields">
-      <p style="font-size:13.5px;color:var(--text-light);margin-bottom:16px">Choose your mug type and add your name, design, or photo.</p>
-      <label class="mug-choice" data-choice="hot">
-        <input type="radio" name="mugDisplay" value="hot" checked>
-        <span><strong>Hot Magic Mug</strong><small>Thermo-changing: photo appears when hot.</small></span>
-      </label>
-      <label class="mug-choice" data-choice="cold">
-        <input type="radio" name="mugDisplay" value="cold">
-        <span><strong>Cold Magic Mug</strong><small>Thermo-changing: photo appears when cold or at normal temperature.</small></span>
-      </label>
-      <label class="mug-choice" data-choice="permanent">
-        <input type="radio" name="mugDisplay" value="permanent">
-        <span><strong>Always Visible</strong><small>Permanent print that stays visible on the mug.</small></span>
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:16px 0 8px;cursor:pointer;color:var(--primary-dark)">
-        <input id="mugPhotoCheck" type="checkbox" onchange="toggleMugPhotoUpload()"> I want to upload a photo / design
-      </label>
-      <div class="mug-upload" id="mugUploadBox">
-        <label for="mugDesignFile">Design File (optional)</label>
-        <input id="mugDesignFile" type="file" accept=".pdf,.ai,.psd,.png,.jpg,.jpeg,.svg">
-        <small id="mugDesignFileName" class="upload-help">Upload an existing design file.</small>
-        <label for="mugPhoto" style="margin-top:12px">Photo Upload (optional)</label>
-        <input id="mugPhoto" type="file" accept="image/*">
-        <small id="mugPhotoName" class="upload-help">Upload a high-quality photo for printing.</small>
-      </div>
-      <div class="form-group" style="margin-top:14px;margin-bottom:0">
-        <label for="mugName">Name or design instruction (optional)</label>
-        <input id="mugName" type="text" placeholder="e.g. Rahul / Add our company logo">
-      </div>
-    </div>
-    <div class="om-footer">
-      <button class="btn btn-primary" type="button" onclick="saveMugOptions()"><i class="fas fa-check"></i> Add Customized Mug</button>
-    </div>
-  </div>
-</div>
-
-<!-- =====================================================================
-     ASSET PREVIEW
-====================================================================== -->
-<div class="preview-overlay" id="assetPreviewOverlay" onclick="closeAssetPreview(event)">
-  <button type="button" aria-label="Close preview" onclick="closeAssetPreview()">×</button>
-  <img id="assetPreviewImage" alt="Full-size uploaded preview">
-</div>
-
-<!-- =====================================================================
-     ORDER FORM MODAL
-====================================================================== -->
-<div class="order-overlay" id="orderOverlay" onclick="closeOrderOutside(event)">
+<!-- ORDER MODAL -->
+<div class="order-overlay" id="orderOverlay" onclick="if(event.target===this)closeOrderModal()">
   <div class="order-modal">
     <div class="om-hdr">
-      <h3><i class="fab fa-whatsapp"></i> Complete Your Order</h3>
+      <h3><i class="fab fa-whatsapp" style="color:var(--wp-green)"></i> Confirm WhatsApp Order</h3>
       <button class="om-close" onclick="closeOrderModal()">×</button>
     </div>
     <div class="om-body">
-       <div class="form-note"><i class="fas fa-paperclip"></i> Fill in this format. Your product details and selected photo/document will be sent with the WhatsApp order. On mobile, the file can open attached; on desktop, attach it in the same chat after WhatsApp opens.</div>
-      <p style="font-size:13.5px;color:var(--text-light);margin-bottom:18px">Fill in your details — your order summary will be sent directly to us on WhatsApp.</p>
-      <!-- Order Summary -->
-      <div class="om-summary">
-        <h6>Your Order Summary</h6>
-        <div id="omSummaryItems"></div>
-        <div class="om-sum-item" style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">
-          <span style="font-weight:800">Total:</span><span id="omTotal">₹0</span>
-        </div>
-        <div class="summary-breakdown" id="orderBreakdown"></div>
-      </div>
-      <div class="payment-card">
-        <h6>Payment Method</h6>
-        <div class="payment-options">
-          <label class="payment-option"><input type="radio" name="paymentMethod" value="cod" checked> Cash on Delivery (COD)</label>
-        </div>
-      </div>
-      <form id="orderForm" onsubmit="sendWhatsApp(event)">
+      <form id="orderForm" onsubmit="sendWhatsAppOrder(event)">
         <div class="form-group">
-          <label>Your Full Name *</label>
+          <label>Your Name *</label>
           <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required>
         </div>
         <div class="form-group">
-          <label>Phone Number *</label>
-          <input type="tel" id="custPhone" placeholder="e.g. 98765 43210" required>
-        </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <input type="email" id="custEmail" placeholder="e.g. rahul@gmail.com">
+          <label>Contact Number *</label>
+          <input type="tel" id="custPhone" placeholder="e.g. 9876543210" required>
         </div>
         <div class="form-group">
           <label>Delivery Address *</label>
-          <textarea id="custAddress" rows="3" placeholder="House No., Street, Area, City, State, PIN Code" required></textarea>
-          <div class="location-box">
-            <button type="button" class="location-btn" id="getLocationBtn" onclick="getLiveLocation()"><i class="fas fa-location-crosshairs"></i> Get Live Location</button>
-            <span class="location-status" id="locationStatus">Optional: allow location access to share an exact Google Maps link with the owner.</span>
-          </div>
+          <textarea id="custAddress" rows="3" placeholder="Enter full address with PIN code" required></textarea>
         </div>
         <div class="form-group">
-          <label>Special Instructions / Notes</label>
-          <textarea id="custNotes" rows="2" placeholder="Any specific requirements, design notes, or quantity details..."></textarea>
+          <label>Special Instructions / Printing Notes</label>
+          <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
+        </div>
+        <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
+          <button type="submit" class="btn btn-wp"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button>
         </div>
       </form>
-    </div>
-    <div class="om-footer">
-      <button type="submit" form="orderForm" class="btn btn-wp"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button>
     </div>
   </div>
 </div>
 
-<!-- =====================================================================
-     FLOATING BUTTONS
-====================================================================== -->
+<!-- FLOATING BUTTONS -->
 <a href="https://wa.me/918447459316" target="_blank" class="wp-float" title="Chat on WhatsApp">
   <i class="fab fa-whatsapp"></i>
 </a>
-<button class="btt-btn" id="bttBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+<button class="btt-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <i class="fas fa-chevron-up"></i>
 </button>
 
-<!-- =====================================================================
-     JAVASCRIPT
-====================================================================== -->
 <script>
-/* ==================================
-   SLIDER
-================================== */
-let curSlide = 0, totalSlides = 1, autoTimer;
-function updateSlider() {
-  document.getElementById('sliderTrack').style.transform = 'translateX(-' + (curSlide * 100) + '%)';
-  document.querySelectorAll('.sl-dot').forEach((d,i) => d.classList.toggle('act', i===curSlide));
-}
-function changeSlide(d) { curSlide = (curSlide + d + totalSlides) % totalSlides; updateSlider(); resetAuto(); }
-function goSlide(n)      { curSlide = n; updateSlider(); resetAuto(); }
-function startAuto()     { clearInterval(autoTimer); }
-function resetAuto()     { clearInterval(autoTimer); startAuto(); }
-startAuto();
+  let cart = [];
 
-/* ==================================
-   MEGA MENU
-================================== */
-function showPanel(id, el) {
-  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('act'));
-  document.querySelectorAll('.mega-left li').forEach(l => l.classList.remove('act'));
-  document.getElementById(id).classList.add('act');
-  el.classList.add('act');
-}
-
-/* ==================================
-   MOBILE MENU
-================================== */
-function openMob() {
-  document.getElementById('mobPanel').style.display = 'block';
-  document.getElementById('mobOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMob() {
-  document.getElementById('mobPanel').style.display = 'none';
-  document.getElementById('mobOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function toggleMobSub(el) {
-  el.classList.toggle('open');
-  var next = el.nextElementSibling;
-  next.classList.toggle('open');
-  var icon = el.querySelector('i');
-  icon.style.transform = next.classList.contains('open') ? 'rotate(180deg)' : '';
-}
-
-/* ==================================
-   CART
-================================== */
-var cart = [];
-var pendingProduct = null;
-var customerLocation = null;
-/* Configure an unsigned Cloudinary preset or your own upload API. Never put a secret key here. */
-// This preset must be created in Cloudinary as an Unsigned Upload Preset.
-window.SK_GRAPHICS_CLOUDINARY = window.SK_GRAPHICS_CLOUDINARY || { cloudName: 'rcsqlbcj', uploadPreset: 'sk_graphics_preset' };
-
-var productFormConfig = {
-  business: {
-    match: ['Business Cards', 'Visiting Cards', 'Letterheads'],
-    fields: [
-      ['Cardholder Name & Designation', 'cardholder', 'input'], ['Company Name & Tagline', 'company', 'input'],
-      ['Contact Information (Phone, Email, Website, Office Address)', 'contact', 'textarea'],
-      ['Print Side', 'printSide', 'select', 'Single Side|Double Side'],
-      ['Finish Type', 'finish', 'select', 'Standard Matte|Glossy|UV Spot|Gold Foil|Silver Foil|Embossed'],
-      ['Corner Type', 'corner', 'select', 'Square Cut|Round Corner'],
-      ['Custom Text / Instructions (Optional)', 'customText', 'textarea']
-    ]
-  },
-  flyers: {
-    match: ['Flyers', 'Pamphlets', 'Brochures'],
-    fields: [
-      ['Business / Event Name', 'businessEvent', 'input'], ['Main Title / Offer Headline', 'headline', 'input'],
-      ['Service List / Price Details / Key Points Text', 'keyPoints', 'textarea'],
-      ['Size Selection', 'size', 'select', 'A4|A5|A6|Custom Size'],
-      ['Brochure Fold Type', 'fold', 'select', 'No Fold|Bi-fold|Tri-fold|Z-fold'],
-      ['Paper GSM & Finish', 'paper', 'select', '130 GSM Glossy|170 GSM Matte|250 GSM'],
-      ['Custom Text / Instructions (Optional)', 'customText', 'textarea']
-    ]
-  },
-  logo: {
-    match: ['Logo Design', 'Brand Identity'],
-    fields: [
-      ['Company / Brand Name', 'brandName', 'input'], ['Tagline / Slogan (Optional)', 'tagline', 'input'],
-      ['Business Industry / Niche', 'industry', 'input'], ['Preferred Color Scheme & Theme', 'theme', 'input'],
-      ['Specific Design Concept / Ideas', 'concept', 'textarea']
-    ]
-  },
-  mugs: {
-    match: ['Custom Mugs'],
-    fields: [
-      ['Mug Type', 'mugType', 'select', 'Magic Mug - Hot|Magic Mug - Cold|Permanent Ceramic Mug'],
-      ['Print Method', 'printMethod', 'select', 'Sublimation|UV Printing|Screen Print'],
-      ['Custom Name / Text to Print (Optional)', 'customText', 'input']
-    ]
-  },
-  tshirts: {
-    match: ['Custom T-Shirts'],
-    fields: [
-      ['T-Shirt Size', 'shirtSize', 'select', 'S|M|L|XL|XXL'], ['T-Shirt Color', 'shirtColor', 'input'],
-      ['Print Method', 'printMethod', 'select', 'Sublimation|DTG|Screen Print'],
-      ['Custom Name / Text to Print (Optional)', 'customText', 'input']
-    ]
-  },
-  bags: {
-    match: ['Carry Bags', 'Promotional Bags', 'Polythene', 'Paper Bags'],
-    fields: [
-      ['Bag Material', 'bagMaterial', 'select', 'Non-Woven D-Cut Bag|W-Cut Bag|Craft Paper Bag|Plastic Polythene|Fancy Box Bag'],
-      ['Bag Size & Capacity', 'bagSize', 'select', 'Small 8x10|Medium 10x14|Large 14x18|Extra Large'],
-      ['Print Type', 'bagPrint', 'select', 'Single Color Screen Print|Multi-Color Offset Print'],
-      ['Business Name, Address & Contact Details', 'bagDetails', 'textarea']
-    ]
-  },
-  packaging: {
-    match: ['Fancy Boxes', 'Custom Packaging', 'Packaging'],
-    fields: [
-      ['Box Type', 'boxType', 'select', 'Rigid Gift Box|Sweet Box|Product Shipping Box|Monocarton Box'],
-      ['Item Selection', 'packageOption', 'radio', 'Gift Boxes / Custom Packaging Only|Carry Bags Only|Both Gift Boxes & Carry Bags (+ ₹50 Delivery Charge)'],
-      ['Box / Bag Dimensions (Length x Width x Height)', 'dimensions', 'input'],
-      ['Coating / Finishing Type', 'coating', 'select', 'Velvet Touch|Thermal Lamination|Foil Stamping|Window Cutout'],
-      ['Details / Text to Print on Packaging', 'packagingText', 'textarea'],
-      ['Note', 'packagingNote', 'note', 'Note: Selecting both Boxes & Bags incurs an additional ₹50 Delivery Charge.']
-    ]
-  },
-  posters: {
-    match: ['Posters', 'Banners', 'Standees'],
-    fields: [
-      ['Material', 'material', 'select', 'Star Flex|Normal Vinyl Banner|Backlit Flex|Canvas'],
-      ['Size (Custom Width x Height in Feet)', 'posterSize', 'input'],
-      ['Finishing Options', 'finishing', 'select', 'Eyelets/Rings|Pocket Border|Standee Frame Included'],
-      ['Event Title & Main Content Details', 'eventContent', 'textarea']
-    ]
-  },
-  rollup: {
-    match: ['Roll-Up', 'Canvas Printing', 'Canvas', 'Pop-Up', 'Canopy', 'Wallpapers'],
-    fields: [
-      ['Frame / Material Selection', 'frameMaterial', 'select', 'Roll-Up Standee Frame|Canvas|Pop-Up Display|Canopy / Demo Tent|Wallpaper'],
-      ['Dimensions & Placement Details', 'placement', 'input'],
-      ['Custom Instructions / Text', 'customInstructions', 'textarea']
-    ]
-  },
-  stickers: {
-    match: ['Stickers', 'Labels', 'Tags', 'Product Labels'],
-    fields: [
-      ['Sticker Type', 'stickerType', 'select', 'Die-Cut Paper Sticker|Waterproof Vinyl Sticker|Transparent Sticker|Roll Labels'],
-      ['Shape', 'shape', 'select', 'Circle|Square|Rectangle|Custom Die-Cut'],
-      ['Size (in Inches / CM)', 'stickerSize', 'input'], ['Text / Product Info to Include', 'productInfo', 'textarea']
-    ]
-  },
-  diaries: {
-    match: ['Diaries', 'Notebooks', 'Folders', 'Notepads', 'Presentation Folders'],
-    fields: [
-      ['Cover Type', 'coverType', 'select', 'Hardcover Leatherette|Softcover Glossy|Spiral Binding'],
-      ['Branding Type', 'brandingType', 'select', 'Debossing|UV Printing|Screen Printing'],
-      ['Quantity & Inner Page Preferences', 'innerPages', 'textarea'], ['Name / Logo Text to Print', 'coverText', 'input']
-    ]
+  function addToCart(name, price) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    updateCartUI();
+    openCart();
   }
-};
 
-/* Product-specific intake checklists from the SK Graphics ordering guide. */
-productFormConfig.business.fields = [
-  ['Finish Type', 'finish', 'select', 'Standard|UV Spot|Gold Foil|Silver Foil|Premium Matte|Premium Gloss'],
-  ['Paper GSM', 'gsm', 'select', '300 GSM|350 GSM|400 GSM'], ['Print Side', 'printSide', 'select', 'Single Sided|Double Sided'],
-  ['Corners', 'corner', 'select', 'Square Cuts|Round Edge Cuts'], ['Quantity', 'quantity', 'input'],
-  ['Design Status', 'designStatus', 'select', 'I have a ready design|I need a new design'], ['Name / Company / Contact Details', 'details', 'textarea']
-];
-productFormConfig.flyers.match = ['Flyers', 'Leaflets'];
-productFormConfig.flyers.fields = [
-  ['Size', 'size', 'select', 'A4|A5|A6|Custom Size'], ['Paper GSM', 'gsm', 'select', '130 GSM|170 GSM|220 GSM Art Paper'],
-  ['Print Side', 'printSide', 'select', 'Single Side|Double Side'], ['Finish', 'finish', 'select', 'Glossy|Matte'],
-  ['Quantity', 'quantity', 'input'], ['Design / Content Status', 'designStatus', 'select', 'Ready design|Send text/logo|Need complete design']
-];
-productFormConfig.brochures = { match: ['Brochures'], fields: [
-  ['Fold Type', 'fold', 'select', 'Bi-fold (2-panel)|Tri-fold (3-panel)|Z-fold'], ['Paper GSM / Quality', 'gsm', 'select', '170 GSM Premium Art Paper|200 GSM Premium Art Paper|250 GSM Premium Art Paper|300 GSM Premium Art Paper'],
-  ['Finish', 'finish', 'select', 'Matte Lamination|Gloss Lamination'], ['Quantity', 'quantity', 'input'], ['Company / Product Details', 'content', 'textarea']
-]};
-productFormConfig.posters.fields = [
-  ['Type', 'material', 'select', 'Vinyl Banner|Flex Print|Star Flex|Poster Paper'], ['Size (Width x Height)', 'size', 'input'],
-  ['Eyelets / Hanging Rings', 'eyelets', 'select', 'Yes|No'], ['Quantity', 'quantity', 'input'], ['Text / Logo / Design Notes', 'content', 'textarea']
-];
-productFormConfig.mugs.fields = [
-  ['Mug Type', 'mugType', 'select', 'Plain White Ceramic|Color Inside Mug|Magic Mug|Inner Handle Mug'],
-  ['Printing Area', 'printArea', 'select', 'Single Side Logo|Double Side|Full Wrap-Around Photo'], ['Quantity', 'quantity', 'input'], ['Name / Message to Print', 'customText', 'textarea']
-];
-productFormConfig.stickers.fields = [
-  ['Type', 'stickerType', 'select', 'Die-cut|Roll Form|Sheet Stickers'], ['Material', 'material', 'select', 'Paper Sticker|Waterproof Vinyl|Transparent'],
-  ['Shape', 'shape', 'select', 'Round|Square|Rectangle|Custom Die-cut'], ['Size', 'size', 'input'], ['Quantity', 'quantity', 'input']
-];
-productFormConfig.tshirts.match = ['Custom T-Shirts'];
-productFormConfig.tshirts.fields = [
-  ['Material / Fabric', 'fabric', 'select', '100% Cotton|Polyester|Dry-Fit'], ['Printing Technique', 'printMethod', 'select', 'Sublimation|Screen Printing|DTG|DTF Sticker'],
-  ['T-Shirt Color', 'color', 'input'], ['Sizes & Quantity Breakdown', 'sizeQuantity', 'input'], ['Print Position', 'position', 'select', 'Front|Back|Sleeve|Front & Back'], ['Name / Text to Print', 'customText', 'textarea']
-];
-productFormConfig.rollup.match = ['Roll-Up'];
-productFormConfig.rollup.fields = [
-  ['Size', 'size', 'select', 'Standard 2x5 ft|3x6 ft|4x6 ft'], ['Material', 'material', 'select', 'Non-tearable Flex|Canvas Print with Aluminium Stand'], ['Quantity', 'quantity', 'input']
-];
-productFormConfig.diaries.match = ['Diaries', 'Notebooks'];
-productFormConfig.diaries.fields = [
-  ['Cover Type', 'coverType', 'select', 'Hardcover|Softcover|Leatherette / PU Leather'], ['Inner Pages', 'innerPages', 'select', 'Plain|Ruled|Grid|Dated Planner'],
-  ['Branding', 'branding', 'select', 'Embossing|Foil Stamping|UV Print'], ['Quantity', 'quantity', 'input'], ['Name / Logo Details', 'coverText', 'textarea']
-];
-productFormConfig.folders = { match: ['Presentation Folders'], fields: [
-  ['Pocket Type', 'pocketType', 'select', 'Single Pocket|Double Pocket|Card Holder Cutout'], ['Paper GSM', 'gsm', 'select', '300 GSM Cardstock|350 GSM Cardstock'],
-  ['Finish', 'finish', 'select', 'Velvet Lamination|Matte Lamination|UV Spot'], ['Quantity', 'quantity', 'input']
-]};
-productFormConfig.canvas = { match: ['Canvas Printing'], fields: [
-  ['Frame Type', 'frameType', 'select', 'Rolled Canvas (without frame)|Stretched Wooden Frame'], ['Size', 'size', 'select', '8x12 inch|12x18 inch|18x24 inch|24x36 inch|Custom Size'], ['Quantity', 'quantity', 'input']
-]};
-productFormConfig.packaging.fields = [
-  ['Box Type', 'boxType', 'select', 'Rigid Gift Box|Corrugated Shipping Box|Custom Carry Bag'], ['Dimensions (L x W x H)', 'dimensions', 'input'],
-  ['Finishing', 'finish', 'select', 'Matte|Gloss|Gold Foil|Embossing'], ['Quantity', 'quantity', 'input'], ['Branding Details', 'brandingDetails', 'textarea']
-];
+  function updateCartUI() {
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    document.getElementById('cartBadge').textContent = count;
+    const body = document.getElementById('cartBody');
+    const footer = document.getElementById('cartFooter');
+    const empty = document.getElementById('cartEmpty');
 
-function getProductCategory(name) {
-  var keys = Object.keys(productFormConfig);
-  for (var i = 0; i < keys.length; i++) {
-    if (productFormConfig[keys[i]].match.some(function (term) { return name.indexOf(term) !== -1; })) return keys[i];
+    if (cart.length === 0) {
+      empty.style.display = 'block';
+      footer.style.display = 'none';
+      body.innerHTML = '';
+      body.appendChild(empty);
+    } else {
+      empty.style.display = 'none';
+      footer.style.display = 'block';
+      body.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;';
+        div.innerHTML = `
+          <div>
+            <strong>${item.name}</strong>
+            <div style="font-size:12px;color:#777">₹${item.price} × ${item.qty}</div>
+          </div>
+          <div style="font-weight:700;color:var(--primary)">₹${item.price * item.qty}</div>
+        `;
+        body.appendChild(div);
+      });
+      document.getElementById('cartTotalAmt').textContent = '₹' + total;
+    }
   }
-  return 'generic';
-}
-function fieldMarkup(field) {
-  var label = field[0], id = field[1], type = field[2];
-  if (type === 'select') return '<div class="form-group"><label>' + label + '</label><select name="' + id + '"><option value="">Select an option</option>' + field[3].split('|').map(function (x) { return '<option>' + x + '</option>'; }).join('') + '</select></div>';
-  if (type === 'radio') return '<div class="form-group"><label>' + label + '</label><div class="radio-stack">' + field[3].split('|').map(function (x, i) { return '<label class="radio-option"><input type="radio" name="' + id + '" value="' + x + '"' + (i === 0 ? ' checked' : '') + '> ' + x + '</label>'; }).join('') + '</div></div>';
-  if (type === 'note') return '<p class="form-note">' + field[3] + '</p>';
-  return '<div class="form-group"><label>' + label + '</label>' + (type === 'textarea' ? '<textarea name="' + id + '" rows="2"></textarea>' : '<input type="text" name="' + id + '">') + '</div>';
-}
-var productUiConfig = {
-  business: ['Upload Logo / Card Design', 'Design File / Card Artwork', 'Logo / Card Image', 'Add Customized Business Card'],
-  flyers: ['Upload Images / Logo / Draft Design', 'Draft Design / Artwork', 'Images / Logo', 'Add Customized Pamphlet / Brochure'],
-   brochures: ['Upload Company Profile / Product Photos / Design', 'Brochure Artwork', 'Company / Product Photos', 'Add Customized Brochure'],
-  logo: ['Upload Reference Logo / Sketch / Inspiration Photo', 'Reference Logo / Sketch', 'Inspiration Photo', 'Submit Logo Design Request'],
-  mugs: ['Upload Logo / Photo / Ready Artwork', 'Ready Artwork', 'Logo / Photo', 'Add Customized Mug'],
-  tshirts: ['Upload Logo / Photo / Ready Artwork', 'Ready Artwork', 'Logo / Photo', 'Add Customized T-Shirt'],
-  bags: ['Upload Brand Logo / Bag Artwork', 'Bag Artwork', 'Brand Logo', 'Add Customized Carry Bags'],
-  packaging: ['Upload Die-cut Template / Logo / Branding Files', 'Die-cut Template / Branding File', 'Logo / Branding Image', 'Add Customized Packaging'],
-  posters: ['Upload Banner Design / High-Res Photos', 'Banner Design', 'High-Res Photos', 'Add Customized Banner / Standee'],
-  stickers: ['Upload Label Artwork / Logo', 'Label Artwork', 'Logo', 'Add Customized Stickers'],
-  diaries: ['Upload Cover Logo / Artwork', 'Cover Artwork', 'Cover Logo', 'Add Customized Diary / Folder'],
-   folders: ['Upload Company Logo / Folder Artwork', 'Folder Artwork', 'Company Logo', 'Add Customized Presentation Folder'],
-   canvas: ['Upload High-Resolution Photo', 'Photo / Print File', 'HD Photo', 'Add Customized Canvas Print'],
-  rollup: ['Upload Photo / Design', 'Design File', 'Photo', 'Add Custom Item'],
-  generic: ['Upload Logo / Photo / Ready Artwork', 'Ready Artwork', 'Logo / Photo', 'Submit Custom Order']
-};
-function openProductOptions(name, price) {
-  pendingProduct = { name: name, price: price, category: getProductCategory(name) };
-  var config = productFormConfig[pendingProduct.category];
-  var fields = config ? config.fields.map(fieldMarkup).join('') : '<div class="form-group"><label>Product Details / Instructions</label><textarea name="details" rows="3" placeholder="Enter your customization requirements"></textarea></div>';
-  var ui = productUiConfig[pendingProduct.category] || productUiConfig.generic;
-  var title = name === 'Custom T-Shirts' ? 'Customize Your T-Shirt' : name === 'Custom Mugs' ? 'Customize Your Mug' : 'Customize ' + name;
-  document.getElementById('productModalTitle').innerHTML = '<i class="fas fa-sliders-h" style="color:var(--accent)"></i> ' + title;
-  document.getElementById('productSubmitButton').innerHTML = '<i class="fas fa-check"></i> ' + ui[3];
-  document.getElementById('productUploadLabel').textContent = ui[0];
-  document.getElementById('productDesignLabel').textContent = ui[1];
-  document.getElementById('productPhotoLabel').textContent = ui[2];
-  document.getElementById('masterProductFields').innerHTML = '<p style="font-size:13.5px;color:var(--text-light);margin-bottom:16px"><strong>Step 1: Product specifications</strong><br>Please share these specifications. Send your logo/photo/design on WhatsApp as a Document or HD file for best print quality.</p>' + fields;
-  document.getElementById('productCustomizationForm').reset();
-  document.getElementById('productUploadBox').classList.remove('show');
-  removeAsset('design');
-  removeAsset('photo');
-  document.getElementById('mugOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function openMugOptions() { openProductOptions('Custom Mugs', 199); }
-function closeMugOptions() {
-  document.getElementById('mugOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeMugOutside(e) {
-  if (e.target === document.getElementById('mugOverlay')) closeMugOptions();
-}
-function toggleProductUploads() {
-  document.getElementById('productUploadBox').classList.toggle('show', document.getElementById('productUploadCheck').checked);
-}
-async function uploadAssetIfConfigured(file) {
-  if (!file) return '';
-  var endpoint = window.SK_GRAPHICS_UPLOAD_ENDPOINT || '';
-  var body = new FormData();
-  body.append('file', file);
-  // Cloudinary's /auto/upload endpoint supports images, PDFs and documents.
-  // The unsigned preset must remain public; never put api_secret in this HTML.
-  body.append('resource_type', 'auto');
-  body.append('secure', 'true');
-  if (!endpoint) {
-    var cloudinary = window.SK_GRAPHICS_CLOUDINARY || {};
-    if (!cloudinary.cloudName || !cloudinary.uploadPreset) throw new Error('Cloud upload is not configured');
-    endpoint = 'https://api.cloudinary.com/v1_1/' + encodeURIComponent(cloudinary.cloudName) + '/auto/upload';
-    body.append('upload_preset', cloudinary.uploadPreset);
-    body.append('folder', 'sk-graphics/orders');
-  }
-  var response = await fetch(endpoint, { method: 'POST', body: body });
-  if (!response.ok) throw new Error('Cloudinary upload failed (' + response.status + ')');
-  var result = await response.json();
-  var publicUrl = result.secure_url || (result.data && result.data.secure_url) || '';
-  if (!/^https:\/\//i.test(publicUrl)) throw new Error('Cloudinary did not return a public HTTPS URL');
-  return publicUrl;
-}
-async function saveProductCustomization(e) {
-  e.preventDefault();
-  if (!pendingProduct) return;
-  var form = document.getElementById('productCustomizationForm');
-  var formData = new FormData(form), details = {};
-  formData.forEach(function (value, key) { if (typeof value === 'string' && value.trim()) details[key] = value.trim(); });
-  var designFile = document.getElementById('productDesignFile').files[0];
-  var photoFile = document.getElementById('productPhotoFile').files[0];
-  var uploadEnabled = document.getElementById('productUploadCheck').checked;
-  var deliveryCharge = details.packageOption && details.packageOption.indexOf('Both Gift Boxes') === 0 ? 50 : 0;
-  var submitButton = document.getElementById('productSubmitButton');
-  var originalButtonText = submitButton.innerHTML;
-  submitButton.disabled = true;
-  submitButton.textContent = 'Preparing Files...';
-  var designUrl = '', photoUrl = '';
-  try {
-    designUrl = uploadEnabled && designFile ? await uploadAssetIfConfigured(designFile) : '';
-    photoUrl = uploadEnabled && photoFile ? await uploadAssetIfConfigured(photoFile) : '';
-  } catch (uploadError) {
-    submitButton.disabled = false;
-    submitButton.innerHTML = originalButtonText;
-    alert('File upload failed. Please check the public unsigned Cloudinary upload preset. WhatsApp requires a publicly accessible HTTPS URL.');
-    return;
-  }
-  submitButton.disabled = false;
-  submitButton.innerHTML = originalButtonText;
-  cart.push({ name: pendingProduct.name, price: pendingProduct.price, qty: 1, customization: { category: pendingProduct.category, details: details, packagingDeliveryCharge: deliveryCharge, designFile: uploadEnabled && designFile ? designFile.name : '', photoFile: uploadEnabled && photoFile ? photoFile.name : '', designUrl: designUrl, photoUrl: photoUrl, designBlob: uploadEnabled ? designFile : null, photoBlob: uploadEnabled ? photoFile : null } });
-  updateCartUI();
-  closeMugOptions();
-  openCart();
-}
 
-function addToCart(name, price) {
-  openProductOptions(name, price);
-}
+  function openCart() { document.getElementById('cartOverlay').classList.add('open'); }
+  function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
+  function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
+  function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
 
-function removeFromCart(name) {
-  cart = cart.filter(i => i.name !== name);
-  updateCartUI();
-}
+  /* WhatsApp Order Dispatch */
+  function sendWhatsAppOrder(e) {
+    e.preventDefault();
+    const name = document.getElementById('custName').value.trim();
+    const phone = document.getElementById('custPhone').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+    const notes = document.getElementById('custNotes').value.trim();
 
-function changeQty(name, delta) {
-  var item = cart.find(i => i.name === name);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) removeFromCart(name);
-  else updateCartUI();
-}
-
-function getCartTotal() {
-  return cart.reduce((s, i) => s + i.price * i.qty, 0);
-}
-
-function updateCartUI() {
-  var count = cart.reduce((s, i) => s + i.qty, 0);
-  document.getElementById('cartBadge').textContent = count;
-  document.getElementById('mobCartCount').textContent = count;
-
-  var body = document.getElementById('cartBody');
-  var footer = document.getElementById('cartFooter');
-  var empty = document.getElementById('cartEmpty');
-
-  if (cart.length === 0) {
-    empty.style.display = 'block';
-    footer.style.display = 'none';
-    body.innerHTML = '';
-    body.appendChild(empty);
-  } else {
-    empty.style.display = 'none';
-    footer.style.display = 'block';
-
-    // Re-render items
-    // Remove old items
-    body.querySelectorAll('.cart-item').forEach(el => el.remove());
-
-    cart.forEach(function(item) {
-      var div = document.createElement('div');
-      div.className = 'cart-item';
-      div.id = 'ci-' + item.name.replace(/[^a-z0-9]/gi,'');
-      div.innerHTML =
-        '<div class="cart-item-icon"><i class="fas fa-print"></i></div>' +
-        '<div class="cart-item-info">' +
-          '<h5>' + item.name + '</h5>' +
-          '<div class="ci-detail">Unit price: ₹' + item.price + '</div>' +
-          '<div class="ci-price">₹' + (item.price * item.qty) + '</div>' +
-          '<div class="cart-item-qty">' +
-            '<button class="qty-btn" onclick="changeQty(\'' + item.name + '\',-1)">−</button>' +
-            '<span class="qty-val">' + item.qty + '</span>' +
-            '<button class="qty-btn" onclick="changeQty(\'' + item.name + '\',1)">+</button>' +
-          '</div>' +
-        '</div>' +
-        '<button class="cart-item-del" onclick="removeFromCart(\'' + item.name + '\')" title="Remove"><i class="fas fa-trash-alt"></i></button>';
-      body.appendChild(div);
+    let itemsList = '';
+    let grandTotal = 0;
+    cart.forEach(item => {
+      itemsList += `• ${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}\n`;
+      grandTotal += item.price * item.qty;
     });
 
-    document.getElementById('cartTotalAmt').textContent = '₹' + getCartTotal();
+    const msg = `*NEW ORDER - SK GRAPHICS*\n------------------------\n` +
+                `*Customer:* ${name}\n` +
+                `*Phone:* ${phone}\n` +
+                `*Address:* ${address}\n\n` +
+                `*Items:*\n${itemsList}\n` +
+                `*Total Payable:* ₹${grandTotal}\n` +
+                `*Notes:* ${notes || 'None'}\n------------------------`;
+
+    window.open(`https://wa.me/918447459316?text=${encodeURIComponent(msg)}`, '_blank');
+    cart = [];
+    updateCartUI();
+    closeOrderModal();
+    document.getElementById('orderForm').reset();
   }
-}
 
-function openCart() {
-  document.getElementById('cartOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeCartOutside(e) {
-  if (e.target === document.getElementById('cartOverlay')) closeCart();
-}
-
-/* ==================================
-   ORDER MODAL
-================================== */
-function getOrderPricing() {
-  var base = cart.reduce(function (sum, item) { return sum + item.price * item.qty; }, 0);
-  var delivery = cart.length ? 50 : 0;
-  cart.forEach(function (item) { if (item.customization && item.customization.packagingDeliveryCharge) delivery += item.customization.packagingDeliveryCharge; });
-  return { base: base, delivery: delivery, total: base + delivery };
-}
-function openOrderModal() {
-  if (cart.length === 0) {
-    alert('Your cart is empty! Please add products first.');
-    return;
+  /* Driver GPS sync hook (admin/driver phone connection) */
+  function updateDriverLocation(lat, lng) {
+    console.log("Driver location received:", lat, lng);
+    // Realtime driver update hook (WebSocket / Socket.io / Firebase)
   }
-  closeCart();
-  customerLocation = null;
-  document.getElementById('locationStatus').textContent = 'Optional: allow location access to share an exact Google Maps link with the owner.';
-  document.getElementById('locationStatus').className = 'location-status';
-  document.getElementById('getLocationBtn').disabled = false;
-
-  // Build summary
-  var summaryHtml = '';
-  cart.forEach(function(item) {
-    summaryHtml += '<div class="om-sum-item"><span>' + item.name + ' × ' + item.qty + '</span><span>₹' + (item.price * item.qty) + '</span></div>';
-  });
-  document.getElementById('omSummaryItems').innerHTML = summaryHtml;
-  var pricing = getOrderPricing();
-  document.getElementById('omTotal').textContent = '₹' + pricing.total;
-  document.getElementById('orderBreakdown').innerHTML = '<div><span>Base Product Price</span><strong>₹' + pricing.base + '</strong></div><div><span>Delivery Charge</span><strong>₹' + pricing.delivery + '</strong></div>';
-  document.querySelector('input[name="paymentMethod"][value="cod"]').checked = true;
-  document.getElementById('orderOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeOrderModal() {
-  document.getElementById('orderOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeOrderOutside(e) {
-  if (e.target === document.getElementById('orderOverlay')) closeOrderModal();
-}
-
-function getLiveLocation() {
-  var button = document.getElementById('getLocationBtn');
-  var status = document.getElementById('locationStatus');
-  if (!navigator.geolocation) {
-    status.textContent = 'This browser does not support live location.';
-    status.className = 'location-status error';
-    return Promise.resolve('');
-  }
-  button.disabled = true;
-  status.textContent = 'Requesting location permission...';
-  status.className = 'location-status';
-  return new Promise(function (resolve) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-      var latitude = Number(position.coords.latitude).toFixed(6);
-      var longitude = Number(position.coords.longitude).toFixed(6);
-      var mapsLink = 'https://maps.google.com/?q=' + latitude + ',' + longitude;
-      customerLocation = { latitude: latitude, longitude: longitude, mapsLink: mapsLink };
-      button.disabled = false;
-      status.innerHTML = '<i class="fas fa-check-circle"></i> Location captured. <a href="' + mapsLink + '" target="_blank" rel="noopener">View on Google Maps</a>';
-      status.className = 'location-status success';
-      resolve(mapsLink);
-    }, function (error) {
-      customerLocation = null;
-      button.disabled = false;
-      status.textContent = error.code === 1 ? 'Location permission was denied. You can still submit with the typed address.' : 'Could not fetch location. You can still submit with the typed address.';
-      status.className = 'location-status error';
-      resolve('');
-    }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
-  });
-}
-
-/* Direct single-file order helper. The main cart flow calls sendWhatsApp below;
-   this helper is available for simple forms that submit one file directly. */
-async function handleOrderSubmit(event, file, orderDetails, customerName) {
-  if (event) event.preventDefault();
-  try {
-    var publicImageUrl = file ? await uploadAssetIfConfigured(file) : '';
-    var mapsLink = customerLocation ? customerLocation.mapsLink : await getLiveLocation();
-    var ownerPhoneNumber = '918447459316';
-    var message =
-      'SK GRAPHICS | NEW CUSTOM ORDER\n' +
-      '==============================\n' +
-      'Customer: ' + (customerName || 'N/A') + '\n\n' +
-      'Order details / text:\n' + (orderDetails || 'N/A') + '\n\n' +
-      'Customer location:\n' + (mapsLink || 'Live location not shared') + '\n\n' +
-      'Design / photo public HTTPS link:\n' + (publicImageUrl || 'No file uploaded') + '\n\n' +
-      'Please review and confirm this order.\n' +
-      'SK Graphics';
-    window.open('https://wa.me/' + ownerPhoneNumber + '?text=' + encodeURIComponent(message), '_blank');
-    return { success: true, imageUrl: publicImageUrl };
-  } catch (error) {
-    console.error('Order submission error:', error);
-    alert('File upload failed: ' + error.message);
-    return { success: false, error: error };
-  }
-}
-
-async function sendWhatsApp(e) {
-  e.preventDefault();
-  var name    = document.getElementById('custName').value.trim();
-  var phone   = document.getElementById('custPhone').value.trim();
-  var email   = document.getElementById('custEmail').value.trim();
-  var address = document.getElementById('custAddress').value.trim();
-  var notes   = document.getElementById('custNotes').value.trim();
-  var paymentMethod = 'Cash on Delivery (COD)';
-  var pricing = getOrderPricing();
-  var mapsLink = customerLocation ? customerLocation.mapsLink : await getLiveLocation();
-
-  // Build order lines
-  var orderLines = '';
-  var fileLines = '';
-  cart.forEach(function(item) {
-    orderLines += '  • ' + item.name + ' × ' + item.qty + '  = ₹' + (item.price * item.qty) + '\n';
-    if (item.customization) {
-      orderLines += '    Product Category: ' + item.customization.category + '\n';
-      Object.keys(item.customization.details).forEach(function (key) {
-        orderLines += '    ' + key + ': ' + item.customization.details[key] + '\n';
-      });
-      if (item.customization.designUrl) fileLines += 'Design File: ' + item.customization.designUrl + '\n';
-      if (item.customization.photoUrl) fileLines += 'Photo File: ' + item.customization.photoUrl + '\n';
-    }
-  });
-
-  var msg =
-    '🛍️ *NEW ORDER - SK GRAPHICS*\n' +
-    '----------------------------------------\n' +
-    '👤 *Customer:* ' + name + '\n' +
-    '📞 *Phone:* ' + phone + '\n' +
-    (email ? '📧 *Email:* ' + email + '\n' : '') +
-    '📍 *Delivery Address:*\n' + address + '\n' +
-    '📦 *Product:* ' + (cart.length === 1 ? cart[0].name : 'Multiple Products') + '\n' +
-    '📋 *Specifications:*\n' + orderLines +
-    '💳 *Payment Method:* ' + paymentMethod + '\n' +
-    '💰 *Total Amount Payable:* ₹' + pricing.total + '\n' +
-    '📝 *Custom Instructions:* ' + (notes || 'N/A') + '\n' +
-    '🖼️ *Customer Photo/Design Link:* ' + (fileLines || 'N/A - no upload selected') +
-    '----------------------------------------\n' +
-    'Brand: SK Graphics';
-
-  // Owner-friendly WhatsApp format. Plain HTTPS URLs are kept on their own
-  // lines so WhatsApp can make them clickable and generate a preview.
-  msg =
-    'SK GRAPHICS | NEW ORDER\n' +
-    '========================\n' +
-    'CUSTOMER\n' +
-    'Name: ' + name + '\n' +
-    'Phone: ' + phone + '\n' +
-    (email ? 'Email: ' + email + '\n' : '') +
-    'Address: ' + address + '\n\n' +
-    'LOCATION\n' + (mapsLink || 'Live location not shared') + '\n\n' +
-    'ORDER\n' + orderLines + '\n' +
-    'Payment: ' + paymentMethod + '\n' +
-    'Delivery: INR ' + pricing.delivery + '\n' +
-    'TOTAL: INR ' + pricing.total + '\n\n' +
-    'CUSTOM INSTRUCTIONS\n' + (notes || 'N/A') + '\n\n' +
-    'FILE / PREVIEW LINKS\n' + (fileLines || 'No file uploaded') + '\n' +
-    'Open the HTTPS link above to view the uploaded design/photo.\n\n' +
-    'Please review and confirm this order.\n' +
-    'SK Graphics';
-
-  var shareFiles = [];
-  cart.forEach(function (item) {
-    if (!item.customization) return;
-    if (item.customization.designBlob) shareFiles.push(item.customization.designBlob);
-    if (item.customization.photoBlob) shareFiles.push(item.customization.photoBlob);
-  });
-  var url = 'https://wa.me/918447459316?text=' + encodeURIComponent(msg);
-  // navigator.share sends the original file to WhatsApp. The Cloudinary URL
-  // remains in the message so the file is also available as a public HTTPS link.
-  if (shareFiles.length && navigator.share && (!navigator.canShare || navigator.canShare({ files: shareFiles }))) {
-    try {
-      await navigator.share({ title: 'SK Graphics Order', text: msg, files: shareFiles });
-    } catch (shareError) {
-      if (shareError.name !== 'AbortError') window.open(url, '_blank');
-    }
-  } else {
-    window.open(url, '_blank');
-    if (shareFiles.length) alert('WhatsApp text opened. Please choose Attach > Document and select the original photo/design file in the same chat.');
-  }
-  closeOrderModal();
-  cart = [];
-  updateCartUI();
-  document.getElementById('orderForm').reset();
-}
-
-function showSelectedFileName(inputId, labelId, emptyText) {
-  var input = document.getElementById(inputId);
-  var label = document.getElementById(labelId);
-  if (!input || !label) return;
-  input.addEventListener('change', function () {
-    label.textContent = this.files[0] ? 'Selected: ' + this.files[0].name : emptyText;
-  });
-}
-var assetPreviewUrls = { design: '', photo: '' };
-function formatFileSize(bytes) {
-  if (!bytes) return '0 B';
-  var units = ['B', 'KB', 'MB', 'GB'], index = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes / Math.pow(1024, index)).toFixed(index ? 1 : 0) + ' ' + units[index];
-}
-function setupAssetPreview(kind, inputId, previewId, imageId, nameId, metaId, emptyText) {
-  var input = document.getElementById(inputId);
-  if (!input) return;
-  input.addEventListener('change', function () {
-    var file = this.files[0], card = document.getElementById(previewId);
-    if (!file) { card.classList.remove('show'); return; }
-    if (assetPreviewUrls[kind]) URL.revokeObjectURL(assetPreviewUrls[kind]);
-    assetPreviewUrls[kind] = URL.createObjectURL(file);
-    document.getElementById(nameId).textContent = file.name;
-    document.getElementById(metaId).textContent = formatFileSize(file.size) + (file.type ? ' • ' + file.type : '');
-    var image = document.getElementById(imageId);
-    image.src = file.type.indexOf('image/') === 0 ? assetPreviewUrls[kind] : '';
-    image.alt = file.type.indexOf('image/') === 0 ? file.name : 'Document selected: ' + file.name;
-    card.classList.add('show');
-  });
-}
-function viewAssetPreview(kind) {
-  if (!assetPreviewUrls[kind]) return;
-  document.getElementById('assetPreviewImage').src = assetPreviewUrls[kind];
-  document.getElementById('assetPreviewOverlay').classList.add('open');
-}
-function closeAssetPreview(e) {
-  if (!e || e.target === document.getElementById('assetPreviewOverlay')) document.getElementById('assetPreviewOverlay').classList.remove('open');
-}
-function removeAsset(kind) {
-  var inputId = kind === 'photo' ? 'productPhotoFile' : 'productDesignFile';
-  var previewId = kind === 'photo' ? 'photoPreview' : 'designPreview';
-  document.getElementById(inputId).value = '';
-  document.getElementById(previewId).classList.remove('show');
-  if (assetPreviewUrls[kind]) URL.revokeObjectURL(assetPreviewUrls[kind]);
-  assetPreviewUrls[kind] = '';
-}
-showSelectedFileName('productPhotoFile', 'productPhotoFileName', 'Upload a high-resolution image or logo.');
-showSelectedFileName('productDesignFile', 'productDesignFileName', 'Upload an existing design or artwork.');
-setupAssetPreview('photo', 'productPhotoFile', 'photoPreview', 'photoPreviewImage', 'photoPreviewName', 'photoPreviewMeta');
-setupAssetPreview('design', 'productDesignFile', 'designPreview', 'designPreviewImage', 'designPreviewName', 'designPreviewMeta');
-document.querySelectorAll('.legacy-fields, .legacy-fields + .om-footer').forEach(function (node) { node.remove(); });
-
-/* ==================================
-   HOW IT WORKS INTERACTIONS
-================================== */
-const artworkInput = document.getElementById('artworkFile');
-const artworkDropzone = document.getElementById('artworkDropzone');
-const artworkPreview = document.getElementById('artworkPreview');
-const artworkName = document.getElementById('artworkName');
-
-function showArtwork(file) {
-  if (!file) return;
-  const allowed = /\.(pdf|ai|psd)$/i.test(file.name);
-  if (!allowed) { alert('Please upload a PDF, AI, or PSD file.'); return; }
-  artworkName.textContent = file.name;
-  artworkPreview.classList.add('show');
-}
-if (artworkInput) artworkInput.addEventListener('change', function () { showArtwork(this.files[0]); });
-if (artworkDropzone) {
-  ['dragenter','dragover'].forEach(function (eventName) {
-    artworkDropzone.addEventListener(eventName, function (e) { e.preventDefault(); artworkDropzone.classList.add('is-dragover'); });
-  });
-  ['dragleave','drop'].forEach(function (eventName) {
-    artworkDropzone.addEventListener(eventName, function (e) { e.preventDefault(); artworkDropzone.classList.remove('is-dragover'); });
-  });
-  artworkDropzone.addEventListener('drop', function (e) { showArtwork(e.dataTransfer.files[0]); });
-}
-function approvePrint() {
-  var button = document.getElementById('approvePrintBtn');
-  if (!button) return;
-  button.textContent = '✓ Approved for Print';
-  button.classList.add('approved');
-}
-
-/* ==================================
-   NEWSLETTER
-================================== */
-function handleNL(e) {
-  e.preventDefault();
-  alert('Thank you for subscribing! You\'ll receive our latest offers soon.');
-  e.target.reset();
-}
-
-/* ==================================
-   BACK TO TOP
-================================== */
-window.addEventListener('scroll', function() {
-  document.getElementById('bttBtn').classList.toggle('vis', window.scrollY > 380);
-});
-</script>
-
-<style>
-  .experience-section { background: linear-gradient(180deg,#f7fbff 0%,#fff 100%); padding: 76px 0; }
-  .experience-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:26px; align-items:start; }
-  .experience-card { background:#fff; border:1px solid #e4ebf2; border-radius:20px; box-shadow:0 16px 45px rgba(27,73,108,.10); padding:24px; }
-  .experience-card h2 { color:#1a2a3a; font-size:25px; margin:8px 0 8px; }
-  .experience-card p { color:#667789; line-height:1.6; }
-  .eyebrow { color:#2b76a6; font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; }
-  .stage-toggle { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:22px 0; }
-  .stage-toggle button { border:1px solid #dbe5ed; background:#f7fafc; border-radius:12px; padding:11px 7px; color:#607386; cursor:pointer; font:700 11px inherit; transition:.2s; }
-  .stage-toggle button.active { background:#2b76a6; border-color:#2b76a6; color:white; box-shadow:0 7px 18px rgba(43,118,166,.25); }
-  .timeline { display:flex; align-items:flex-start; gap:0; margin:8px 0 20px; }
-  .timeline-step { flex:1; text-align:center; position:relative; color:#8b9bab; font-size:11px; font-weight:700; }
-  .timeline-step:not(:last-child):after { content:''; position:absolute; top:15px; left:50%; width:100%; height:3px; background:#dce7ef; z-index:0; }
-  .timeline-step.done:not(:last-child):after { background:#5ba5cf; }
-  .timeline-dot { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:#e6eef4; color:#7c8d9b; margin:0 auto 8px; position:relative; z-index:1; }
-  .timeline-step.done { color:#2b76a6; }.timeline-step.done .timeline-dot { background:#2b76a6; color:#fff; }
-  .map { min-height:210px; border-radius:16px; position:relative; overflow:hidden; background-color:#dcecf0; background-image:linear-gradient(25deg,transparent 46%,rgba(255,255,255,.9) 47%,rgba(255,255,255,.9) 49%,transparent 50%),linear-gradient(115deg,transparent 42%,rgba(255,255,255,.8) 43%,rgba(255,255,255,.8) 45%,transparent 46%),linear-gradient(8deg,transparent 57%,#bad5d1 58%,#bad5d1 60%,transparent 61%); }
-  .map:before,.map:after { content:''; position:absolute; background:rgba(255,255,255,.55); height:5px; transform:rotate(-28deg); width:120%; left:-10%; top:38%; box-shadow:0 52px rgba(255,255,255,.45),0 106px rgba(255,255,255,.4); }
-  .map:after { transform:rotate(44deg); top:12%; opacity:.7; }
-  .map-label { position:absolute; left:16px; top:14px; z-index:2; background:rgba(255,255,255,.88); border-radius:10px; padding:8px 11px; color:#38566a; font-size:11px; font-weight:800; }
-  .route { position:absolute; left:18%; top:64%; width:64%; height:2px; background:#f57c1f; transform:rotate(-23deg); z-index:3; box-shadow:0 0 0 4px rgba(245,124,31,.12); }
-  .pin,.vehicle { position:absolute; z-index:4; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; box-shadow:0 5px 12px rgba(0,0,0,.18); }
-  .pin { right:13%; top:25%; background:#f57c1f; }.vehicle { left:25%; top:62%; background:#2b76a6; transition:left .45s ease,top .45s ease; }
-  .delivery-info { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:18px; padding:14px; background:#f6fafc; border-radius:14px; }.delivery-info strong { display:block; color:#1a2a3a; margin-bottom:4px; }.delivery-info small { color:#718395; }.status-badge { background:#e7f7ee; color:#13844e; border-radius:20px; padding:7px 10px; font-size:11px; font-weight:800; white-space:nowrap; }
-  .image-showcase { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:18px; }.image-showcase figure { margin:0; overflow:hidden; border-radius:14px; background:#eef3f6; }.image-showcase img { width:100%; height:130px; object-fit:cover; transition:transform .3s; }.image-showcase figure:hover img { transform:scale(1.04); }.image-showcase figcaption { padding:9px 10px; font-size:11px; font-weight:800; color:#40576a; }
-  .chat-fab { position:fixed; right:22px; bottom:22px; width:58px; height:58px; border:0; border-radius:50%; background:#2b76a6; color:#fff; box-shadow:0 12px 28px rgba(43,118,166,.35); cursor:pointer; z-index:1200; font-size:21px; }.chat-panel { display:none; position:fixed; right:22px; bottom:92px; width:min(370px,calc(100vw - 30px)); background:rgba(255,255,255,.96); backdrop-filter:blur(16px); border:1px solid #dce7ef; border-radius:20px; box-shadow:0 20px 60px rgba(25,55,78,.2); z-index:1199; overflow:hidden; }.chat-panel.open { display:block; animation:chatIn .2s ease; } @keyframes chatIn { from{opacity:0; transform:translateY(10px)}to{opacity:1;transform:none} }.chat-head { background:#1a2a3a; color:#fff; padding:16px; display:flex; align-items:center; justify-content:space-between; }.chat-head small { display:block; color:#b6d9eb; margin-top:3px; }.chat-close { background:none; border:0; color:#fff; cursor:pointer; font-size:18px; }.chat-messages { height:230px; overflow:auto; padding:14px; background:#f7fafc; }.chat-message { max-width:82%; border-radius:13px; padding:10px 12px; margin-bottom:9px; font-size:13px; line-height:1.45; }.chat-message.bot { background:#fff; color:#40576a; border:1px solid #e0e9ef; }.chat-message.user { margin-left:auto; background:#2b76a6; color:#fff; }.chat-quick { display:flex; gap:6px; flex-wrap:wrap; padding:10px 12px 4px; }.chat-quick button { border:1px solid #cbdde9; border-radius:20px; background:#fff; color:#2b76a6; padding:7px 9px; font-size:11px; cursor:pointer; }.chat-form { display:flex; gap:8px; padding:10px 12px 14px; }.chat-form input { min-width:0; flex:1; border:1px solid #dbe5ed; border-radius:10px; padding:10px; outline:none; font:13px inherit; }.chat-form button { border:0; border-radius:10px; background:#f57c1f; color:#fff; width:42px; cursor:pointer; }
-  .checkout-drawer { display:none; position:fixed; inset:0; background:rgba(15,35,50,.48); z-index:1300; justify-content:flex-end; }.checkout-drawer.open { display:flex; }.checkout-panel { width:min(440px,100%); height:100%; background:#fff; padding:25px; overflow:auto; animation:slideIn .25s ease; } @keyframes slideIn {from{transform:translateX(100%)}to{transform:none}} .checkout-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }.checkout-head h2 { color:#1a2a3a; }.checkout-close { border:0; background:#eef4f7; border-radius:50%; width:34px; height:34px; cursor:pointer; }.checkout-row { display:flex; justify-content:space-between; padding:11px 0; color:#5d7181; border-bottom:1px solid #edf1f4; }.checkout-row.total { font-size:18px; color:#1a2a3a; font-weight:800; border:0; }.payment-options { display:grid; gap:10px; margin:17px 0; }.payment-option { border:1px solid #dce7ef; padding:13px; border-radius:12px; display:flex; gap:10px; align-items:center; cursor:pointer; }.payment-option input { accent-color:#2b76a6; }.payment-option strong { color:#2d4657; display:block; }.payment-option small { color:#8292a0; }.gateway-note { background:#fff7ed; border:1px solid #f8d8b1; color:#8b5a27; padding:11px; border-radius:10px; font-size:11px; line-height:1.5; }
-  @media(max-width:850px){ .experience-grid{grid-template-columns:1fr}.experience-card{padding:18px}.stage-toggle button{font-size:10px}.image-showcase img{height:110px} }
-  @media(max-width:480px){.delivery-info{align-items:flex-start;flex-direction:column}.status-badge{align-self:flex-start}.chat-fab{right:14px;bottom:14px}.chat-panel{right:14px;bottom:82px}.stage-toggle{gap:4px}}
-</style>
-
-<section class="experience-section" id="track-order">
-  <div class="container">
-    <div class="section-header"><span class="section-tag">Smart service desk</span><h2 class="section-title">Order tracking, support & checkout</h2><p class="section-subtitle">Track every print order live, ask for help, and choose your payment method from one clean workspace.</p></div>
-    <div class="experience-grid">
-      <div class="experience-card">
-        <span class="eyebrow">Order #SK-24081</span><h2>Live order tracking</h2><p id="trackingCopy">Your order is being prepared by our print studio.</p>
-        <div class="stage-toggle" role="group" aria-label="Test delivery stage"><button class="active" data-stage="0">Creating</button><button data-stage="1">Packed</button><button data-stage="2">Out for delivery</button><button data-stage="3">Delivered</button></div>
-        <div class="timeline"><div class="timeline-step done"><div class="timeline-dot"><i class="fa-solid fa-pen-ruler"></i></div>Creating</div><div class="timeline-step"><div class="timeline-dot"><i class="fa-solid fa-box"></i></div>Packed</div><div class="timeline-step"><div class="timeline-dot"><i class="fa-solid fa-truck"></i></div>On the way</div><div class="timeline-step"><div class="timeline-dot"><i class="fa-solid fa-check"></i></div>Delivered</div></div>
-        <div class="map" aria-label="Live delivery map"><span class="map-label"><i class="fa-solid fa-location-dot"></i> Delhi NCR delivery route</span><div class="route"></div><div class="vehicle"><i class="fa-solid fa-truck"></i></div><div class="pin"><i class="fa-solid fa-house"></i></div></div>
-        <div class="delivery-info"><div><strong id="etaText">Estimated arrival: Tomorrow, 11:30 AM</strong><small id="driverText">Driver details unlock when your order is out for delivery.</small></div><span class="status-badge" id="statusBadge">In production</span></div>
-        <button class="btn btn-primary" id="locationBtn" style="margin-top:14px;width:100%"><i class="fa-solid fa-location-crosshairs"></i> Check live location</button>
-      </div>
-      <div class="experience-card"><span class="eyebrow">SK Graphics collection</span><h2>Made for your brand</h2><p>Explore the latest brochures, branding, cards and packaging work from the studio.</p><div class="image-showcase"><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-brochures-sFlQL4XMSXccOZ4VJXwJRiyrOI4jYo.png" alt="Brochures and portfolios on a wooden desk"><figcaption>Brochures and portfolios</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-branding-studio-H7DWaWTOBl17sH6VAUm2fQsPZwgum6.png" alt="Branding studio wall with SK Graphics artwork"><figcaption>Branding studio</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-business-cards-7TNUxOyzsV1LU0U7Z04mmIgiBF65oN.png" alt="Black SK Graphics business cards"><figcaption>Business cards</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-banners-hoowEt1pv06StDrobG3J3QtmBbAI8U.png" alt="SK Graphics event banners in an exhibition hall"><figcaption>Event banners</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-fancy-boxes-84mFJbFTYFKfwQx6rXl1Xhz71pVNIg.png" alt="SK Graphics premium boxes and packaging"><figcaption>Fancy boxes and packaging</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-canvas-printing-aDVpjAbidfZJGlZgXWHb6a6mTkeicG.png" alt="SK Graphics canvas prints displayed in a living room"><figcaption>Canvas printing</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-notebooks-2N5TmDc8OtUIgZCRNYWPwk9sL7NACv.png" alt="Branded SK Graphics notebooks on a desk"><figcaption>Branded notebooks</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-printing-materials-e2CwHCAFxXWHHnEZOfx9sGy7wpzjzN.png" alt="Printed SK Graphics marketing materials"><figcaption>Printing materials</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-tshirt-fcR64JdEAx3ZqloWpTFpFT9et85eg3.png" alt="Black SK Graphics branded t shirt"><figcaption>Branded t shirts</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-mugs-2HB72ue3n80SxYgrHiwuTYaDCWiMGr.png" alt="White SK Graphics mug on a kitchen table"><figcaption>Custom mugs</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-roll-up-banner-AyCbZEvDN7EuKWPAt0bcAryP82DF2m.png" alt="SK Graphics roll up banner at a business expo"><figcaption>Roll up banners</figcaption></figure><figure><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-stickers-GVmHHc35TMeTWlBJNduGhkm8OOIg6v.png" alt="SK Graphics sticker sheet with colorful logos"><figcaption>Custom stickers</figcaption></figure></div><button class="btn btn-accent" id="checkoutBtn" style="width:100%;margin-top:18px"><i class="fa-solid fa-bag-shopping"></i> Open checkout</button></div>
-    </div>
-  </div>
-</section>
-
-<button class="chat-fab" id="chatFab" aria-label="Open AI support chat"><i class="fa-solid fa-comments"></i></button>
-<div class="chat-panel" id="chatPanel" role="dialog" aria-label="SK Graphics AI support"><div class="chat-head"><div><strong>SK Support Assistant</strong><small>Usually replies instantly</small></div><button class="chat-close" id="chatClose" aria-label="Close chat">×</button></div><div class="chat-messages" id="chatMessages"><div class="chat-message bot">Namaste. I can help with ordering, delivery tracking, print options and payment.</div></div><div class="chat-quick"><button data-question="कैसे ऑर्डर करें?">कैसे ऑर्डर करें?</button><button data-question="ऑर्डर कब तक पहुंचेगा?">ऑर्डर कब तक पहुंचेगा?</button><button data-question="ट्रैक माय ऑर्डर">ट्रैक माय ऑर्डर</button><button data-question="पेमेंट सपोर्ट">पेमेंट सपोर्ट</button></div><form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Type your question..." aria-label="Type your question"><button aria-label="Send message"><i class="fa-solid fa-paper-plane"></i></button></form></div>
-
-<div class="checkout-drawer" id="checkoutDrawer" role="dialog" aria-modal="true" aria-label="Checkout"><div class="checkout-panel"><div class="checkout-head"><h2>Order summary</h2><button class="checkout-close" id="checkoutClose" aria-label="Close checkout">×</button></div><div class="checkout-row"><span>Premium business cards × 1</span><strong>₹699</strong></div><div class="checkout-row"><span>Shipping</span><strong>₹50</strong></div><div class="checkout-row total"><span>Total</span><strong>₹749</strong></div><h3 style="margin-top:20px;color:#1a2a3a">Choose payment method</h3><div class="payment-options"><label class="payment-option"><input type="radio" name="payment" checked><span><strong>Online payment</strong><small>UPI, cards or net banking</small></span></label><label class="payment-option"><input type="radio" name="payment"><span><strong>Cash on delivery</strong><small>Pay when your print order arrives</small></span></label></div><div class="gateway-note" id="paymentStatus"><strong>Secure payment:</strong> Razorpay will confirm the payment only after the server verifies the signature and captured status.</div><button class="btn btn-accent" id="payBtn" style="width:100%;margin-top:18px">Continue to payment</button></div></div>
-
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-(function(){
-  var stages=[{copy:'Your order is being prepared by our print studio.',eta:'Estimated arrival: Tomorrow, 11:30 AM',driver:'Driver details unlock when your order is out for delivery.',badge:'In production',left:'25%',top:'62%'},{copy:'Your prints are packed and quality checked.',eta:'Estimated arrival: Tomorrow, 11:30 AM',driver:'Packed securely and ready for dispatch.',badge:'Packed',left:'40%',top:'54%'},{copy:'Your order is on the way to your delivery address.',eta:'Arriving in 25 mins',driver:'Ravi Kumar · DL 01 AB 4821',badge:'Out for delivery',left:'68%',top:'40%'},{copy:'Delivered successfully. Thank you for choosing SK Graphics.',eta:'Delivered today at 10:42 AM',driver:'Delivered by Ravi Kumar · DL 01 AB 4821',badge:'Delivered',left:'78%',top:'28%'}];
-  var buttons=[].slice.call(document.querySelectorAll('[data-stage]')); var steps=[].slice.call(document.querySelectorAll('.timeline-step')); var vehicle=document.querySelector('.vehicle');
-  buttons.forEach(function(btn){btn.addEventListener('click',function(){var stage=Number(btn.dataset.stage); buttons.forEach(function(b){b.classList.toggle('active',b===btn)}); steps.forEach(function(s,i){s.classList.toggle('done',i<=stage)}); var data=stages[stage]; document.getElementById('trackingCopy').textContent=data.copy; document.getElementById('etaText').textContent=data.eta; document.getElementById('driverText').textContent=data.driver; document.getElementById('statusBadge').textContent=data.badge; vehicle.style.left=data.left; vehicle.style.top=data.top; });});
-  var chat=document.getElementById('chatPanel'); document.getElementById('chatFab').onclick=function(){chat.classList.add('open')}; document.getElementById('chatClose').onclick=function(){chat.classList.remove('open')};
-  function reply(question){var messages=document.getElementById('chatMessages'); var user=document.createElement('div'); user.className='chat-message user'; user.textContent=question; messages.appendChild(user); var answer='I can help you choose paper, finish, size and quantity. Tell me what you want to print.'; if(question.indexOf('पहुंच')>-1||question.indexOf('ट्रैक')>-1) answer='Order #SK-24081 is currently in production. Use the tracking stages above; once dispatched, the driver and live route will appear.'; if(question.indexOf('पेमेंट')>-1) answer='We accept UPI, cards, net banking and cash on delivery. Open checkout to choose your preferred method.'; var bot=document.createElement('div'); bot.className='chat-message bot'; bot.textContent=answer; messages.appendChild(bot); messages.scrollTop=messages.scrollHeight;}
-  document.querySelectorAll('.chat-quick button').forEach(function(b){b.onclick=function(){reply(b.dataset.question)}}); document.getElementById('chatForm').onsubmit=function(e){e.preventDefault(); var input=document.getElementById('chatInput'); if(!input.value.trim())return; reply(input.value.trim()); input.value=''};
-  var drawer=document.getElementById('checkoutDrawer'); var payBtn=document.getElementById('payBtn'); var paymentStatus=document.getElementById('paymentStatus'); document.getElementById('checkoutBtn').onclick=function(){drawer.classList.add('open')}; document.getElementById('checkoutClose').onclick=function(){drawer.classList.remove('open')}; drawer.onclick=function(e){if(e.target===drawer)drawer.classList.remove('open')};
-  payBtn.onclick=async function(){
-    payBtn.disabled=true; payBtn.textContent='Starting secure payment...'; paymentStatus.textContent='Connecting to Razorpay...';
-    try {
-      var orderResponse=await fetch('/api/payments/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:'Premium business cards',quantity:1})});
-      var order=await orderResponse.json(); if(!orderResponse.ok) throw new Error(order.message||'Unable to create payment order');
-      var options={key:order.keyId,amount:order.amount,currency:order.currency,name:'SK Graphics',description:'Premium business cards',order_id:order.orderId,handler:async function(response){
-        paymentStatus.textContent='Verifying payment securely...';
-        var verifyResponse=await fetch('/api/payments/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(response)}); var result=await verifyResponse.json();
-        if(!verifyResponse.ok||!result.confirmed) throw new Error(result.message||'Payment is not confirmed');
-        paymentStatus.textContent='Payment confirmed. Payment ID: '+result.paymentId; payBtn.textContent='Payment confirmed';
-      },modal:{ondismiss:function(){payBtn.disabled=false;payBtn.textContent='Continue to payment';paymentStatus.textContent='Payment was cancelled. No confirmation was received.'}},theme:{color:'#2b76a6'}};
-      new Razorpay(options).open();
-    } catch(error) { paymentStatus.textContent=error.message||'Internal Server Error. Please try again.'; payBtn.disabled=false; payBtn.textContent='Try payment again'; }
-  };
-})();
 </script>
 </body>
 </html>
