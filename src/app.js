@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const crypto = require("crypto");
@@ -34,8 +36,13 @@ app.set("views", path.join(__dirname, ".."));
    HOME PAGE
 ========================= */
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/", (req, res, next) => {
+  try {
+    return res.render("index");
+  } catch (error) {
+    console.error("HOME PAGE ERROR:", error);
+    return next(error);
+  }
 });
 
 /* =========================
@@ -71,6 +78,13 @@ app.post("/api/newsletter", async (req, res) => {
     }
 
     /* DUPLICATE CHECK */
+
+    if (!process.env.MONGO_URI) {
+      return res.status(503).json({
+        ok: false,
+        message: "Newsletter service is temporarily unavailable"
+      });
+    }
 
     const existingEmail = await Gmailmodel.findOne({
       email: email
@@ -153,7 +167,9 @@ app.post("/api/payments/verify", async (req, res) => {
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    if (!crypto.timingSafeEqual(Buffer.from(expectedSignature), Buffer.from(razorpay_signature))) {
+    const expectedBuffer = Buffer.from(expectedSignature);
+    const receivedBuffer = Buffer.from(String(razorpay_signature));
+    if (expectedBuffer.length !== receivedBuffer.length || !crypto.timingSafeEqual(expectedBuffer, receivedBuffer)) {
       return res.status(400).json({ ok: false, message: "Payment signature could not be verified" });
     }
 
@@ -181,6 +197,16 @@ app.get("/api/test", (req, res) => {
     ok: true,
     message: "Labzeck backend is working"
   });
+});
+
+app.use((req, res) => {
+  return res.status(404).json({ ok: false, message: "Route not found" });
+});
+
+app.use((error, req, res, next) => {
+  console.error("UNHANDLED REQUEST ERROR:", error);
+  if (res.headersSent) return next(error);
+  return res.status(500).json({ ok: false, message: "Internal server error" });
 });
 
 module.exports = app;
