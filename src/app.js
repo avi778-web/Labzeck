@@ -31,7 +31,7 @@ app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 ========================= */
 
 app.set("view engine", "ejs");
-const viewsDirectory = path.resolve(__dirname, "..");
+const viewsDirectory = path.resolve(__dirname, "..", "views");
 app.set("views", viewsDirectory);
 
 /* =========================
