@@ -31,7 +31,8 @@ app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 ========================= */
 
 app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, ".."));
+const viewsDirectory = path.resolve(__dirname, "..");
+app.set("views", viewsDirectory);
 
 /* =========================
    HOME PAGE
@@ -126,7 +127,7 @@ app.post("/api/newsletter", async (req, res) => {
       ok: false,
       message: "Could not save your email"
     });
-  }             
+  }
 });
 
 /* =========================
