@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
 
 const Gmailmodel = require("./models/email.model");
+const OrderModel = require("./models/order.model");
 
 const app = express();
 
@@ -127,6 +128,57 @@ app.post("/api/newsletter", async (req, res) => {
       ok: false,
       message: "Could not save your email"
     });
+  }
+});
+
+/* =========================
+   STANDARD ORDERS
+========================= */
+
+app.post("/api/orders", async (req, res) => {
+  try {
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const customer = body.customer && typeof body.customer === "object" ? body.customer : {};
+    const items = Array.isArray(body.items) ? body.items : [];
+    const name = String(customer.name || "").trim();
+    const phone = String(customer.phone || "").trim();
+    const address = String(customer.address || "").trim();
+    const notes = String(body.notes || "").trim();
+    const total = Number(body.total);
+    const latitude = Number(customer.location && customer.location.latitude);
+    const longitude = Number(customer.location && customer.location.longitude);
+
+    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0) {
+      return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
+    }
+    if (phone.replace(/\\D/g, "").length < 10) {
+      return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
+    }
+    if (!process.env.MONGO_URI || mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ ok: false, message: "Order service is temporarily unavailable" });
+    }
+
+    const order = await OrderModel.create({
+      customer: {
+        name,
+        phone,
+        address,
+        location: Number.isFinite(latitude) && Number.isFinite(longitude) ? { latitude, longitude } : undefined
+      },
+      items: items.slice(0, 50).map((item) => ({
+        name: String(item.name || "").trim().slice(0, 160),
+        price: Math.max(0, Number(item.price) || 0),
+        quantity: Math.max(1, Math.min(999, Number(item.qty) || 1))
+      })),
+      total,
+      notes,
+      orderType: "standard"
+    });
+
+    return res.status(201).json({ ok: true, orderId: order._id, message: "Order saved successfully" });
+  } catch (error) {
+    console.error("STANDARD ORDER ERROR:", error.stack || error);
+    return res.status(500).json({ ok: false, message: "Could not save order" });
   }
 });
 

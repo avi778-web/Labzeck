@@ -251,7 +251,7 @@
       transition: transform .35s ease, filter .35s ease;
     }
     .cat-card:hover .cat-img img { transform: scale(1.06); filter: saturate(1.08); }
-    
+
     /* Circle Logo badge on product cards */
     .cat-img .cat-circle-badge {
       position: absolute; right: 10px; bottom: 10px; width: 44px; height: 44px;
@@ -834,7 +834,14 @@
       <button class="om-close" onclick="closeOrderModal()">×</button>
     </div>
     <div class="om-body">
-      <form id="orderForm" onsubmit="sendWhatsAppOrder(event)">
+      <form id="orderForm" onsubmit="submitOrder(event)">
+<div class="form-group">
+          <label>Order Type *</label>
+          <select id="orderType" required>
+            <option value="standard">Standard order save in database</option>
+            <option value="bulk">Bulk order via WhatsApp only</option>
+          </select>
+        </div>
         <div class="form-group">
           <label>Your Name *</label>
           <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required>
@@ -852,7 +859,7 @@
           <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
         </div>
         <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
-          <button type="submit" class="btn btn-wp"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button>
+          <button type="submit" class="btn btn-wp" id="orderSubmitBtn"><i class="fab fa-whatsapp"></i> Submit Order</button>
         </div>
       </form>
     </div>
@@ -920,30 +927,46 @@
   function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
   function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
 
-  /* WhatsApp Order Dispatch */
-  function sendWhatsAppOrder(e) {
+  async function submitOrder(e) {
     e.preventDefault();
+    const type = document.getElementById('orderType').value;
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const notes = document.getElementById('custNotes').value.trim();
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}`).join('\n');
+    if (!cart.length || !name || !phone || !address) return alert('Please complete your order details and add a product.');
 
-    let itemsList = '';
-    let grandTotal = 0;
-    cart.forEach(item => {
-      itemsList += `• ${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}\n`;
-      grandTotal += item.price * item.qty;
-    });
+    let location = {};
+    if (navigator.geolocation) {
+      try {
+        const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+        location = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+      } catch (error) {
+        console.warn('Location permission unavailable; saving address only.');
+      }
+    }
 
-    const msg = `*NEW ORDER - SK GRAPHICS*\n------------------------\n` +
-                `*Customer:* ${name}\n` +
-                `*Phone:* ${phone}\n` +
-                `*Address:* ${address}\n\n` +
-                `*Items:*\n${itemsList}\n` +
-                `*Total Payable:* ₹${grandTotal}\n` +
-                `*Notes:* ${notes || 'None'}\n------------------------`;
-
-    window.open(`https://wa.me/918447459316?text=${encodeURIComponent(msg)}`, '_blank');
+    if (type === 'bulk') {
+      const msg = `*BULK ORDER - SK GRAPHICS*\n------------------------\n*Customer:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${itemsList}\n*Total Estimate:* ₹${total}\n*Notes:* ${notes || 'None'}\n------------------------`;
+      window.open(`https://wa.me/918447459316?text=${encodeURIComponent(msg)}`, '_blank');
+    } else {
+      const button = document.getElementById('orderSubmitBtn');
+      button.disabled = true;
+      button.textContent = 'Saving order...';
+      try {
+        const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Could not save order');
+        alert(`Order saved successfully. Order ID: ${result.orderId}`);
+      } catch (error) {
+        alert(error.message || 'Could not save order. Please try again.');
+        button.disabled = false;
+        button.textContent = 'Submit Order';
+        return;
+      }
+    }
     cart = [];
     updateCartUI();
     closeOrderModal();
