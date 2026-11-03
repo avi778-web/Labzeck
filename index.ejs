@@ -247,7 +247,8 @@
       background: #f4f7f9;
     }
     .cat-img img {
-      width: 100%; height: 100%; object-fit: cover;
+      width: 142px; height: 142px; object-fit: cover; border-radius: 50%;
+      border: 4px solid #fff; box-shadow: 0 5px 18px rgba(17, 36, 50, .18);
       transition: transform .35s ease, filter .35s ease;
     }
     .cat-card:hover .cat-img img { transform: scale(1.06); filter: saturate(1.08); }
@@ -494,7 +495,7 @@
 <section class="hero" id="home">
   <div class="hero-banner-wrapper">
     <!-- Aapki provide ki gayi online print shop image -->
-    <img class="/assets/sk-hero-online-print-shop.png" src="assets/sk-hero-online-print-shop.png" alt="Your Online Print Shop - SK Graphics">
+    <img src="/assets/sk-hero-online-print-shop.png" alt="SK Graphics online print shop">
   </div>
 </section>
 
@@ -521,7 +522,7 @@
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="addToCart('Business Cards', 99)">
         <div class="cat-img">
-          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-business-cards-7TNUxOyzsV1LU0U7Z04mmIgiBF65oN.png" alt="Business Cards" loading="lazy">
+          <img src="/assets/sk-product-printing.png" alt="Business Cards" loading="lazy">
           <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">

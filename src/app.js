@@ -5,6 +5,7 @@ const path = require("path");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
+const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
@@ -83,7 +84,7 @@ app.post("/api/newsletter", async (req, res) => {
 
     /* DUPLICATE CHECK */
 
-    if (!process.env.MONGO_URI || mongoose.connection.readyState !== 1) {
+    if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
       return res.status(503).json({
         ok: false,
         message: "Newsletter service is temporarily unavailable"
@@ -154,7 +155,7 @@ app.post("/api/orders", async (req, res) => {
     if (phone.replace(/\\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
     }
-    if (!process.env.MONGO_URI || mongoose.connection.readyState !== 1) {
+    if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
       return res.status(503).json({ ok: false, message: "Order service is temporarily unavailable" });
     }
 
