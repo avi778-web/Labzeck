@@ -237,10 +237,12 @@
       gap: 20px;
     }
     .cat-card {
-      border: 1.5px solid var(--border); border-radius: var(--radius-lg);
-      overflow: hidden; transition: all .3s ease; cursor: pointer; background: #fff;
+      background: #fff; border: 2px solid transparent; border-radius: var(--radius);
+      overflow: hidden; cursor: pointer; transition: .25s; box-shadow: var(--shadow);
     }
-    .cat-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-hov); border-color: var(--primary); }
+    .cat-card:hover, .cat-card:focus-within { transform: translateY(-6px); box-shadow: var(--shadow-hov); border-color: #f2c94c; }
+    .cat-circle-badge { position:absolute; right:10px; bottom:10px; width:44px; height:44px; border-radius:50%; background:#111; border:2px solid #fff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.28); z-index:2; }
+    .cat-circle-badge span { color:#fff; font-size:9px; font-weight:800; letter-spacing:-.5px; text-transform:uppercase; }
     .cat-img {
       height: 165px; display: flex; align-items: center; justify-content: center;
       overflow: hidden; position: relative;
@@ -426,7 +428,7 @@
 <div class="ann-bar">
   <i class="fas fa-tag"></i>
   <span>🎉 Get <strong>10% OFF</strong> on your first order — Code: <strong>PRINT10</strong></span>
-  <a href="#products">Shop Now →</a>
+  <a href="#products">Shop Now ��</a>
 </div>
 
 <!-- TOP BAR -->
@@ -544,23 +546,24 @@
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
-          <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy">
-        </div>
-        <div class="cat-body">
+          <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy"><div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Business Cards</h5>
-          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><span class="cat-starting">Starting from ₹399</span><span class="cat-link">Select Options <i class="fas fa-sliders-h"></i></span>
+          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
       <!-- 2. Flyers & Leaflets -->
       <div class="cat-card" onclick="openProductOptions('Color Pamphlets')">
         <div class="cat-img">
-          <img src="/assets/sk-flyers-leaflets.png" alt="Flyers & Leaflets" loading="lazy">
-        </div>
-        <div class="cat-body">
+          <img src="https://github.com/avi778-web/Labzeck/blob/main/assets/sk-flyers-clean.png?raw=true" alt="Flyers & Leaflets" loading="lazy" onerror="this.onerror=null;this.src='/assets/sk-flyers-leaflets.png'">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Color Pamphlets</h5>
           <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
-          <span class="cat-starting">Starting from ₹600</span><span class="cat-link">Select Options <i class="fas fa-sliders-h"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -568,11 +571,12 @@
       <div class="cat-card" onclick="addToCart('Brochures', 299)">
         <div class="cat-img">
           <img src="/assets/sk-brochures.png" alt="Brochures" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Brochures</h5>
           <p>Bi-fold, tri-fold and Z-fold brochures on premium art paper.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -580,11 +584,12 @@
       <div class="cat-card" onclick="addToCart('Posters & Banners', 599)">
         <div class="cat-img">
           <img src="/assets/sk-banners.png" alt="Posters & Banners" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Posters &amp; Banners</h5>
           <p>Vibrant large-format vinyl banners, posters, and flex prints for every event.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -592,11 +597,12 @@
       <div class="cat-card" onclick="addToCart('Custom Mugs', 199)">
         <div class="cat-img">
           <img src="/assets/sk-mugs.png" alt="Custom Mugs" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Custom Mugs</h5>
           <p>Personalized ceramic mugs — ideal corporate gifts with your logo or photo.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -604,11 +610,12 @@
       <div class="cat-card" onclick="addToCart('Stickers & Labels', 149)">
         <div class="cat-img">
           <img src="/assets/sk-stickers.png" alt="Stickers & Labels" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Stickers &amp; Labels</h5>
           <p>Die-cut, roll, and sheet stickers in any shape — waterproof options available.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -616,11 +623,12 @@
       <div class="cat-card" onclick="addToCart('Custom T-Shirts', 299)">
         <div class="cat-img">
           <img src="/assets/sk-tshirt.png" alt="Custom T-Shirts" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Custom T-Shirts</h5>
           <p>Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -628,11 +636,12 @@
       <div class="cat-card" onclick="addToCart('Roll-Up Banners', 1299)">
         <div class="cat-img">
           <img src="/assets/sk-roll-up-banner.png" alt="Roll-Up Banners" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Roll-Up Banners</h5>
           <p>Retractable standees for exhibitions, retail, and corporate events.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -640,11 +649,12 @@
       <div class="cat-card" onclick="addToCart('Diaries & Notebooks', 299)">
         <div class="cat-img">
           <img src="/assets/sk-notebooks.png" alt="Diaries & Notebooks" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Diaries &amp; Notebooks</h5>
           <p>Custom-branded hardcover and softcover diaries, notepads, and planners.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -652,11 +662,12 @@
       <div class="cat-card" onclick="addToCart('Folders', 349)">
         <div class="cat-img">
           <img src="/assets/sk-presentation-folders.png" alt="Presentation Folders" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Presentation Folders</h5>
           <p>Premium printed folders for presentations, proposals, and corporate kits.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -664,11 +675,12 @@
       <div class="cat-card" onclick="addToCart('Canvas Printing', 799)">
         <div class="cat-img">
           <img src="/assets/sk-canvas-printing.png" alt="Canvas Printing" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Canvas Printing</h5>
           <p>Photo-quality canvas prints on stretched frames for homes, offices, and gifts.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -676,11 +688,12 @@
       <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging', 499)">
         <div class="cat-img">
           <img src="/assets/sk-fancy-boxes.png" alt="Fancy Boxes & Packaging" loading="lazy">
-        </div>
-        <div class="cat-body">
+ <div class="cat-circle-badge"><span>SK</span></div>
+ </div>
+ <div class="cat-body">
           <h5>Fancy Boxes &amp; Packaging</h5>
           <p>Custom packaging, gift boxes, and carry bags with premium finishing options.</p>
-          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
     </div>
