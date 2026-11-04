@@ -230,7 +230,7 @@
     .feat-item h6 { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
     .feat-item p { font-size: 12px; opacity: .8; margin: 0; }
 
-    /* CATEGORIES & CIRCULAR LOGO */
+    /* PRODUCT CARDS */
     .cats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
@@ -252,24 +252,11 @@
     }
     .cat-card:hover .cat-img img { transform: scale(1.06); filter: saturate(1.08); }
     
-    /* Circle Logo badge on product cards */
-    .cat-img .cat-circle-badge {
-      position: absolute; right: 10px; bottom: 10px; width: 44px; height: 44px;
-      border-radius: 50%; background: #111; border: 2px solid #fff;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,.3); z-index: 2;
-    }
-    .cat-img .cat-circle-badge span {
-      color: #fff; font-size: 9px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase;
-    }
-
     .cat-body { padding: 15px 17px 17px; }
     .cat-body h5 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
     .cat-body p { font-size: 12.5px; color: var(--text-light); margin-bottom: 12px; line-height: 1.55; }
-    .cat-body .cat-link {
-      font-size: 13px; font-weight: 700; color: var(--primary);
-      display: flex; align-items: center; gap: 5px;
-    }
+    .cat-body .cat-link { font-size: 13px; font-weight: 700; color: var(--primary); display: inline-flex; align-items: center; gap: 5px; border: 1px solid rgba(43,118,166,.25); padding: 7px 10px; border-radius: 8px; background: #f5fbff; }
+    .cat-body .cat-starting { display:block; font-size:12px; font-weight:700; color:#11845b; margin: 0 0 10px; }
 
     /* PROMO STRIP */
     .promo-strip { background: linear-gradient(90deg,#f57c1f,#ff9a3c); padding: 22px 0; }
@@ -349,12 +336,30 @@
     .footer-bot p { font-size: 13px; color: rgba(255,255,255,.45); }
 
     /* CART & MODALS */
+    .cart-overlay, .order-overlay, .mug-overlay, .options-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
     .cart-overlay, .order-overlay, .mug-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.5);
       z-index: 2000; display: none; align-items: center; justify-content: center;
     }
     .cart-overlay { justify-content: flex-end; }
-    .cart-overlay.open, .order-overlay.open, .mug-overlay.open { display: flex; }
+    .cart-overlay.open, .order-overlay.open, .mug-overlay.open, .options-overlay.open { display: flex; }
+    .options-modal { background:#fff; border-radius:var(--radius-lg); width:min(470px,94%); padding-bottom:18px; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+    .options-body { padding: 20px 24px 4px; }
+    .option-group { margin-bottom:18px; }
+    .option-group label { display:block; font-size:13px; font-weight:700; margin-bottom:9px; }
+    .option-choices { display:flex; flex-wrap:wrap; gap:8px; }
+    .option-choice { border:1px solid var(--border); background:#fff; border-radius:9px; padding:9px 11px; font-size:12px; cursor:pointer; }
+    .option-choice.active { border-color:var(--primary); background:#edf7fd; color:var(--primary); font-weight:700; }
+    .options-total { margin: 8px 24px 14px; padding:12px; background:#f3faf7; display:flex; justify-content:space-between; border-radius:10px; }
+    .options-total strong { color:#11845b; }
+    .options-confirm { display:flex; width:calc(100% - 48px); margin:0 24px; justify-content:center; }
+    .qr-content { padding: 20px; text-align:center; display:grid; gap:10px; justify-items:center; }
+    .qr-content img { width:190px; height:190px; object-fit:contain; border:8px solid #fff; box-shadow:0 2px 14px rgba(0,0,0,.1); }
+    .cart-line { display:grid; grid-template-columns:1fr auto; gap:8px; padding:13px 0; border-bottom:1px solid #eee; }
+    .cart-line-meta { font-size:12px; color:#777; margin-top:4px; }
+    .cart-line-actions { display:flex; align-items:center; gap:7px; }
+    .qty-btn { width:26px; height:26px; border:1px solid var(--border); background:#fff; border-radius:6px; cursor:pointer; }
+    .remove-btn { border:0; background:transparent; color:#c44; cursor:pointer; margin-left:4px; }
     .cart-panel {
       width: min(420px, 95vw); height: 100vh; background: #fff;
       display: flex; flex-direction: column; box-shadow: -4px 0 40px rgba(0,0,0,.2);
@@ -378,12 +383,13 @@
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
     .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none; }
-    .bundle-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-    .bundle-options button { border: 1px solid var(--primary); color: var(--primary); background: #fff; border-radius: 999px; padding: 5px 8px; font-size: 11px; cursor: pointer; transition: .2s; }
-    .bundle-options button:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
     .delivery-summary { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: #f3faf7; color: var(--text); margin: 6px 0 16px; font-size: 13px; }
     .delivery-summary strong { color: #11845b; }
-    @media (max-width: 520px) { .order-modal { width: calc(100% - 24px); } .om-body { padding: 16px; } .bundle-options button { font-size: 10px; } }
+    .upi-panel { margin: -4px 0 16px; padding: 12px; border: 1px solid #cfe4ef; border-radius: 10px; background: #f5fbff; }
+    .upi-panel p { font-size:12px; color:var(--text-light); margin:0 0 10px; }
+    .upi-panel .btn { margin-right:6px; margin-bottom:6px; padding:8px 10px; font-size:12px; }
+    .upi-panel small { display:block; color:var(--text-muted); font-size:11px; margin-top:4px; }
+    @media (max-width: 520px) { .order-modal, .options-modal { width: calc(100% - 24px); } .om-body, .options-body { padding: 16px; } }
     .om-footer { padding: 16px 24px 20px; border-top: 1px solid var(--border); }
     .om-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 12px; }
 
@@ -535,28 +541,25 @@
     </div>
     <div class="cats-grid">
       <!-- 1. Business Cards -->
-      <div class="cat-card" onclick="addToCart('Business Cards', 599, '100 single-sided cards')">
+      <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
           <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Business Cards</h5>
-          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p>
-          <div class="bundle-options" onclick="event.stopPropagation()"><button type="button" onclick="addToCart('Business Cards',399,'50 single-sided cards')">50 ₹399</button><button type="button" onclick="addToCart('Business Cards',599,'100 single-sided cards')">100 ₹599</button><button type="button" onclick="addToCart('Business Cards',999,'200 single-sided cards')">200 ₹999</button><button type="button" onclick="addToCart('Business Cards',799,'100 double-sided cards')">100 DS ₹799</button><button type="button" onclick="addToCart('Business Cards',1399,'200 double-sided cards')">200 DS ₹1399</button></div>
+          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><span class="cat-starting">Starting from ₹399</span><span class="cat-link">Select Options <i class="fas fa-sliders-h"></i></span>
         </div>
       </div>
 
       <!-- 2. Flyers & Leaflets -->
-      <div class="cat-card" onclick="addToCart('Color Pamphlets', 600, '100 pamphlets + configuration')">
+      <div class="cat-card" onclick="openProductOptions('Color Pamphlets')">
         <div class="cat-img">
           <img src="/assets/sk-flyers-leaflets.png" alt="Flyers & Leaflets" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Color Pamphlets</h5>
           <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting from ₹600</span><span class="cat-link">Select Options <i class="fas fa-sliders-h"></i></span>
         </div>
       </div>
 
@@ -564,12 +567,11 @@
       <div class="cat-card" onclick="addToCart('Brochures', 299)">
         <div class="cat-img">
           <img src="/assets/sk-brochures.png" alt="Brochures" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Brochures</h5>
           <p>Bi-fold, tri-fold and Z-fold brochures on premium art paper.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -577,12 +579,11 @@
       <div class="cat-card" onclick="addToCart('Posters & Banners', 599)">
         <div class="cat-img">
           <img src="/assets/sk-banners.png" alt="Posters & Banners" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Posters &amp; Banners</h5>
           <p>Vibrant large-format vinyl banners, posters, and flex prints for every event.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -590,12 +591,11 @@
       <div class="cat-card" onclick="addToCart('Custom Mugs', 199)">
         <div class="cat-img">
           <img src="/assets/sk-mugs.png" alt="Custom Mugs" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Custom Mugs</h5>
           <p>Personalized ceramic mugs — ideal corporate gifts with your logo or photo.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -603,12 +603,11 @@
       <div class="cat-card" onclick="addToCart('Stickers & Labels', 149)">
         <div class="cat-img">
           <img src="/assets/sk-stickers.png" alt="Stickers & Labels" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Stickers &amp; Labels</h5>
           <p>Die-cut, roll, and sheet stickers in any shape — waterproof options available.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -616,12 +615,11 @@
       <div class="cat-card" onclick="addToCart('Custom T-Shirts', 299)">
         <div class="cat-img">
           <img src="/assets/sk-tshirt.png" alt="Custom T-Shirts" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Custom T-Shirts</h5>
           <p>Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -629,12 +627,11 @@
       <div class="cat-card" onclick="addToCart('Roll-Up Banners', 1299)">
         <div class="cat-img">
           <img src="/assets/sk-roll-up-banner.png" alt="Roll-Up Banners" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Roll-Up Banners</h5>
           <p>Retractable standees for exhibitions, retail, and corporate events.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -642,12 +639,11 @@
       <div class="cat-card" onclick="addToCart('Diaries & Notebooks', 299)">
         <div class="cat-img">
           <img src="/assets/sk-notebooks.png" alt="Diaries & Notebooks" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Diaries &amp; Notebooks</h5>
           <p>Custom-branded hardcover and softcover diaries, notepads, and planners.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -655,12 +651,11 @@
       <div class="cat-card" onclick="addToCart('Folders', 349)">
         <div class="cat-img">
           <img src="/assets/sk-presentation-folders.png" alt="Presentation Folders" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Presentation Folders</h5>
           <p>Premium printed folders for presentations, proposals, and corporate kits.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -668,12 +663,11 @@
       <div class="cat-card" onclick="addToCart('Canvas Printing', 799)">
         <div class="cat-img">
           <img src="/assets/sk-canvas-printing.png" alt="Canvas Printing" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Canvas Printing</h5>
           <p>Photo-quality canvas prints on stretched frames for homes, offices, and gifts.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
 
@@ -681,12 +675,11 @@
       <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging', 499)">
         <div class="cat-img">
           <img src="/assets/sk-fancy-boxes.png" alt="Fancy Boxes & Packaging" loading="lazy">
-          <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
           <h5>Fancy Boxes &amp; Packaging</h5>
           <p>Custom packaging, gift boxes, and carry bags with premium finishing options.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <span class="cat-starting">Starting price available</span><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
       </div>
     </div>
@@ -824,6 +817,18 @@
   </div>
 </footer>
 
+<!-- PRODUCT OPTIONS MODAL -->
+<div class="options-overlay" id="optionsOverlay" onclick="if(event.target===this)closeProductOptions()">
+  <div class="options-modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
+    <div class="om-hdr"><h3 id="optionsTitle">Select options</h3><button class="om-close" onclick="closeProductOptions()">×</button></div>
+    <div class="options-body" id="optionsBody"></div>
+    <div class="options-total"><span>Price</span><strong id="optionsPrice">₹0</strong></div>
+    <button class="btn btn-primary options-confirm" onclick="confirmProductOption()"><i class="fas fa-cart-plus"></i> Confirm &amp; Add to Cart</button>
+  </div>
+</div>
+
+<div class="options-overlay" id="qrOverlay" onclick="if(event.target===this)closeUPIQR()"><div class="options-modal qr-modal"><div class="om-hdr"><h3>Scan to pay via UPI</h3><button class="om-close" onclick="closeUPIQR()">×</button></div><div class="qr-content"><img id="upiQrImage" alt="UPI payment QR code"><strong id="upiQrAmount"></strong><small>UPI ID: skgraphics@upi</small></div></div></div>
+
 <!-- CART PANEL -->
 <div class="cart-overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()">
   <div class="cart-panel">
@@ -839,7 +844,8 @@
     </div>
     <div class="cart-footer" id="cartFooter" style="display:none">
       <div class="cart-total"><span>Total:</span><span id="cartTotalAmt">₹0</span></div>
-      <button class="btn btn-wp" onclick="openOrderModal()"><i class="fab fa-whatsapp"></i> Order via WhatsApp</button>
+      <div class="delivery-summary"><span><s>₹50</s> delivery</span><strong>FREE Delivery</strong></div>
+      <button class="btn btn-primary" onclick="openOrderModal()"><i class="fas fa-credit-card"></i> Proceed to Checkout</button>
     </div>
   </div>
 </div>
@@ -848,15 +854,11 @@
 <div class="order-overlay" id="orderOverlay" onclick="if(event.target===this)closeOrderModal()">
   <div class="order-modal">
     <div class="om-hdr">
-      <h3><i class="fab fa-whatsapp" style="color:var(--wp-green)"></i> Confirm WhatsApp Order</h3>
+      <h3><i class="fas fa-credit-card" style="color:var(--primary)"></i> Checkout</h3>
       <button class="om-close" onclick="closeOrderModal()">×</button>
     </div>
     <div class="om-body">
       <form id="orderForm" onsubmit="submitOrder(event)">
-        <div class="form-group">
-          <label>Order Type *</label>
-          <select id="orderType" required><option value="standard">Standard order to database</option><option value="bulk">Bulk order to WhatsApp only</option></select>
-        </div>
         <div class="form-group">
           <label>Your Name *</label>
           <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required>
@@ -871,7 +873,8 @@
         </div>
         <div class="form-group">
           <label>Payment Method *</label>
-          <select id="paymentMethod" required><option value="UPI">UPI</option><option value="PhonePe">PhonePe</option><option value="Razorpay">Razorpay</option><option value="GPay">GPay</option><option value="UPI QR Code">UPI QR Code</option></select>
+          <select id="paymentMethod" required onchange="updatePaymentPanel()"><option value="COD">Cash on Delivery (COD)</option><option value="UPI">UPI Payment</option></select>
+          <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with PhonePe, GPay, Paytm or another UPI app.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><small id="upiFallback">Desktop fallback: use QR Code or Razorpay checkout.</small></div>
         </div>
         <div class="form-group">
           <label>Special Instructions / Printing Notes</label>
@@ -915,53 +918,63 @@
     const body = document.getElementById('cartBody');
     const footer = document.getElementById('cartFooter');
     const empty = document.getElementById('cartEmpty');
-
-    if (cart.length === 0) {
-      empty.style.display = 'block';
-      footer.style.display = 'none';
-      body.innerHTML = '';
-      body.appendChild(empty);
-    } else {
-      empty.style.display = 'none';
-      footer.style.display = 'block';
-      body.innerHTML = '';
-      let total = 0;
-      cart.forEach(item => {
-        total += item.price * item.qty;
-        const div = document.createElement('div');
-        div.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;';
-        div.innerHTML = `
-          <div>
-            <strong>${item.name}</strong>
-            <div style="font-size:12px;color:#777">₹${item.price} × ${item.qty}</div>
-          </div>
-          <div style="font-weight:700;color:var(--primary)">₹${item.price * item.qty}</div>
-        `;
-        body.appendChild(div);
-      });
-      document.getElementById('cartTotalAmt').textContent = '₹' + total;
-    }
+    if (!cart.length) { empty.style.display = 'block'; footer.style.display = 'none'; body.innerHTML = ''; body.appendChild(empty); return; }
+    empty.style.display = 'none'; footer.style.display = 'block'; body.innerHTML = '';
+    cart.forEach((item, index) => {
+      const div = document.createElement('div'); div.className = 'cart-line';
+      div.innerHTML = `<div><strong>${item.name}</strong><div class="cart-line-meta">₹${item.price} each · ₹${item.price * item.qty}</div></div><div class="cart-line-actions"><button class="qty-btn" onclick="changeCartQty(${index},-1)" aria-label="Decrease quantity">−</button><span>${item.qty}</span><button class="qty-btn" onclick="changeCartQty(${index},1)" aria-label="Increase quantity">+</button><button class="remove-btn" onclick="removeCartItem(${index})" aria-label="Remove ${item.name}"><i class="fas fa-trash"></i></button></div>`;
+      body.appendChild(div);
+    });
+    document.getElementById('cartTotalAmt').textContent = '₹' + cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   }
 
+  function changeCartQty(index, amount) { cart[index].qty += amount; if (cart[index].qty <= 0) cart.splice(index, 1); updateCartUI(); }
+  function removeCartItem(index) { cart.splice(index, 1); updateCartUI(); }
+
+  let selectedOption = null;
+  let optionChoices = [];
+  function openProductOptions(name) {
+    const isCards = name === 'Business Cards';
+    selectedOption = isCards ? { name, price: 399, bundle: '50 single-sided cards' } : { name, price: 600, bundle: '100 pamphlets' };
+    const choices = isCards ? [{label:'50 Cards', price:399, bundle:'50 single-sided cards'}, {label:'100 Cards', price:599, bundle:'100 single-sided cards'}, {label:'200 Cards', price:999, bundle:'200 single-sided cards'}, {label:'100 Cards · Double-sided', price:799, bundle:'100 double-sided cards'}, {label:'200 Cards · Double-sided', price:1399, bundle:'200 double-sided cards'}] : [{label:'100 Pamphlets', price:600, bundle:'100 pamphlets'}];
+    optionChoices = choices;
+    document.getElementById('optionsTitle').textContent = `${name} options`;
+    document.getElementById('optionsBody').innerHTML = `<div class="option-group"><label>${isCards ? 'Quantity & side selection' : 'Quantity'}</label><div class="option-choices">${choices.map((choice, index) => `<button type="button" class="option-choice ${index === 0 ? 'active' : ''}" onclick="selectProductOption(${index})">${choice.label} · ₹${choice.price}</button>`).join('')}</div></div>`;
+    updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open');
+  }
+  function selectProductOption(index) { selectedOption = { ...selectedOption, ...optionChoices[index] }; document.querySelectorAll('.option-choice').forEach((button, i) => button.classList.toggle('active', i === index)); updateOptionsPrice(); }
+  function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
+  function confirmProductOption() { if (!selectedOption) return; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle); closeProductOptions(); }
+  function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); }
   function openCart() { document.getElementById('cartOverlay').classList.add('open'); }
   function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
   function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
   function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
 
+  function getCartTotal() { return cart.reduce((sum, item) => sum + item.price * item.qty, 0); }
+  function updatePaymentPanel() { const isUpi = document.getElementById('paymentMethod').value === 'UPI'; document.getElementById('upiPaymentPanel').hidden = !isUpi; }
+  function launchUPIPayment() { const total = getCartTotal(); const url = `upi://pay?pa=skgraphics@upi&pn=SK%20Graphics&am=${total}&cu=INR`; window.location.href = url; }
+  function showUPIQR() { const total = getCartTotal(); const upiUrl = `upi://pay?pa=skgraphics@upi&pn=SK%20Graphics&am=${total}&cu=INR`; document.getElementById('upiQrImage').src = `https://quickchart.io/qr?size=220&text=${encodeURIComponent(upiUrl)}`; document.getElementById('upiQrAmount').textContent = `Amount: ₹${total}`; document.getElementById('qrOverlay').classList.add('open'); }
+  function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   async function submitOrder(e) {
     e.preventDefault();
-    const type = document.getElementById('orderType').value;
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const notes = document.getElementById('custNotes').value.trim();
     const paymentMethod = document.getElementById('paymentMethod').value;
-    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    if (!cart.length || !name || !phone || !address) return alert('Please complete all order details and add a product.');
+    const total = getCartTotal();
+    if (!cart.length || !name || !phone || !address) return alert('Please complete your order details and add a product.');
     let location = {};
-    if (navigator.geolocation) {
-      try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; address will be saved.'); }
-    }
+    if (navigator.geolocation) { try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; saving address only.'); } }
+    const button = document.getElementById('orderSubmitBtn'); button.disabled = true; button.textContent = 'Saving order...';
+    try {
+      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, deliveryFee: 0 }) });
+      const result = await response.json(); if (!response.ok) throw new Error(result.message || 'Could not save order');
+      alert(`Order saved successfully. Order ID: ${result.orderId}`); cart = []; updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel();
+    } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
+    finally { button.disabled = false; button.textContent = 'Submit Order'; }
+  }
     const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}`).join('\n');
     if (type === 'bulk') {
       const message = `*BULK ORDER - SK GRAPHICS*\n------------------------\n*Customer:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${itemsList}\n*Total Estimate:* ₹${total}\n*Payment:* ${paymentMethod}\n*Notes:* ${notes || 'None'}\n------------------------`;
