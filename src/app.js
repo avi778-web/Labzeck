@@ -151,7 +151,7 @@ app.post("/api/orders", async (req, res) => {
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
-    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0 || !["UPI", "PhonePe", "Razorpay", "GPay", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
     }
     if (phone.replace(/\D/g, "").length < 10) {

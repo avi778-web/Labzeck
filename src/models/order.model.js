@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema(
     items: [{ name: String, price: Number, quantity: Number }],
     total: { type: Number, required: true, min: 0 },
     notes: { type: String, trim: true, maxlength: 1000 },
-    paymentMethod: { type: String, enum: ["UPI", "PhonePe", "Razorpay", "GPay", "UPI QR Code"], default: "UPI" },
+    paymentMethod: { type: String, enum: ["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },
     deliveryFee: { type: Number, min: 0, default: 0 },
     orderType: { type: String, enum: ["standard"], default: "standard" },
     status: { type: String, enum: ["received", "processing", "completed"], default: "received" }
