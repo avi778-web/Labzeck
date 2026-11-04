@@ -152,7 +152,7 @@ app.post("/api/orders", async (req, res) => {
     if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0) {
       return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
     }
-    if (phone.replace(/\\D/g, "").length < 10) {
+    if (phone.replace(/\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
     }
     if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
