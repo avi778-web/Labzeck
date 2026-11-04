@@ -145,14 +145,16 @@ app.post("/api/orders", async (req, res) => {
     const phone = String(customer.phone || "").trim();
     const address = String(customer.address || "").trim();
     const notes = String(body.notes || "").trim();
+    const paymentMethod = String(body.paymentMethod || "UPI");
+    const deliveryFee = Number(body.deliveryFee || 0);
     const total = Number(body.total);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
-    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0) {
+    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0 || !["UPI", "PhonePe", "Razorpay", "GPay", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
     }
-    if (phone.replace(/\\D/g, "").length < 10) {
+    if (phone.replace(/\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
     }
     if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
@@ -173,6 +175,8 @@ app.post("/api/orders", async (req, res) => {
       })),
       total,
       notes,
+      paymentMethod,
+      deliveryFee,
       orderType: "standard"
     });
 

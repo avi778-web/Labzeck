@@ -320,7 +320,14 @@
     .f-logo .fn { font-size: 22px; font-weight: 800; color: #fff; }
     .f-logo .fs { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .f-desc { font-size: 13.5px; color: rgba(255,255,255,.62); line-height: 1.72; margin-bottom: 20px; }
-    .f-social { display: flex; gap: 9px; flex-wrap: wrap; }
+    .f-social, .hdr-social { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
+    .social-link { display: inline-flex; align-items: center; gap: 7px; color: inherit; text-decoration: none; transition: transform .2s ease, color .2s ease, background .2s ease; }
+    .social-link:hover { transform: translateY(-3px); color: var(--accent); }
+    .social-link svg { width: 19px; height: 19px; fill: currentColor; }
+    .hdr-social .social-link { padding: 7px 9px; border-radius: 10px; background: rgba(255,255,255,.08); font-size: 12px; }
+    .hdr-social .social-link:hover { background: rgba(255,255,255,.16); }
+    .f-social .social-link { width: 38px; height: 38px; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.08); }
+    @media (max-width: 900px) { .hdr-social .social-link span { display: none; } .hdr-social .social-link { padding: 7px; } }
     .f-soc-icon {
       width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,.09);
       display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.72);
@@ -370,10 +377,13 @@
     .om-body { padding: 20px 24px; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-      border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none;
-    }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none; }
+    .bundle-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .bundle-options button { border: 1px solid var(--primary); color: var(--primary); background: #fff; border-radius: 999px; padding: 5px 8px; font-size: 11px; cursor: pointer; transition: .2s; }
+    .bundle-options button:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+    .delivery-summary { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: #f3faf7; color: var(--text); margin: 6px 0 16px; font-size: 13px; }
+    .delivery-summary strong { color: #11845b; }
+    @media (max-width: 520px) { .order-modal { width: calc(100% - 24px); } .om-body { padding: 16px; } .bundle-options button { font-size: 10px; } }
     .om-footer { padding: 16px 24px 20px; border-top: 1px solid var(--border); }
     .om-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 12px; }
 
@@ -392,7 +402,8 @@
     }
 
     @media (max-width: 768px) {
-      .main-nav, .top-bar { display: none; }
+      .main-nav, .top-bar, .hdr-social { display: none; }
+      body { overflow-x: hidden; }
       .mob-toggle { display: flex; }
       .footer-grid, .why-layout, .legacy-how-works .steps-grid { grid-template-columns: 1fr; }
       .cats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -474,6 +485,11 @@
       <button type="button"><i class="fas fa-search"></i></button>
     </div>
 
+    <div class="hdr-social" aria-label="Social media links">
+      <a class="social-link" href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm8.8 1.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg><span>Instagram</span></a>
+      <a class="social-link" href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer" aria-label="YouTube @surajpal-1518u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.8 31.8 0 0 0 0 12a31.8 31.8 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.8 31.8 0 0 0 24 12a31.8 31.8 0 0 0-.5-5.8ZM9.6 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg><span>YouTube</span></a>
+    </div>
+
     <div class="hdr-icons">
       <button class="hdr-icon-btn" title="Shopping Cart" onclick="openCart()">
         <i class="fas fa-shopping-cart"></i>
@@ -519,7 +535,7 @@
     </div>
     <div class="cats-grid">
       <!-- 1. Business Cards -->
-      <div class="cat-card" onclick="addToCart('Business Cards', 99)">
+      <div class="cat-card" onclick="addToCart('Business Cards', 599, '100 single-sided cards')">
         <div class="cat-img">
           <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-business-cards-7TNUxOyzsV1LU0U7Z04mmIgiBF65oN.png" alt="Business Cards" loading="lazy">
           <div class="cat-circle-badge"><span>SK</span></div>
@@ -527,18 +543,18 @@
         <div class="cat-body">
           <h5>Business Cards</h5>
           <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <div class="bundle-options" onclick="event.stopPropagation()"><button type="button" onclick="addToCart('Business Cards',399,'50 single-sided cards')">50 ₹399</button><button type="button" onclick="addToCart('Business Cards',599,'100 single-sided cards')">100 ₹599</button><button type="button" onclick="addToCart('Business Cards',999,'200 single-sided cards')">200 ₹999</button><button type="button" onclick="addToCart('Business Cards',799,'100 double-sided cards')">100 DS ₹799</button><button type="button" onclick="addToCart('Business Cards',1399,'200 double-sided cards')">200 DS ₹1399</button></div>
         </div>
       </div>
 
       <!-- 2. Flyers & Leaflets -->
-      <div class="cat-card" onclick="addToCart('Flyers', 199)">
+      <div class="cat-card" onclick="addToCart('Color Pamphlets', 600, '100 pamphlets + configuration')">
         <div class="cat-img">
           <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-printing-materials-e2CwHCAFxXWHHnEZOfx9sGy7wpzjzN.png" alt="Flyers & Leaflets" loading="lazy">
           <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
-          <h5>Flyers &amp; Leaflets</h5>
+          <h5>Color Pamphlets</h5>
           <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
           <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
@@ -771,8 +787,10 @@
         <div>
           <div class="f-logo"><span class="fn">SK Graphics</span><span class="fs">Custom Printing &amp; Branding</span></div>
           <p class="f-desc">One-stop shop for business cards, brochures, flyers, banners, cups, t-shirts, packaging & more.</p>
-          <div class="f-social">
-            <a href="https://wa.me/918447459316" target="_blank" class="f-soc-icon"><i class="fab fa-whatsapp"></i></a>
+          <div class="f-social" aria-label="Social media links">
+            <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm4.3 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></a>
+            <a href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="YouTube @surajpal-1518u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.8 31.8 0 0 0 0 12a31.8 31.8 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.8 31.8 0 0 0 24 12a31.8 31.8 0 0 0-.5-5.8ZM9.6 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg></a>
           </div>
         </div>
         <div class="f-col">
@@ -834,7 +852,11 @@
       <button class="om-close" onclick="closeOrderModal()">×</button>
     </div>
     <div class="om-body">
-      <form id="orderForm" onsubmit="sendWhatsAppOrder(event)">
+      <form id="orderForm" onsubmit="submitOrder(event)">
+        <div class="form-group">
+          <label>Order Type *</label>
+          <select id="orderType" required><option value="standard">Standard order to database</option><option value="bulk">Bulk order to WhatsApp only</option></select>
+        </div>
         <div class="form-group">
           <label>Your Name *</label>
           <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required>
@@ -848,11 +870,16 @@
           <textarea id="custAddress" rows="3" placeholder="Enter full address with PIN code" required></textarea>
         </div>
         <div class="form-group">
+          <label>Payment Method *</label>
+          <select id="paymentMethod" required><option value="UPI">UPI</option><option value="PhonePe">PhonePe</option><option value="Razorpay">Razorpay</option><option value="GPay">GPay</option><option value="UPI QR Code">UPI QR Code</option></select>
+        </div>
+        <div class="form-group">
           <label>Special Instructions / Printing Notes</label>
           <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
         </div>
+        <div class="delivery-summary"><span><s>₹50</s> delivery charge</span><strong>FREE Delivery</strong></div>
         <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
-          <button type="submit" class="btn btn-wp"><i class="fab fa-whatsapp"></i> Send Order on WhatsApp</button>
+          <button type="submit" class="btn btn-wp" id="orderSubmitBtn"><i class="fas fa-check"></i> Submit Order</button>
         </div>
       </form>
     </div>
@@ -870,12 +897,13 @@
 <script>
   let cart = [];
 
-  function addToCart(name, price) {
-    const existing = cart.find(i => i.name === name);
+  function addToCart(name, price, bundle = '') {
+    const lineName = bundle ? `${name} — ${bundle}` : name;
+    const existing = cart.find(i => i.name === lineName);
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ name, price, qty: 1 });
+      cart.push({ name: lineName, price, qty: 1 });
     }
     updateCartUI();
     openCart();
@@ -920,30 +948,38 @@
   function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
   function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
 
-  /* WhatsApp Order Dispatch */
-  function sendWhatsAppOrder(e) {
+  async function submitOrder(e) {
     e.preventDefault();
+    const type = document.getElementById('orderType').value;
     const name = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const notes = document.getElementById('custNotes').value.trim();
-
-    let itemsList = '';
-    let grandTotal = 0;
-    cart.forEach(item => {
-      itemsList += `• ${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}\n`;
-      grandTotal += item.price * item.qty;
-    });
-
-    const msg = `*NEW ORDER - SK GRAPHICS*\n------------------------\n` +
-                `*Customer:* ${name}\n` +
-                `*Phone:* ${phone}\n` +
-                `*Address:* ${address}\n\n` +
-                `*Items:*\n${itemsList}\n` +
-                `*Total Payable:* ₹${grandTotal}\n` +
-                `*Notes:* ${notes || 'None'}\n------------------------`;
-
-    window.open(`https://wa.me/918447459316?text=${encodeURIComponent(msg)}`, '_blank');
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    if (!cart.length || !name || !phone || !address) return alert('Please complete all order details and add a product.');
+    let location = {};
+    if (navigator.geolocation) {
+      try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; address will be saved.'); }
+    }
+    const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}`).join('\n');
+    if (type === 'bulk') {
+      const message = `*BULK ORDER - SK GRAPHICS*\n------------------------\n*Customer:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${itemsList}\n*Total Estimate:* ₹${total}\n*Payment:* ${paymentMethod}\n*Notes:* ${notes || 'None'}\n------------------------`;
+      window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    } else {
+      const button = document.getElementById('orderSubmitBtn');
+      button.disabled = true;
+      try {
+        const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, deliveryFee: 0 }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Order could not be saved');
+        alert(`Order saved successfully. Order ID: ${result.orderId}`);
+      } catch (error) {
+        button.disabled = false;
+        alert(error.message || 'Order could not be saved. Please try again.');
+        return;
+      }
+    }
     cart = [];
     updateCartUI();
     closeOrderModal();
