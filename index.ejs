@@ -377,10 +377,13 @@
     .om-body { padding: 20px 24px; }
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border);
-      border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none;
-    }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 14px; outline: none; }
+    .bundle-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .bundle-options button { border: 1px solid var(--primary); color: var(--primary); background: #fff; border-radius: 999px; padding: 5px 8px; font-size: 11px; cursor: pointer; transition: .2s; }
+    .bundle-options button:hover { background: var(--primary); color: #fff; transform: translateY(-1px); }
+    .delivery-summary { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; background: #f3faf7; color: var(--text); margin: 6px 0 16px; font-size: 13px; }
+    .delivery-summary strong { color: #11845b; }
+    @media (max-width: 520px) { .order-modal { width: calc(100% - 24px); } .om-body { padding: 16px; } .bundle-options button { font-size: 10px; } }
     .om-footer { padding: 16px 24px 20px; border-top: 1px solid var(--border); }
     .om-footer .btn { width: 100%; justify-content: center; font-size: 15px; padding: 12px; }
 
@@ -399,7 +402,8 @@
     }
 
     @media (max-width: 768px) {
-      .main-nav, .top-bar { display: none; }
+      .main-nav, .top-bar, .hdr-social { display: none; }
+      body { overflow-x: hidden; }
       .mob-toggle { display: flex; }
       .footer-grid, .why-layout, .legacy-how-works .steps-grid { grid-template-columns: 1fr; }
       .cats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
@@ -531,7 +535,7 @@
     </div>
     <div class="cats-grid">
       <!-- 1. Business Cards -->
-      <div class="cat-card" onclick="addToCart('Business Cards', 99)">
+      <div class="cat-card" onclick="addToCart('Business Cards', 599, '100 single-sided cards')">
         <div class="cat-img">
           <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-business-cards-7TNUxOyzsV1LU0U7Z04mmIgiBF65oN.png" alt="Business Cards" loading="lazy">
           <div class="cat-circle-badge"><span>SK</span></div>
@@ -539,18 +543,18 @@
         <div class="cat-body">
           <h5>Business Cards</h5>
           <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <div class="bundle-options" onclick="event.stopPropagation()"><button type="button" onclick="addToCart('Business Cards',399,'50 single-sided cards')">50 ₹399</button><button type="button" onclick="addToCart('Business Cards',599,'100 single-sided cards')">100 ₹599</button><button type="button" onclick="addToCart('Business Cards',999,'200 single-sided cards')">200 ₹999</button><button type="button" onclick="addToCart('Business Cards',799,'100 double-sided cards')">100 DS ₹799</button><button type="button" onclick="addToCart('Business Cards',1399,'200 double-sided cards')">200 DS ₹1399</button></div>
         </div>
       </div>
 
       <!-- 2. Flyers & Leaflets -->
-      <div class="cat-card" onclick="addToCart('Flyers', 199)">
+      <div class="cat-card" onclick="addToCart('Color Pamphlets', 600, '100 pamphlets + configuration')">
         <div class="cat-img">
           <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sk-printing-materials-e2CwHCAFxXWHHnEZOfx9sGy7wpzjzN.png" alt="Flyers & Leaflets" loading="lazy">
           <div class="cat-circle-badge"><span>SK</span></div>
         </div>
         <div class="cat-body">
-          <h5>Flyers &amp; Leaflets</h5>
+          <h5>Color Pamphlets</h5>
           <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
           <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
         </div>
@@ -866,9 +870,14 @@
           <textarea id="custAddress" rows="3" placeholder="Enter full address with PIN code" required></textarea>
         </div>
         <div class="form-group">
+          <label>Payment Method *</label>
+          <select id="paymentMethod" required><option value="UPI">UPI</option><option value="PhonePe">PhonePe</option><option value="Razorpay">Razorpay</option><option value="GPay">GPay</option><option value="UPI QR Code">UPI QR Code</option></select>
+        </div>
+        <div class="form-group">
           <label>Special Instructions / Printing Notes</label>
           <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
         </div>
+        <div class="delivery-summary"><span><s>₹50</s> delivery charge</span><strong>FREE Delivery</strong></div>
         <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
           <button type="submit" class="btn btn-wp" id="orderSubmitBtn"><i class="fas fa-check"></i> Submit Order</button>
         </div>
@@ -888,12 +897,13 @@
 <script>
   let cart = [];
 
-  function addToCart(name, price) {
-    const existing = cart.find(i => i.name === name);
+  function addToCart(name, price, bundle = '') {
+    const lineName = bundle ? `${name} — ${bundle}` : name;
+    const existing = cart.find(i => i.name === lineName);
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ name, price, qty: 1 });
+      cart.push({ name: lineName, price, qty: 1 });
     }
     updateCartUI();
     openCart();
@@ -945,6 +955,7 @@
     const phone = document.getElementById('custPhone').value.trim();
     const address = document.getElementById('custAddress').value.trim();
     const notes = document.getElementById('custNotes').value.trim();
+    const paymentMethod = document.getElementById('paymentMethod').value;
     const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
     if (!cart.length || !name || !phone || !address) return alert('Please complete all order details and add a product.');
     let location = {};
@@ -953,13 +964,13 @@
     }
     const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}`).join('\n');
     if (type === 'bulk') {
-      const message = `*BULK ORDER - SK GRAPHICS*\n------------------------\n*Customer:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${itemsList}\n*Total Estimate:* ₹${total}\n*Notes:* ${notes || 'None'}\n------------------------`;
+      const message = `*BULK ORDER - SK GRAPHICS*\n------------------------\n*Customer:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}\n\n*Items:*\n${itemsList}\n*Total Estimate:* ₹${total}\n*Payment:* ${paymentMethod}\n*Notes:* ${notes || 'None'}\n------------------------`;
       window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
     } else {
       const button = document.getElementById('orderSubmitBtn');
       button.disabled = true;
       try {
-        const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes }) });
+        const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, deliveryFee: 0 }) });
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Order could not be saved');
         alert(`Order saved successfully. Order ID: ${result.orderId}`);
