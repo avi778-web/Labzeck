@@ -11,6 +11,18 @@ const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
 
 const app = express();
+let databaseConnectionPromise = null;
+
+async function ensureDatabase() {
+  if (mongoose.connection.readyState === 1) return true;
+  if (!mongoConnectionString) return false;
+  if (!databaseConnectionPromise) {
+    databaseConnectionPromise = mongoose.connect(mongoConnectionString, { serverSelectionTimeoutMS: 8000 })
+      .then(() => true)
+      .catch((error) => { databaseConnectionPromise = null; console.error('MongoDB request connection failed:', error.message); return false; });
+  }
+  return databaseConnectionPromise;
+}
 
 function getRazorpay() {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) return null;
@@ -84,11 +96,8 @@ app.post("/api/newsletter", async (req, res) => {
 
     /* DUPLICATE CHECK */
 
-    if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
-      return res.status(503).json({
-        ok: false,
-        message: "Newsletter service is temporarily unavailable"
-      });
+    if (!(await ensureDatabase())) {
+      return res.status(503).json({ ok: false, message: "Database is temporarily unavailable. Please retry in a moment." });
     }
 
     if (!Gmailmodel || typeof Gmailmodel.findOne !== "function") {
@@ -147,6 +156,7 @@ app.post("/api/orders", async (req, res) => {
     const notes = String(body.notes || "").trim();
     const paymentMethod = String(body.paymentMethod || "UPI");
     const deliveryFee = Number(body.deliveryFee || 0);
+    const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const total = Number(body.total);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
@@ -157,8 +167,12 @@ app.post("/api/orders", async (req, res) => {
     if (phone.replace(/\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
     }
-    if (!mongoConnectionString || mongoose.connection.readyState !== 1) {
-      return res.status(503).json({ ok: false, message: "Order service is temporarily unavailable" });
+    if (!(await ensureDatabase())) {
+      return res.status(503).json({ ok: false, message: "Database is temporarily unavailable. Please retry in a moment." });
+    }
+    if (idempotencyKey) {
+      const existingOrder = await OrderModel.findOne({ idempotencyKey }).lean();
+      if (existingOrder) return res.status(200).json({ ok: true, orderId: existingOrder._id, duplicate: true, message: "Order already recorded" });
     }
 
     const order = await OrderModel.create({
@@ -171,12 +185,21 @@ app.post("/api/orders", async (req, res) => {
       items: items.slice(0, 50).map((item) => ({
         name: String(item.name || "").trim().slice(0, 160),
         price: Math.max(0, Number(item.price) || 0),
-        quantity: Math.max(1, Math.min(999, Number(item.qty) || 1))
+        quantity: Math.max(1, Math.min(999, Number(item.qty) || 1)),
+        customization: item.customization && {
+          hasDesign: Boolean(item.customization.hasDesign),
+          addExtraAsset: Boolean(item.customization.addExtraAsset),
+          fontStyle: String(item.customization.fontStyle || '').slice(0, 80),
+          printText: String(item.customization.printText || '').slice(0, 2000),
+          designFile: String(item.customization.designFile || '').slice(0, 3000000),
+          extraAsset: String(item.customization.extraAsset || '').slice(0, 3000000)
+        }
       })),
       total,
       notes,
       paymentMethod,
       deliveryFee,
+      idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
     });
 
@@ -198,12 +221,17 @@ app.post("/api/payments/order", async (req, res) => {
       return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
     }
 
-    const amount = 74900;
+    const requestedAmount = Number(req.body && req.body.amount);
+    const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
+    if (!Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
+      return res.status(400).json({ ok: false, message: "Invalid payment amount" });
+    }
+    const amount = requestedAmount;
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
-      receipt: `sk_${Date.now()}`,
-      notes: { product: "Premium business cards", quantity: "1" }
+      receipt: token ? `sk_${token}`.slice(0, 40) : `sk_${Date.now()}`,
+      notes: { source: "SK Graphics checkout", idempotencyKey: token || "none" }
     });
 
     return res.status(201).json({

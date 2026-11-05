@@ -11,11 +11,12 @@ const orderSchema = new mongoose.Schema(
         longitude: { type: Number, min: -180, max: 180 }
       }
     },
-    items: [{ name: String, price: Number, quantity: Number }],
+    items: [{ name: String, price: Number, quantity: Number, customization: { hasDesign: Boolean, addExtraAsset: Boolean, fontStyle: String, printText: String, designFile: String, extraAsset: String } }],
     total: { type: Number, required: true, min: 0 },
     notes: { type: String, trim: true, maxlength: 1000 },
     paymentMethod: { type: String, enum: ["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },
     deliveryFee: { type: Number, min: 0, default: 0 },
+    idempotencyKey: { type: String, trim: true, maxlength: 100, unique: true, sparse: true },
     orderType: { type: String, enum: ["standard"], default: "standard" },
     status: { type: String, enum: ["received", "processing", "completed"], default: "received" }
   },
