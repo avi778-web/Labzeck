@@ -347,13 +347,13 @@
     }
     .cart-overlay { justify-content: flex-end; }
     .cart-overlay.open, .order-overlay.open, .mug-overlay.open, .options-overlay.open { display: flex; }
-    .options-modal { background:#fff; border-radius:var(--radius-lg); width:min(470px,94%); padding-bottom:18px; box-shadow:0 20px 60px rgba(0,0,0,.25); }
-    .options-body { padding: 20px 24px 4px; }
+    .options-modal { background:#fff; border-radius:var(--radius-lg); width:min(500px,94vw); max-height:calc(100vh - 28px); display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+    .options-body { padding:20px 24px 10px; overflow-y:auto; min-height:0; overscroll-behavior:contain; }
     .option-group { margin-bottom:18px; }
-    .option-group label { display:block; font-size:13px; font-weight:700; margin-bottom:9px; }
-    .option-choices { display:flex; flex-wrap:wrap; gap:8px; }
-    .option-choice { border:1px solid var(--border); background:#fff; border-radius:9px; padding:9px 11px; font-size:12px; cursor:pointer; }
-    .option-choice.active { border-color:var(--primary); background:#edf7fd; color:var(--primary); font-weight:700; }
+    .option-group label { display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
+    .option-select { width:100%; min-height:44px; border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; color:var(--text); font:inherit; font-size:13px; }
+    .options-total { flex-shrink:0; margin:0 24px 12px; padding:12px; background:#f3faf7; display:flex; justify-content:space-between; border-radius:10px; }
+    .options-confirm { flex-shrink:0; display:flex; width:calc(100% - 48px); margin:0 24px 18px; justify-content:center; min-height:46px; }
     .custom-fields { margin-top:18px; border-top:1px solid #e6eef3; padding-top:16px; }
     .custom-check { display:flex; gap:9px; align-items:flex-start; margin:12px 0; font-size:13px; line-height:1.4; }
     .custom-check input { margin-top:2px; accent-color:var(--primary); }
@@ -435,6 +435,12 @@
       .whatsapp-btn { right: 14px; bottom: 76px; width: 52px; height: 52px; }
       .btt-btn { right: 18px; bottom: 18px; }
       .payment-strip { padding: 10px 12px; }
+      .options-overlay { align-items:flex-end; }
+      .options-modal { width:100%; max-height:calc(100vh - 10px); border-radius:18px 18px 0 0; }
+      .options-body { padding:18px 16px 8px; }
+      .options-total { margin-left:16px; margin-right:16px; }
+      .options-confirm { width:calc(100% - 32px); margin-left:16px; margin-right:16px; margin-bottom:12px; }
+      .custom-fields textarea { min-height:90px; }
     }
   </style>
 </head>
@@ -968,13 +974,16 @@
   function openProductOptions(name) {
     const isCards = name === 'Business Cards';
     selectedOption = isCards ? { name, price: 399, bundle: '50 single-sided cards' } : { name, price: 600, bundle: '100 pamphlets' };
-    const choices = isCards ? [{label:'50 Cards', price:399, bundle:'50 single-sided cards'}, {label:'100 Cards', price:599, bundle:'100 single-sided cards'}, {label:'200 Cards', price:999, bundle:'200 single-sided cards'}, {label:'100 Cards · Double-sided', price:799, bundle:'100 double-sided cards'}, {label:'200 Cards · Double-sided', price:1399, bundle:'200 double-sided cards'}] : [{label:'100 Pamphlets', price:600, bundle:'100 pamphlets'}];
-    optionChoices = choices;
+    const singleChoices = [{label:'50 Cards', price:399, bundle:'50 single-sided cards'}, {label:'100 Cards', price:599, bundle:'100 single-sided cards'}, {label:'200 Cards', price:999, bundle:'200 single-sided cards'}];
+    const doubleChoices = [{label:'100 Cards (Double-sided)', price:799, bundle:'100 double-sided cards'}, {label:'200 Cards (Double-sided)', price:1399, bundle:'200 double-sided cards'}];
+    optionChoices = isCards ? singleChoices : [{label:'100 Pamphlets', price:600, bundle:'100 pamphlets'}];
     document.getElementById('optionsTitle').textContent = `${name} options`;
-    document.getElementById('optionsBody').innerHTML = `<div class="option-group"><label>${isCards ? 'Quantity & side selection' : 'Quantity'}</label><div class="option-choices">${choices.map((choice, index) => `<button type="button" class="option-choice ${index === 0 ? 'active' : ''}" onclick="selectProductOption(${index})">${choice.label} · ₹${choice.price}</button>`).join('')}</div></div>`;
+    const dropdowns = isCards ? `<div class="option-group"><label for="singleOption">Single-sided options</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${singleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div><div class="option-group"><label for="doubleOption">Double-sided options</label><select class="option-select" id="doubleOption" onchange="selectProductOption('double', this.value)"><option value="">Choose double-sided package</option>${doubleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>` : `<div class="option-group"><label for="singleOption">Quantity</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${optionChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>`;
+    optionChoices = { single: singleChoices, double: doubleChoices };
+    document.getElementById('optionsBody').innerHTML = dropdowns;
     document.getElementById('optionsBody').insertAdjacentHTML('beforeend', `<div class="custom-fields"><label class="custom-check"><input type="checkbox" id="hasDesign" onchange="toggleUploadField('designUpload', this.checked)"><span><strong>Already Have Your Design?</strong><small> Upload PNG, JPG or PDF artwork if it is print-ready.</small></span></label><label class="upload-zone" id="designUpload" hidden>Choose your design file<input type="file" id="designFile" accept="image/png,image/jpeg,application/pdf" onchange="readCustomizationFile('designFile','designFileData')"></label><input type="hidden" id="designFileData"><label class="custom-check"><input type="checkbox" id="addExtraAsset" onchange="toggleUploadField('extraUpload', this.checked)"><span><strong>Add Extra Photo or Logo?</strong><small> Add a secondary image or brand mark.</small></span></label><label class="upload-zone" id="extraUpload" hidden>Choose photo or logo<input type="file" id="extraFile" accept="image/png,image/jpeg,application/pdf" onchange="readCustomizationFile('extraFile','extraFileData')"></label><input type="hidden" id="extraFileData"><label for="fontStyle"><strong>Font style</strong><select id="fontStyle"><option>Arial</option><option>Cursive / Brush Script</option><option>Times New Roman</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>Great Vibes</option><option>Courier New</option><option>Georgia</option><option>Verdana</option><option>Comic Sans MS</option><option>Impact</option></select></label><label for="printText" style="display:block;margin-top:14px"><strong>What to Print</strong><textarea id="printText" placeholder="Type names, phone numbers, shop name or printing instructions..."></textarea></label></div>`); updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open');
   }
-  function selectProductOption(index) { selectedOption = { ...selectedOption, ...optionChoices[index] }; document.querySelectorAll('.option-choice').forEach((button, i) => button.classList.toggle('active', i === index)); updateOptionsPrice(); }
+  function selectProductOption(side, value) { const choices = optionChoices[side] || []; if (value === '') { selectedOption = { ...selectedOption, price: choices[0]?.price || 0, bundle: choices[0]?.bundle || '' }; } else { selectedOption = { ...selectedOption, ...choices[Number(value)] }; } if (side === 'single' && document.getElementById('doubleOption')) document.getElementById('doubleOption').value = ''; if (side === 'double' && document.getElementById('singleOption')) document.getElementById('singleOption').value = ''; updateOptionsPrice(); }
   function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
   function toggleUploadField(id, visible) { document.getElementById(id).hidden = !visible; }
 function readCustomizationFile(inputId, outputId) { const file = document.getElementById(inputId).files[0]; if (!file) return; if (file.size > 3 * 1024 * 1024) { alert('Please choose a file smaller than 3MB.'); document.getElementById(inputId).value = ''; return; } const reader = new FileReader(); reader.onload = () => { document.getElementById(outputId).value = reader.result; }; reader.readAsDataURL(file); }
