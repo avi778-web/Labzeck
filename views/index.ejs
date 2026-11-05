@@ -242,15 +242,14 @@
     }
     .cat-card:hover, .cat-card:focus-within { transform: translateY(-6px); box-shadow: var(--shadow-hov); border-color: #f2c94c; }
     .cat-circle-badge { position:absolute; right:10px; bottom:10px; width:44px; height:44px; border-radius:50%; background:#111; border:2px solid #fff; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,.28); z-index:2; }
-    .cat-circle-badge span { color:#fff; font-size:9px; font-weight:800; letter-spacing:-.5px; text-transform:uppercase; }
+    .cat-circle-badge img { width:34px; height:34px; object-fit:contain; border-radius:50%; display:block; }
     .cat-img {
       height: 165px; display: flex; align-items: center; justify-content: center;
       overflow: hidden; position: relative;
       background: #f4f7f9;
     }
     .cat-img img {
-      width: 142px; height: 142px; object-fit: cover; border-radius: 50%;
-      border: 4px solid #fff; box-shadow: 0 5px 18px rgba(17, 36, 50, .18);
+      width: 100%; height: 100%; object-fit: cover; border-radius: 0;
       transition: transform .35s ease, filter .35s ease;
     }
     .cat-card:hover .cat-img img { transform: scale(1.06); filter: saturate(1.08); }
@@ -337,6 +336,8 @@
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
     .footer-bot p { font-size: 13px; color: rgba(255,255,255,.45); }
+    .payment-strip { background:#080808; display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap; padding:12px 16px; }
+    .payment-strip img { width:min(559px, 100%); height:auto; object-fit:contain; display:block; }
 
     /* CART & MODALS */
     .cart-overlay, .order-overlay, .mug-overlay, .options-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -353,6 +354,13 @@
     .option-choices { display:flex; flex-wrap:wrap; gap:8px; }
     .option-choice { border:1px solid var(--border); background:#fff; border-radius:9px; padding:9px 11px; font-size:12px; cursor:pointer; }
     .option-choice.active { border-color:var(--primary); background:#edf7fd; color:var(--primary); font-weight:700; }
+    .custom-fields { margin-top:18px; border-top:1px solid #e6eef3; padding-top:16px; }
+    .custom-check { display:flex; gap:9px; align-items:flex-start; margin:12px 0; font-size:13px; line-height:1.4; }
+    .custom-check input { margin-top:2px; accent-color:var(--primary); }
+    .upload-zone { display:block; border:1px dashed #9ab8c8; border-radius:10px; padding:12px; background:#f8fcfe; margin:7px 0 12px 25px; font-size:12px; color:var(--text-light); transition:.2s; }
+    .upload-zone:hover { border-color:var(--primary); background:#eef8fd; }
+    .custom-fields select, .custom-fields textarea { width:100%; border:1px solid var(--border); border-radius:9px; padding:10px; font:inherit; font-size:13px; margin-top:6px; }
+    .custom-fields textarea { resize:vertical; min-height:75px; }
     .options-total { margin: 8px 24px 14px; padding:12px; background:#f3faf7; display:flex; justify-content:space-between; border-radius:10px; }
     .options-total strong { color:#11845b; }
     .options-confirm { display:flex; width:calc(100% - 48px); margin:0 24px; justify-content:center; }
@@ -546,7 +554,7 @@
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
-          <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy"><div class="cat-circle-badge"><span>SK</span></div>
+          <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy"><div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Business Cards</h5>
@@ -557,8 +565,8 @@
       <!-- 2. Flyers & Leaflets -->
       <div class="cat-card" onclick="openProductOptions('Color Pamphlets')">
         <div class="cat-img">
-          <img src="https://github.com/avi778-web/Labzeck/blob/main/assets/sk-flyers-clean.png?raw=true" alt="Flyers & Leaflets" loading="lazy" onerror="this.onerror=null;this.src='/assets/sk-flyers-leaflets.png'">
- <div class="cat-circle-badge"><span>SK</span></div>
+          <img src="/assets/sk-flyers-clean.png" alt="Flyers & Leaflets" loading="lazy" onerror="this.onerror=null;this.src='/assets/sk-flyers-leaflets.png'">
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Color Pamphlets</h5>
@@ -571,7 +579,7 @@
       <div class="cat-card" onclick="addToCart('Brochures', 299)">
         <div class="cat-img">
           <img src="/assets/sk-brochures.png" alt="Brochures" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Brochures</h5>
@@ -584,7 +592,7 @@
       <div class="cat-card" onclick="addToCart('Posters & Banners', 599)">
         <div class="cat-img">
           <img src="/assets/sk-banners.png" alt="Posters & Banners" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Posters &amp; Banners</h5>
@@ -597,7 +605,7 @@
       <div class="cat-card" onclick="addToCart('Custom Mugs', 199)">
         <div class="cat-img">
           <img src="/assets/sk-mugs.png" alt="Custom Mugs" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Custom Mugs</h5>
@@ -610,7 +618,7 @@
       <div class="cat-card" onclick="addToCart('Stickers & Labels', 149)">
         <div class="cat-img">
           <img src="/assets/sk-stickers.png" alt="Stickers & Labels" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Stickers &amp; Labels</h5>
@@ -623,7 +631,7 @@
       <div class="cat-card" onclick="addToCart('Custom T-Shirts', 299)">
         <div class="cat-img">
           <img src="/assets/sk-tshirt.png" alt="Custom T-Shirts" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Custom T-Shirts</h5>
@@ -636,7 +644,7 @@
       <div class="cat-card" onclick="addToCart('Roll-Up Banners', 1299)">
         <div class="cat-img">
           <img src="/assets/sk-roll-up-banner.png" alt="Roll-Up Banners" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Roll-Up Banners</h5>
@@ -649,7 +657,7 @@
       <div class="cat-card" onclick="addToCart('Diaries & Notebooks', 299)">
         <div class="cat-img">
           <img src="/assets/sk-notebooks.png" alt="Diaries & Notebooks" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Diaries &amp; Notebooks</h5>
@@ -662,7 +670,7 @@
       <div class="cat-card" onclick="addToCart('Folders', 349)">
         <div class="cat-img">
           <img src="/assets/sk-presentation-folders.png" alt="Presentation Folders" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Presentation Folders</h5>
@@ -675,7 +683,7 @@
       <div class="cat-card" onclick="addToCart('Canvas Printing', 799)">
         <div class="cat-img">
           <img src="/assets/sk-canvas-printing.png" alt="Canvas Printing" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Canvas Printing</h5>
@@ -688,7 +696,7 @@
       <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging', 499)">
         <div class="cat-img">
           <img src="/assets/sk-fancy-boxes.png" alt="Fancy Boxes & Packaging" loading="lazy">
- <div class="cat-circle-badge"><span>SK</span></div>
+ <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Fancy Boxes &amp; Packaging</h5>
@@ -824,6 +832,7 @@
       </div>
     </div>
   </div>
+  <div class="payment-strip" aria-label="Accepted payment methods"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-L0uFxWxpgN0L3kyLrBgHVLgbhlXYjB.png" alt="Accepted cards and payment methods"></div>
   <div class="container">
     <div class="footer-bot">
       <p>© 2024 SK Graphics. All Rights Reserved.</p>
@@ -913,14 +922,15 @@
 
 <script>
   let cart = [];
+  const orderToken = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `sk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
 
-  function addToCart(name, price, bundle = '') {
+  function addToCart(name, price, bundle = '', customization = null) {
     const lineName = bundle ? `${name} — ${bundle}` : name;
     const existing = cart.find(i => i.name === lineName);
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ name: lineName, price, qty: 1 });
+      cart.push({ name: lineName, price, qty: 1, customization });
     }
     updateCartUI();
     openCart();
@@ -954,11 +964,13 @@
     optionChoices = choices;
     document.getElementById('optionsTitle').textContent = `${name} options`;
     document.getElementById('optionsBody').innerHTML = `<div class="option-group"><label>${isCards ? 'Quantity & side selection' : 'Quantity'}</label><div class="option-choices">${choices.map((choice, index) => `<button type="button" class="option-choice ${index === 0 ? 'active' : ''}" onclick="selectProductOption(${index})">${choice.label} · ₹${choice.price}</button>`).join('')}</div></div>`;
-    updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open');
+    document.getElementById('optionsBody').insertAdjacentHTML('beforeend', `<div class="custom-fields"><label class="custom-check"><input type="checkbox" id="hasDesign" onchange="toggleUploadField('designUpload', this.checked)"><span><strong>Already Have Your Design?</strong><small> Upload PNG, JPG or PDF artwork if it is print-ready.</small></span></label><label class="upload-zone" id="designUpload" hidden>Choose your design file<input type="file" id="designFile" accept="image/png,image/jpeg,application/pdf" onchange="readCustomizationFile('designFile','designFileData')"></label><input type="hidden" id="designFileData"><label class="custom-check"><input type="checkbox" id="addExtraAsset" onchange="toggleUploadField('extraUpload', this.checked)"><span><strong>Add Extra Photo or Logo?</strong><small> Add a secondary image or brand mark.</small></span></label><label class="upload-zone" id="extraUpload" hidden>Choose photo or logo<input type="file" id="extraFile" accept="image/png,image/jpeg,application/pdf" onchange="readCustomizationFile('extraFile','extraFileData')"></label><input type="hidden" id="extraFileData"><label for="fontStyle"><strong>Font style</strong><select id="fontStyle"><option>Arial</option><option>Cursive / Brush Script</option><option>Times New Roman</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>Great Vibes</option><option>Courier New</option><option>Georgia</option><option>Verdana</option><option>Comic Sans MS</option><option>Impact</option></select></label><label for="printText" style="display:block;margin-top:14px"><strong>What to Print</strong><textarea id="printText" placeholder="Type names, phone numbers, shop name or printing instructions..."></textarea></label></div>`); updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open');
   }
   function selectProductOption(index) { selectedOption = { ...selectedOption, ...optionChoices[index] }; document.querySelectorAll('.option-choice').forEach((button, i) => button.classList.toggle('active', i === index)); updateOptionsPrice(); }
   function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
-  function confirmProductOption() { if (!selectedOption) return; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle); closeProductOptions(); }
+  function toggleUploadField(id, visible) { document.getElementById(id).hidden = !visible; }
+function readCustomizationFile(inputId, outputId) { const file = document.getElementById(inputId).files[0]; if (!file) return; if (file.size > 3 * 1024 * 1024) { alert('Please choose a file smaller than 3MB.'); document.getElementById(inputId).value = ''; return; } const reader = new FileReader(); reader.onload = () => { document.getElementById(outputId).value = reader.result; }; reader.readAsDataURL(file); }
+function confirmProductOption() { if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
   function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); }
   function openCart() { document.getElementById('cartOverlay').classList.add('open'); }
   function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
@@ -983,9 +995,9 @@
     if (navigator.geolocation) { try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; saving address only.'); } }
     const button = document.getElementById('orderSubmitBtn'); button.disabled = true; button.textContent = 'Saving order...';
     try {
-      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, deliveryFee: 0 }) });
+      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await response.json(); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      alert(`Order saved successfully. Order ID: ${result.orderId}`); cart = []; updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel();
+      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { button.disabled = false; button.textContent = 'Submit Order'; }
   }
