@@ -97,7 +97,7 @@ app.post("/api/newsletter", async (req, res) => {
     /* DUPLICATE CHECK */
 
     if (!(await ensureDatabase())) {
-      return res.status(503).json({ ok: false, message: "Database is temporarily unavailable. Please retry in a moment." });
+      return res.status(503).json({ ok: false, message: "We are reconnecting the order service. Please try again in a few seconds." });
     }
 
     if (!Gmailmodel || typeof Gmailmodel.findOne !== "function") {
@@ -168,7 +168,7 @@ app.post("/api/orders", async (req, res) => {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
     }
     if (!(await ensureDatabase())) {
-      return res.status(503).json({ ok: false, message: "Database is temporarily unavailable. Please retry in a moment." });
+      return res.status(503).json({ ok: false, message: "We are reconnecting the order service. Please try again in a few seconds." });
     }
     if (idempotencyKey) {
       const existingOrder = await OrderModel.findOne({ idempotencyKey }).lean();
