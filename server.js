@@ -32,7 +32,11 @@ process.on("uncaughtException", (error) => {
   process.exitCode = 1;
 });
 
-startServer().catch((error) => {
-  console.error("FATAL STARTUP ERROR:", error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("FATAL STARTUP ERROR:", error);
+    process.exitCode = 1;
+  });
+} else {
+  module.exports = app;
+}
