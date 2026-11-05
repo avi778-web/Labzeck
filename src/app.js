@@ -26,11 +26,10 @@ async function ensureDatabase() {
 }
 
 function getRazorpay() {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) return null;
-  return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-  });
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3;
+  if (!keyId || !keySecret) return null;
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
 }
 
 /* =========================
@@ -243,7 +242,7 @@ app.post("/api/orders", async (req, res) => {
    RAZORPAY PAYMENTS
 ========================= */
 
-app.post("/api/payments/order", async (req, res) => {
+app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   try {
     const razorpay = getRazorpay();
     if (!razorpay) {
@@ -270,7 +269,7 @@ app.post("/api/payments/order", async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID
+      keyId: process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3
     });
   } catch (error) {
     console.error("RAZORPAY ORDER ERROR:", error.message);
@@ -278,7 +277,7 @@ app.post("/api/payments/order", async (req, res) => {
   }
 });
 
-app.post("/api/payments/verify", async (req, res) => {
+app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -286,7 +285,7 @@ app.post("/api/payments/verify", async (req, res) => {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || "")
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
