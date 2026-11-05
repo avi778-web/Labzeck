@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
@@ -25,20 +26,41 @@ async function ensureDatabase() {
 }
 
 function getRazorpay() {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) return null;
-  return new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET
-  });
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3;
+  if (!keyId || !keySecret) return null;
+  return new Razorpay({ key_id: keyId, key_secret: keySecret });
 }
 
 /* =========================
    MIDDLEWARE
 ========================= */
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
+const uploadsDirectory = path.join(__dirname, "..", "assets", "uploads");
+fs.mkdirSync(uploadsDirectory, { recursive: true });
+app.use("/uploads", express.static(uploadsDirectory));
+
+app.post("/api/uploads", (req, res) => {
+  try {
+    const { data, mimeType } = req.body || {};
+    if (typeof data !== "string" || !/^data:(image\/(png|jpeg|webp)|application\/pdf);base64,/.test(data)) {
+      return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, or PDF files are supported" });
+    }
+    const raw = data.split(",")[1];
+    const buffer = Buffer.from(raw, "base64");
+    if (!buffer.length || buffer.length > 700 * 1024) return res.status(413).json({ ok: false, message: "File is too large after compression" });
+    const extension = mimeType === "application/pdf" ? "pdf" : mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
+    const filename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${extension}`;
+    fs.writeFileSync(path.join(uploadsDirectory, filename), buffer, { flag: "wx" });
+    return res.status(201).json({ ok: true, url: `/uploads/${filename}` });
+  } catch (error) {
+    console.error("UPLOAD ERROR:", error.message);
+    return res.status(500).json({ ok: false, message: "Could not save upload" });
+  }
+});
 
 /* =========================
    EJS SETUP
@@ -155,6 +177,9 @@ app.post("/api/orders", async (req, res) => {
     const address = String(customer.address || "").trim();
     const notes = String(body.notes || "").trim();
     const paymentMethod = String(body.paymentMethod || "UPI");
+    const paymentStatus = String(body.paymentStatus || (paymentMethod === "COD" ? "cod" : "pending"));
+    const transactionId = String(body.transactionId || "").trim().slice(0, 120);
+    const razorpayOrderId = String(body.razorpayOrderId || "").trim().slice(0, 120);
     const deliveryFee = Number(body.deliveryFee || 0);
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const total = Number(body.total);
@@ -198,6 +223,9 @@ app.post("/api/orders", async (req, res) => {
       total,
       notes,
       paymentMethod,
+      paymentStatus: ["pending", "paid", "cod", "failed"].includes(paymentStatus) ? paymentStatus : "pending",
+      transactionId: transactionId || undefined,
+      razorpayOrderId: razorpayOrderId || undefined,
       deliveryFee,
       idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
@@ -214,7 +242,7 @@ app.post("/api/orders", async (req, res) => {
    RAZORPAY PAYMENTS
 ========================= */
 
-app.post("/api/payments/order", async (req, res) => {
+app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   try {
     const razorpay = getRazorpay();
     if (!razorpay) {
@@ -222,8 +250,10 @@ app.post("/api/payments/order", async (req, res) => {
     }
 
     const requestedAmount = Number(req.body && req.body.amount);
+    const paymentItems = Array.isArray(req.body && req.body.items) ? req.body.items : [];
+    const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
-    if (!Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
+    if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
     }
     const amount = requestedAmount;
@@ -239,7 +269,7 @@ app.post("/api/payments/order", async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID
+      keyId: process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3
     });
   } catch (error) {
     console.error("RAZORPAY ORDER ERROR:", error.message);
@@ -247,7 +277,7 @@ app.post("/api/payments/order", async (req, res) => {
   }
 });
 
-app.post("/api/payments/verify", async (req, res) => {
+app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -255,7 +285,7 @@ app.post("/api/payments/verify", async (req, res) => {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || "")
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
