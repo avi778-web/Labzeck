@@ -330,7 +330,7 @@ app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
 app.get("/api/test", (req, res) => {
   res.json({
     ok: true,
-    message: "Labzeck backend is working"
+    message: "SK GRAPHICS backend is working"
   });
 });
 
