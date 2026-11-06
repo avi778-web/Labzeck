@@ -6,7 +6,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
-const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
+const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
@@ -200,7 +200,9 @@ app.post("/api/orders", async (req, res) => {
       if (existingOrder) return res.status(200).json({ ok: true, orderId: existingOrder._id, duplicate: true, message: "Order already recorded" });
     }
 
-    const order = await OrderModel.create({
+    let order;
+    try {
+      order = await OrderModel.create({
       customer: {
         name,
         phone,
@@ -229,12 +231,23 @@ app.post("/api/orders", async (req, res) => {
       deliveryFee,
       idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
-    });
+      });
+    } catch (saveError) {
+      console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
+      if (saveError.name === "ValidationError" || saveError.name === "CastError") {
+        return res.status(400).json({ ok: false, message: "Order data is invalid", details: saveError.message });
+      }
+      if (saveError.code === 11000 && idempotencyKey) {
+        const duplicate = await OrderModel.findOne({ idempotencyKey }).lean();
+        if (duplicate) return res.status(200).json({ ok: true, orderId: duplicate._id, duplicate: true, message: "Order already recorded" });
+      }
+      return res.status(500).json({ ok: false, message: "Order could not be saved", errorCode: saveError.code || saveError.name || "DATABASE_WRITE_ERROR" });
+    }
 
     return res.status(201).json({ ok: true, orderId: order._id, message: "Order saved successfully" });
   } catch (error) {
     console.error("STANDARD ORDER ERROR:", error.stack || error);
-    return res.status(500).json({ ok: false, message: "Could not save order" });
+    return res.status(500).json({ ok: false, message: "Order request failed", errorCode: error.code || error.name || "ORDER_REQUEST_ERROR" });
   }
 });
 
@@ -334,7 +347,7 @@ app.use((error, req, res, next) => {
   return res.status(status).json({
     ok: false,
     error: err.message,
-    stack: err.stack
+    errorCode: err.code || err.name || "INTERNAL_REQUEST_ERROR"
   });
 });
 
