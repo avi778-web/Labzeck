@@ -27,7 +27,7 @@ async function ensureDatabase() {
 
 function getRazorpay() {
   const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
   if (!keyId || !keySecret) return null;
   return new Razorpay({ key_id: keyId, key_secret: keySecret });
 }
@@ -298,7 +298,7 @@ app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
     }
 
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || "")
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4 || "")
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
