@@ -6,6 +6,37 @@ const fs = require("fs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
+const { z } = require("zod");
+
+const newsletterSchema = z.object({ email: z.string().trim().email().max(254) });
+const itemSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  price: z.coerce.number().finite().nonnegative(),
+  qty: z.coerce.number().int().min(1).max(999)
+}).passthrough();
+const orderSchema = z.object({
+  customer: z.object({
+    name: z.string().trim().min(1).max(120),
+    phone: z.string().trim().min(10).max(30),
+    address: z.string().trim().min(1).max(500),
+    location: z.object({ latitude: z.coerce.number().finite(), longitude: z.coerce.number().finite() }).optional()
+  }).passthrough(),
+  items: z.array(itemSchema).min(1).max(50),
+  total: z.coerce.number().finite().nonnegative(),
+  deliveryFee: z.coerce.number().finite().nonnegative().optional(),
+  paymentMethod: z.enum(["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"]).optional(),
+  paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
+}).passthrough();
+const paymentOrderSchema = z.object({
+  amount: z.coerce.number().int().min(100).max(100000000),
+  items: z.array(itemSchema).min(1).max(50),
+  idempotencyKey: z.string().trim().max(100).optional()
+}).passthrough();
+const paymentVerificationSchema = z.object({
+  razorpay_order_id: z.string().trim().min(1).max(120),
+  razorpay_payment_id: z.string().trim().min(1).max(120),
+  razorpay_signature: z.string().trim().regex(/^[a-f0-9]{64}$/i)
+});
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 
 const Gmailmodel = require("./models/email.model");
@@ -20,34 +51,32 @@ app.use((req, res, next) => {
   next();
 });
 let databaseConnectionPromise = null;
-
-async function ensureDatabase() {
-  if (mongoose.connection.readyState === 1) return true;
-  if (!mongoConnectionString) return false;
-  if (!databaseConnectionPromise) {
-    databaseConnectionPromise = mongoose.connect(mongoConnectionString, { serverSelectionTimeoutMS: 8000 })
-      .then(() => true)
-      .catch((error) => { databaseConnectionPromise = null; console.error('MongoDB request connection failed:', error.message); return false; });
+const rateLimitState = new Map();
+function sensitiveRouteRateLimit(req, res, next) {
+  const key = `${req.ip}:${req.path}`;
+  const now = Date.now();
+  const current = rateLimitState.get(key);
+  if (!current || now - current.startedAt >= 60_000) {
+    rateLimitState.set(key, { startedAt: now, count: 1 });
+    return next();
   }
-  return databaseConnectionPromise;
+  if (current.count >= 30) return res.status(429).json({ ok: false, message: "Too many requests. Please try again shortly." });
+  current.count += 1;
+  return next();
 }
-
-function getRazorpay() {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
-  if (!keyId || !keySecret) return null;
-  return new Razorpay({ key_id: keyId, key_secret: keySecret });
-}
-
-/* =========================
-   MIDDLEWARE
-========================= */
+app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
-const uploadsDirectory = path.join(__dirname, "..", "assets", "uploads");
-fs.mkdirSync(uploadsDirectory, { recursive: true });
+const uploadsDirectory = process.env.VERCEL
+  ? path.join("/tmp", "sk-graphics-uploads")
+  : path.join(__dirname, "..", "assets", "uploads");
+try {
+  fs.mkdirSync(uploadsDirectory, { recursive: true });
+} catch (error) {
+  console.error("UPLOAD DIRECTORY ERROR:", error.message);
+}
 app.use("/uploads", express.static(uploadsDirectory));
 
 app.post("/api/uploads", (req, res) => {
@@ -96,14 +125,10 @@ app.get("/", (req, res, next) => {
 ========================= */
 
 app.post("/api/newsletter", async (req, res) => {
-  console.log("NEWSLETTER API HIT");
-  console.log("NEWSLETTER DATA:", req.body);
-
   try {
-    const body = req.body && typeof req.body === "object" ? req.body : {};
-    const email = String(body.email || "")
-      .trim()
-      .toLowerCase();
+    const parsed = newsletterSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Enter a valid email address" });
+    const email = parsed.data.email.toLowerCase();
 
     /* EMAIL VALIDATION */
 
@@ -176,7 +201,9 @@ app.post("/api/newsletter", async (req, res) => {
 
 app.post("/api/orders", async (req, res) => {
   try {
-    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const parsed = orderSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Order data is invalid", issues: parsed.error.issues.map((issue) => issue.path.join(".")).slice(0, 10) });
+    const body = parsed.data;
     const customer = body.customer && typeof body.customer === "object" ? body.customer : {};
     const items = Array.isArray(body.items) ? body.items : [];
     const name = String(customer.name || "").trim();
@@ -270,8 +297,10 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
       return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
     }
 
-    const requestedAmount = Number(req.body && req.body.amount);
-    const paymentItems = Array.isArray(req.body && req.body.items) ? req.body.items : [];
+    const parsed = paymentOrderSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid payment request" });
+    const requestedAmount = parsed.data.amount;
+    const paymentItems = parsed.data.items;
     const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
@@ -300,10 +329,9 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
 
 app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({ ok: false, message: "Incomplete payment response" });
-    }
+    const parsed = paymentVerificationSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Incomplete or invalid payment response" });
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = parsed.data;
 
     const paymentSecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
     if (!paymentSecret) return res.status(503).json({ ok: false, message: "Payment verification is not configured on the server" });
@@ -357,7 +385,7 @@ app.use((error, req, res, next) => {
   const status = Number.isInteger(err.status) && err.status >= 400 && err.status < 500 ? err.status : 500;
   return res.status(status).json({
     ok: false,
-    error: err.message,
+    error: status < 500 ? err.message : "An unexpected server error occurred. Please try again.",
     errorCode: err.code || err.name || "INTERNAL_REQUEST_ERROR"
   });
 });

@@ -1,24 +1,26 @@
 const mongoose = require("mongoose");
 
+let connectionPromise = null;
+
 async function connectDB() {
-  try {
-    const mongoURI = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
+  if (mongoose.connection.readyState === 1) return mongoose.connection;
 
-    if (!mongoURI) {
-      throw new Error("MONGODB_CONNECTION_STRING is missing");
-    }
+  const mongoURI = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
+  if (!mongoURI) throw new Error("MongoDB is not configured");
 
-    await mongoose.connect(mongoURI);
-
-    console.log("✅ MongoDB connected");
-    console.log("📦 Database:", mongoose.connection.name);
-
-  } catch (error) {
-    console.error("❌ MongoDB connection failed:");
-    console.error(error.message);
-
-    throw error;
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 8000,
+      maxPoolSize: 10,
+      minPoolSize: 0
+    }).then(() => mongoose.connection).catch((error) => {
+      connectionPromise = null;
+      console.error("MongoDB connection failed:", error.message);
+      throw error;
+    });
   }
+
+  return connectionPromise;
 }
 
 module.exports = connectDB;
