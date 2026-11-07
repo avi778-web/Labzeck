@@ -25,7 +25,11 @@ async function ensureDatabase() {
   if (mongoose.connection.readyState === 1) return true;
   if (!mongoConnectionString) return false;
   if (!databaseConnectionPromise) {
-    databaseConnectionPromise = mongoose.connect(mongoConnectionString, { serverSelectionTimeoutMS: 8000 })
+    databaseConnectionPromise = mongoose.connect(mongoConnectionString, {
+      serverSelectionTimeoutMS: 8000,
+      maxPoolSize: 10,
+      minPoolSize: 0
+    })
       .then(() => true)
       .catch((error) => { databaseConnectionPromise = null; console.error('MongoDB request connection failed:', error.message); return false; });
   }
@@ -35,8 +39,8 @@ async function ensureDatabase() {
 function getRazorpay() {
   const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
   const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
-  if (!keyId || !keySecret) return null;
-  return new Razorpay({ key_id: keyId, key_secret: keySecret });
+  if (!String(keyId || "").trim() || !String(keySecret || "").trim()) return null;
+  return new Razorpay({ key_id: String(keyId).trim(), key_secret: String(keySecret).trim() });
 }
 
 /* =========================
@@ -46,8 +50,14 @@ function getRazorpay() {
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
-const uploadsDirectory = path.join(__dirname, "..", "assets", "uploads");
-fs.mkdirSync(uploadsDirectory, { recursive: true });
+const uploadsDirectory = process.env.VERCEL
+  ? path.join("/tmp", "sk-graphics-uploads")
+  : path.join(__dirname, "..", "assets", "uploads");
+try {
+  fs.mkdirSync(uploadsDirectory, { recursive: true });
+} catch (error) {
+  console.error("UPLOAD DIRECTORY ERROR:", error.message);
+}
 app.use("/uploads", express.static(uploadsDirectory));
 
 app.post("/api/uploads", (req, res) => {
@@ -357,7 +367,7 @@ app.use((error, req, res, next) => {
   const status = Number.isInteger(err.status) && err.status >= 400 && err.status < 500 ? err.status : 500;
   return res.status(status).json({
     ok: false,
-    error: err.message,
+    error: status < 500 ? err.message : "An unexpected server error occurred. Please try again.",
     errorCode: err.code || err.name || "INTERNAL_REQUEST_ERROR"
   });
 });
