@@ -12,6 +12,13 @@ const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
 
 const app = express();
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+  next();
+});
 let databaseConnectionPromise = null;
 
 async function ensureDatabase() {
@@ -186,7 +193,8 @@ app.post("/api/orders", async (req, res) => {
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
-    if (!name || !phone || !address || !items.length || !Number.isFinite(total) || total < 0 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
     }
     if (phone.replace(/\D/g, "").length < 10) {
@@ -297,8 +305,11 @@ app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
       return res.status(400).json({ ok: false, message: "Incomplete payment response" });
     }
 
+    const paymentSecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
+    if (!paymentSecret) return res.status(503).json({ ok: false, message: "Payment verification is not configured on the server" });
+
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4 || "")
+      .createHmac("sha256", paymentSecret)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
