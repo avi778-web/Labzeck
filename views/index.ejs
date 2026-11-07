@@ -174,6 +174,11 @@
       transition: border-color .2s; color: var(--text);
     }
     .hdr-search input:focus { border-color: var(--primary); }
+    .hdr-search.search-active { z-index: 1100; }
+    .search-results-note { display: none; margin: -24px 0 24px; color: var(--text-light); font-size: 14px; text-align: center; }
+    .search-results-note.visible { display: block; }
+    .cat-card.search-hidden { display: none; }
+    .search-backdrop { display: none; }
     .hdr-search button {
       position: absolute; right: 0; top: 0; height: 100%; padding: 0 14px;
       background: var(--primary); border: none; border-radius: 0 25px 25px 0;
@@ -444,11 +449,18 @@
       .options-total { margin-left:16px; margin-right:16px; }
       .options-confirm { width:calc(100% - 32px); margin-left:16px; margin-right:16px; margin-bottom:12px; }
       .custom-fields textarea { min-height:90px; }
+      body.search-mode .hero, body.search-mode .feat-bar, body.search-mode > section:not(#products), body.search-mode footer { display:none; }
+      body.search-mode .search-backdrop { display:block; position:fixed; inset:0; background:rgba(15,23,42,.42); z-index:1050; }
+      body.search-mode .main-header { z-index:1100; }
+      body.search-mode .hdr-search { position:fixed; left:14px; right:14px; top:12px; max-width:none; }
+      body.search-mode .hdr-search input { height:46px; font-size:16px; background:#fff; }
+      body.search-mode #products { position:relative; z-index:1060; margin-top:70px; background:#fff; }
     }
   </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 </head>
 <body>
+<div id="searchBackdrop" class="search-backdrop" aria-hidden="true"></div>
 
 <!-- ANNOUNCEMENT BAR -->
 <div class="ann-bar">
@@ -516,8 +528,8 @@
     </nav>
 
     <div class="hdr-search">
-      <input type="text" placeholder="Search products...">
-      <button type="button"><i class="fas fa-search"></i></button>
+      <input id="productSearch" type="search" placeholder="Search products..." aria-label="Search products" autocomplete="off">
+      <button type="button" aria-label="Search products"><i class="fas fa-search"></i></button>
     </div>
 
     <div class="hdr-social" aria-label="Social media links">
@@ -568,7 +580,8 @@
       <h2 class="section-title">Explore Our Product Categories</h2>
       <p class="section-subtitle">From business essentials to promotional merchandise — we print it all with precision and speed.</p>
     </div>
-    <div class="cats-grid">
+    <p id="searchResultsNote" class="search-results-note" aria-live="polite"></p>
+    <div class="cats-grid" id="productGrid">
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
@@ -942,7 +955,51 @@
   let cart = [];
   async function parseResponse(response) { const text = await response.text(); try { return text ? JSON.parse(text) : {}; } catch (_) { return { message: `Server returned ${response.status}` }; } }
   const orderToken = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `sk_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-
+  const PRODUCT_CATALOG_WITH_SYNONYMS = [
+    { id:'business-cards', name:'Business Cards', description:'Standard, UV spot, foil, and premium finish options for lasting impressions.', synonyms:['visiting card','card','visting card','identity card','id card','name card','contact card','personal card','corporate card'] },
+    { id:'color-pamphlets', name:'Color Pamphlets', description:'Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.', synonyms:['pamphlet','flyer','parcha','ad paper','leaflet','paper ad','handbill','marketing paper'] },
+    { id:'brochures', name:'Brochures', description:'Bi-fold, tri-fold and Z-fold brochures on premium art paper.', synonyms:['pamphlet folder','company profile','catalog booklet','bifold','trifold','booklet'] },
+    { id:'posters-banners', name:'Posters & Banners', description:'Vibrant large-format vinyl banners, posters, and flex prints for every event.', synonyms:['flex','flex printing','hoarding','banner','poster','wall poster','vinyl print','event banner'] },
+    { id:'custom-mugs', name:'Custom Mugs', description:'Personalized ceramic mugs — ideal corporate gifts with your logo or photo.', synonyms:['cup','coffee mug','photo mug','gift mug','personalized cup','printed mug'] },
+    { id:'stickers-labels', name:'Stickers & Labels', description:'Die-cut, roll, and sheet stickers in any shape — waterproof options available.', synonyms:['sticker','label','packaging sticker','product label','waterproof sticker','logo sticker','adhesive sheet'] },
+    { id:'custom-tshirts', name:'Custom T-Shirts', description:'Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.', synonyms:['tshirt','t shirt','tee','printed shirt','custom shirt','team tshirt','event tshirt','kapda print'] },
+    { id:'roll-up-banners', name:'Roll-Up Banners', description:'Retractable standees for exhibitions, retail, and corporate events.', synonyms:['standee','flex standee','rollup','display stand','exhibition banner','vertical banner'] },
+    { id:'diaries-notebooks', name:'Diaries & Notebooks', description:'Custom-branded hardcover and softcover diaries, notepads, and planners.', synonyms:['diary','notebook','pad','register','planner','office diary','custom notepad'] },
+    { id:'presentation-folders', name:'Presentation Folders', description:'Premium printed folders for presentations, proposals, and corporate kits.', synonyms:['file folder','doc folder','paper file','presentation file','office folder','proposal file'] },
+    { id:'canvas-printing', name:'Canvas Printing', description:'Photo-quality canvas prints on stretched frames for homes, offices, and gifts.', synonyms:['photo frame','wall frame','canvas photo','wall art','painting print','stretched canvas'] },
+    { id:'fancy-boxes-packaging', name:'Fancy Boxes & Packaging', description:'Custom packaging, gift boxes, and carry bags with premium finishing options.', synonyms:['box','gift box','carry bag','paper bag','packaging box','sweet box','custom bag'] }
+  ];
+  const normalizeSearch = value => String(value || '').toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ');
+  function filterProductCatalog(query) {
+    const normalizedQuery = normalizeSearch(query);
+    const cards = [...document.querySelectorAll('#productGrid .cat-card')];
+    const note = document.getElementById('searchResultsNote');
+    let matches = 0;
+    cards.forEach((card, index) => {
+      const product = PRODUCT_CATALOG_WITH_SYNONYMS[index];
+      const haystack = product ? [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ') : normalizeSearch(card.textContent);
+      const matched = !normalizedQuery || haystack.includes(normalizedQuery);
+      card.classList.toggle('search-hidden', !matched);
+      if (matched) matches += 1;
+    });
+    if (note) {
+      note.textContent = normalizedQuery ? `${matches} product${matches === 1 ? '' : 's'} found` : '';
+      note.classList.toggle('visible', Boolean(normalizedQuery));
+    }
+  }
+  function setSearchMode(active) {
+    document.body.classList.toggle('search-mode', active);
+    document.getElementById('searchBackdrop')?.setAttribute('aria-hidden', String(!active));
+  }
+  function initProductSearch() {
+    const input = document.getElementById('productSearch');
+    if (!input) return;
+    input.addEventListener('input', () => filterProductCatalog(input.value));
+    input.addEventListener('focus', () => setSearchMode(true));
+    document.getElementById('searchBackdrop')?.addEventListener('click', () => { input.blur(); setSearchMode(false); });
+    input.addEventListener('keydown', event => { if (event.key === 'Escape') { input.value = ''; filterProductCatalog(''); input.blur(); setSearchMode(false); } });
+    document.querySelector('.hdr-search button')?.addEventListener('click', () => { document.getElementById('products')?.scrollIntoView({ behavior:'smooth' }); });
+  }
   function addToCart(name, price, bundle = '', customization = null) {
     const lineName = bundle ? `${name} — ${bundle}` : name;
     const existing = cart.find(i => i.name === lineName);
@@ -1029,6 +1086,8 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { button.disabled = false; button.textContent = 'Submit Order'; }
   }
+
+  initProductSearch();
 
   /* Driver GPS sync hook (admin/driver phone connection) */
   function updateDriverLocation(lat, lng) {
