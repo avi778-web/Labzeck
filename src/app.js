@@ -19,7 +19,7 @@ const orderSchema = z.object({
     name: z.string().trim().min(1).max(120),
     phone: z.string().trim().min(10).max(30),
     address: z.string().trim().min(1).max(500),
-    location: z.object({ latitude: z.coerce.number().finite(), longitude: z.coerce.number().finite() }).optional()
+    location: z.object({ latitude: z.coerce.number().finite(), longitude: z.coerce.number().finite() }).nullable().optional()
   }).passthrough(),
   items: z.array(itemSchema).min(1).max(50),
   total: z.coerce.number().finite().nonnegative(),
@@ -32,12 +32,24 @@ const paymentOrderSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   idempotencyKey: z.string().trim().max(100).optional()
 }).passthrough();
+const qrPaymentSchema = z.object({
+  amount: z.coerce.number().int().min(100).max(100000000),
+  idempotencyKey: z.string().trim().max(100).optional()
+});
 const paymentVerificationSchema = z.object({
   razorpay_order_id: z.string().trim().min(1).max(120),
   razorpay_payment_id: z.string().trim().min(1).max(120),
   razorpay_signature: z.string().trim().regex(/^[a-f0-9]{64}$/i)
 });
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
+let razorpayClient = null;
+function getRazorpay() {
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
+  if (!keyId || !keySecret) return null;
+  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  return razorpayClient;
+}
 
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
@@ -64,7 +76,7 @@ function sensitiveRouteRateLimit(req, res, next) {
   current.count += 1;
   return next();
 }
-app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
+app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
@@ -177,7 +189,7 @@ app.post("/api/newsletter", async (req, res) => {
 
     await newEmail.save();
 
-    console.log("✅ EMAIL SAVED:", email);
+    console.log("Newsletter subscription saved");
 
     return res.status(201).json({
       ok: true,
@@ -292,13 +304,12 @@ app.post("/api/orders", async (req, res) => {
 
 app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   try {
+    const parsed = paymentOrderSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid payment request", issues: parsed.error.issues.map((issue) => issue.path.join(".")).slice(0, 10) });
     const razorpay = getRazorpay();
     if (!razorpay) {
-      return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+      return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the deployment environment." });
     }
-
-    const parsed = paymentOrderSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid payment request" });
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
     const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;
@@ -324,6 +335,21 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   } catch (error) {
     console.error("RAZORPAY ORDER ERROR:", error.message);
     return res.status(502).json({ ok: false, message: "Unable to start payment. Please try again." });
+  }
+});
+
+app.post("/api/payments/qr", async (req, res) => {
+  try {
+    const parsed = qrPaymentSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid QR payment amount" });
+    const razorpay = getRazorpay();
+    if (!razorpay) return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account" });
+    const qr = await razorpay.qrCode.create({ type: "upi", name: "SK Graphics", usage: "single_use", fixed_amount: true, payment_amount: parsed.data.amount, description: "SK Graphics order", close_by: Math.floor(Date.now() / 1000) + 1800, notes: { idempotencyKey: parsed.data.idempotencyKey || "none" } });
+    return res.status(201).json({ ok: true, qrId: qr.id, imageUrl: qr.image_url, amount: parsed.data.amount });
+  } catch (error) {
+    console.error("RAZORPAY QR ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Unable to create Razorpay QR. Please try UPI App payment." });
   }
 });
 
