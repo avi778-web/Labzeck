@@ -186,6 +186,16 @@
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
     .search-suggestion small { display: block; color: var(--text-light); font-size: 11px; }
+    .search-history-heading { padding: 7px 12px 4px; color: var(--text-light); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .search-history-item { display:flex; align-items:center; gap:8px; padding:4px; border-radius:10px; }
+    .search-history-item:hover, .search-history-item:focus-within { background:var(--bg-light); }
+    .search-history-query { display:flex; align-items:center; gap:9px; flex:1; min-width:0; border:0; background:transparent; color:var(--text); padding:8px; text-align:left; font:inherit; cursor:pointer; }
+    .search-history-query span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .search-history-query i { color:var(--text-light); font-size:12px; }
+    .search-history-remove { width:28px; height:28px; border:0; border-radius:50%; background:transparent; color:var(--text-light); cursor:pointer; }
+    .search-history-remove:hover, .search-history-remove:focus-visible { background:#fee2e2; color:#b91c1c; }
+    .search-no-result { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; padding:8px 12px; color:var(--text-light); font-size:13px; }
+    .search-no-result button { border:0; background:var(--bg-light); color:var(--primary); border-radius:999px; padding:6px 10px; font:inherit; font-weight:700; cursor:pointer; }
     .search-results-note { display: none; margin: -24px 0 24px; color: var(--text-light); font-size: 14px; text-align: center; }
     .search-results-note.visible { display: block; }
     .cat-card.search-hidden { display: none; }
@@ -378,6 +388,7 @@
 
     /* CART & MODALS */
     .cart-overlay, .order-overlay, .mug-overlay, .options-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+    body.modal-open { overflow: hidden; }
     .cart-overlay, .order-overlay, .mug-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.5);
       z-index: 2000; display: none; align-items: center; justify-content: center;
@@ -394,7 +405,8 @@
     .custom-fields { margin-top:18px; border-top:1px solid #e6eef3; padding-top:16px; }
     .custom-check { display:flex; gap:9px; align-items:flex-start; margin:12px 0; font-size:13px; line-height:1.4; }
     .custom-check input { margin-top:2px; accent-color:var(--primary); }
-    .upload-zone { display:block; border:1px dashed #9ab8c8; border-radius:10px; padding:12px; background:#f8fcfe; margin:7px 0 12px 25px; font-size:12px; color:var(--text-light); transition:.2s; }
+    .upload-zone[hidden] { display:none !important; }
+ .upload-zone { display:block; border:1px dashed #9ab8c8; border-radius:10px; padding:12px; background:#f8fcfe; margin:7px 0 12px 25px; font-size:12px; color:var(--text-light); transition:.2s; }
     .upload-zone:hover { border-color:var(--primary); background:#eef8fd; }
     .file-preview { display:flex; align-items:center; gap:10px; margin:6px 0 12px 25px; min-height:0; }
     .file-preview img { width:64px; height:50px; border-radius:7px; object-fit:cover; border:1px solid var(--border); }
@@ -1019,7 +1031,13 @@
     { id:'canvas-printing', name:'Canvas Printing', description:'Photo-quality canvas prints on stretched frames for homes, offices, and gifts.', synonyms:['photo frame','wall frame','canvas photo','wall art','painting print','stretched canvas'] },
     { id:'fancy-boxes-packaging', name:'Fancy Boxes & Packaging', description:'Custom packaging, gift boxes, and carry bags with premium finishing options.', synonyms:['box','gift box','carry bag','paper bag','packaging box','sweet box','custom bag'] }
   ];
+  const SEARCH_HISTORY_KEY = 'sk_graphics_search_history';
+  let searchHistory = [];
+  try { const storedHistory = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]'); searchHistory = Array.isArray(storedHistory) ? storedHistory.filter(item => typeof item === 'string' && item.trim()).slice(0, 8) : []; } catch (_) { searchHistory = []; }
   const normalizeSearch = value => String(value || '').toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ');
+  function persistSearchHistory() { try { localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(searchHistory)); } catch (_) {} }
+  function rememberSearch(query) { const value = String(query || '').trim().replace(/\s+/g, ' '); if (!value) return; searchHistory = [value, ...searchHistory.filter(item => normalizeSearch(item) !== normalizeSearch(value))].slice(0, 8); persistSearchHistory(); }
+  function removeSearchHistory(query) { searchHistory = searchHistory.filter(item => item !== query); persistSearchHistory(); renderSearchSuggestions(document.getElementById('productSearch')?.value || ''); document.getElementById('productSearch')?.focus(); }
   function editDistance(left, right) {
     const row = Array.from({ length: right.length + 1 }, (_, index) => index);
     for (let i = 1; i <= left.length; i += 1) {
@@ -1064,18 +1082,25 @@
     const box = document.getElementById('searchSuggestions');
     if (!box) return;
     const normalizedQuery = normalizeSearch(query);
+    const history = searchHistory.filter(item => !normalizedQuery || fuzzyMatches(normalizedQuery, item));
     const results = PRODUCT_CATALOG_WITH_SYNONYMS.filter(product => {
       const haystack = [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ');
       return fuzzyMatches(normalizedQuery, haystack);
     }).slice(0, 6);
-    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-suggestion" role="status">No matching products</div>' : '');
+    const historyMarkup = history.length ? `<div class="search-history-heading">Recent searches</div>${history.map(item => `<div class="search-history-item" role="option"><button type="button" class="search-history-query" data-history-query="${escapeHtml(item)}"><i class="fas fa-clock" aria-hidden="true"></i><span>${escapeHtml(item)}</span></button><button type="button" class="search-history-remove" data-remove-history="${escapeHtml(item)}" aria-label="Remove ${escapeHtml(item)} from search history"><i class="fas fa-times" aria-hidden="true"></i></button></div>`).join('')}` : '';
+    const resultMarkup = results.length ? `<div class="search-history-heading">Products</div>${results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('')}` : (normalizedQuery ? '<div class="search-no-result" role="status"><span>No matching products</span><button type="button" class="search-no-result-clear" aria-label="Clear search">Clear</button></div>' : '');
+    box.innerHTML = historyMarkup + resultMarkup;
+    box.querySelector('.search-no-result-clear')?.addEventListener('click', clearProductSearch);
     box.querySelectorAll('[data-product-id]').forEach(button => button.addEventListener('click', () => selectSearchProduct(button.dataset.productId)));
+    box.querySelectorAll('[data-history-query]').forEach(button => button.addEventListener('click', () => { const value = button.dataset.historyQuery || ''; const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { const input = document.getElementById('productSearch'); if (input) { input.value = value; filterProductCatalog(value); } } }));
+    box.querySelectorAll('[data-remove-history]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); removeSearchHistory(button.dataset.removeHistory || ''); }));
   }
   function selectSearchProduct(productId) {
     const product = PRODUCT_CATALOG_WITH_SYNONYMS.find(item => item.id === productId);
     const input = document.getElementById('productSearch');
     const note = document.getElementById('searchResultsNote');
     if (!product || !input) return;
+    rememberSearch(input.value || product.name);
     filterProductCatalog(product.name);
     input.value = '';
     input.closest('.hdr-search')?.classList.remove('has-query', 'search-active');
@@ -1089,6 +1114,9 @@
     if (!input) return;
     input.value = '';
     filterProductCatalog('');
+    input.closest('.hdr-search')?.classList.remove('has-query', 'search-active');
+    const suggestions = document.getElementById('searchSuggestions');
+    if (suggestions) suggestions.innerHTML = '';
     document.body.classList.remove('search-results-active', 'search-mode');
     input.blur();
   }
@@ -1148,7 +1176,7 @@
     const dropdowns = isCards ? `<div class="option-group"><label for="singleOption">Single-sided options</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${singleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div><div class="option-group"><label for="doubleOption">Double-sided options</label><select class="option-select" id="doubleOption" onchange="selectProductOption('double', this.value)"><option value="">Choose double-sided package</option>${doubleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>` : `<div class="option-group"><label for="singleOption">Quantity</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${optionChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>`;
     optionChoices = { single: singleChoices, double: doubleChoices };
     document.getElementById('optionsBody').innerHTML = dropdowns;
-    document.getElementById('optionsBody').insertAdjacentHTML('beforeend', `<div class="custom-fields"><label class="custom-check"><input type="checkbox" id="hasDesign" onchange="toggleUploadField('designUpload', this.checked)"><span><strong>Already Have Your Design?</strong><small> Upload PNG, JPG or PDF artwork if it is print-ready.</small></span></label><label class="upload-zone" id="designUpload" hidden>Choose your design file<input type="file" id="designFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('designFile','designFileData','designPreview')"></label><input type="hidden" id="designFileData"><div class="file-preview" id="designPreview"></div><label class="custom-check"><input type="checkbox" id="addExtraAsset" onchange="toggleUploadField('extraUpload', this.checked)"><span><strong>Add Extra Photo or Logo?</strong><small> Add a secondary image or brand mark.</small></span></label><label class="upload-zone" id="extraUpload" hidden>Choose photo or logo<input type="file" id="extraFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('extraFile','extraFileData','extraPreview')"></label><input type="hidden" id="extraFileData"><div class="file-preview" id="extraPreview"></div><label for="fontStyle"><strong>Font style</strong><select id="fontStyle"><option>Arial</option><option>Cursive / Brush Script</option><option>Times New Roman</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>Great Vibes</option><option>Courier New</option><option>Georgia</option><option>Verdana</option><option>Comic Sans MS</option><option>Impact</option></select></label><label for="printText" style="display:block;margin-top:14px"><strong>What to Print</strong><textarea id="printText" placeholder="Type names, phone numbers, shop name or printing instructions..."></textarea></label></div>`); updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open');
+    document.getElementById('optionsBody').insertAdjacentHTML('beforeend', `<div class="custom-fields"><label class="custom-check"><input type="checkbox" id="hasDesign" onchange="toggleUploadField('designUpload', this.checked)"><span><strong>Already Have Your Design?</strong><small> Upload PNG, JPG or PDF artwork if it is print-ready.</small></span></label><label class="upload-zone" id="designUpload" hidden>Choose your design file<input type="file" id="designFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('designFile','designFileData','designPreview')"></label><input type="hidden" id="designFileData"><div class="file-preview" id="designPreview"></div><label class="custom-check"><input type="checkbox" id="addExtraAsset" onchange="toggleUploadField('extraUpload', this.checked)"><span><strong>Add Extra Photo or Logo?</strong><small> Add a secondary image or brand mark.</small></span></label><label class="upload-zone" id="extraUpload" hidden>Choose photo or logo<input type="file" id="extraFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('extraFile','extraFileData','extraPreview')"></label><input type="hidden" id="extraFileData"><div class="file-preview" id="extraPreview"></div><label for="fontStyle"><strong>Font style</strong><select id="fontStyle"><option>Arial</option><option>Cursive / Brush Script</option><option>Times New Roman</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>Great Vibes</option><option>Courier New</option><option>Georgia</option><option>Verdana</option><option>Comic Sans MS</option><option>Impact</option></select></label><label for="printText" style="display:block;margin-top:14px"><strong>What to Print</strong><textarea id="printText" placeholder="Type names, phone numbers, shop name or printing instructions..."></textarea></label></div>`); updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open'); syncOverlayScrollLock();
   }
   function selectProductOption(side, value) { const choices = optionChoices[side] || []; if (value === '') { selectedOption = { ...selectedOption, price: choices[0]?.price || 0, bundle: choices[0]?.bundle || '' }; } else { selectedOption = { ...selectedOption, ...choices[Number(value)] }; } if (side === 'single' && document.getElementById('doubleOption')) document.getElementById('doubleOption').value = ''; if (side === 'double' && document.getElementById('singleOption')) document.getElementById('singleOption').value = ''; updateOptionsPrice(); }
   function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
@@ -1158,22 +1186,33 @@ function readFileAsDataUrl(file) { return new Promise((resolve, reject) => { con
 function compressImage(file) { return new Promise((resolve, reject) => { const image = new Image(); const objectUrl = URL.createObjectURL(file); image.onload = () => { const scale = Math.min(1, 1600 / Math.max(image.width, image.height)); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale)); canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height); URL.revokeObjectURL(objectUrl); resolve(canvas.toDataURL('image/jpeg', 0.78)); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Image could not be read')); }; image.src = objectUrl; }); }
 function clearCustomizationFile(inputId, outputId, previewId) { document.getElementById(inputId).value = ''; document.getElementById(outputId).value = ''; document.getElementById(previewId).innerHTML = ''; }
 function confirmProductOption() { if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
-  function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); }
+  function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); syncOverlayScrollLock(); }
+  function syncOverlayScrollLock() {
+    const hasOpenOverlay = [...document.querySelectorAll('.cart-overlay, .order-overlay, .mug-overlay, .options-overlay, .mobile-nav-overlay')].some(overlay => overlay.classList.contains('open'));
+    document.body.classList.toggle('modal-open', hasOpenOverlay);
+  }
   function toggleMobileNav() {
     const overlay = document.getElementById('mobileNavOverlay');
     const toggle = document.querySelector('.mob-toggle');
     const isOpen = overlay.classList.toggle('open');
     toggle?.setAttribute('aria-expanded', String(isOpen));
+    syncOverlayScrollLock();
   }
-  function openCart() { document.getElementById('cartOverlay').classList.add('open'); }
-  function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
-  function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
-  function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); }
+  function openCart() { document.getElementById('cartOverlay').classList.add('open'); syncOverlayScrollLock(); }
+  function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); syncOverlayScrollLock(); }
+  function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); syncOverlayScrollLock(); }
+  function closeOrderModal() { document.getElementById('orderOverlay').classList.remove('open'); syncOverlayScrollLock(); }
 
   let verifiedPayment = null;
   let paymentInProgress = false;
   let orderSubmissionInProgress = false;
   let razorpayLoaderPromise = null;
+  function resetPaymentState() {
+    paymentInProgress = false;
+    document.querySelectorAll('#upiPaymentPanel .btn').forEach(item => { item.disabled = false; item.classList.remove('is-loading'); });
+    const button = document.getElementById('orderSubmitBtn');
+    if (button) button.disabled = false;
+  }
   function loadRazorpay() {
     if (window.Razorpay) return Promise.resolve(window.Razorpay);
     if (razorpayLoaderPromise) return razorpayLoaderPromise;
@@ -1190,31 +1229,17 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     return razorpayLoaderPromise;
   }
   function getCartTotal() { return cart.reduce((sum, item) => sum + item.price * item.qty, 0); }
-  function updatePaymentPanel() { const isUpi = document.getElementById('paymentMethod').value === 'UPI'; document.getElementById('upiPaymentPanel').hidden = !isUpi; }
+  function updatePaymentPanel() { const isUpi = document.getElementById('paymentMethod').value === 'UPI'; document.getElementById('upiPaymentPanel').hidden = !isUpi; if (!isUpi) { verifiedPayment = null; resetPaymentState(); } }
   function updateFirstOrderBadge() {
     const badge = document.getElementById('firstOrderBadge');
     if (!badge) return;
     try { badge.hidden = localStorage.getItem('sk_graphics_order_completed') === 'true'; } catch (_) { badge.hidden = false; }
   }
-  async function startRazorpayPayment() { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
+  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
-  async function showUPIQR() {
+  function showUPIQR() {
     if (!cart.length) return alert('Add a product before opening the payment QR.');
-    const amount = Math.round(getCartTotal() * 100);
-    const qrImage = document.getElementById('upiQrImage');
-    const qrOverlay = document.getElementById('qrOverlay');
-    qrOverlay.classList.add('open');
-    document.getElementById('upiQrAmount').textContent = 'Creating secure Razorpay QR...';
-    try {
-      const response = await fetch('/api/payments/qr', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount, idempotencyKey: orderToken }) });
-      const result = await parseResponse(response);
-      if (!response.ok || !result.imageUrl) throw new Error(result.message || 'Unable to create Razorpay QR');
-      qrImage.src = result.imageUrl;
-      document.getElementById('upiQrAmount').textContent = `Pay ₹${(result.amount / 100).toFixed(2)} securely via Razorpay`;
-    } catch (error) {
-      closeUPIQR();
-      alert(error.message || 'Unable to create Razorpay QR. Please try UPI App payment.');
-    }
+    startRazorpayPayment('qr');
   }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   async function submitOrder(e) {
@@ -1235,7 +1260,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
+      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${window.location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }

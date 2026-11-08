@@ -43,14 +43,24 @@ const paymentVerificationSchema = z.object({
 });
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 let razorpayClient = null;
+function getRazorpayCredentials() {
+  const candidates = [
+    [process.env.API_KEY, process.env.API_KEY_2],
+    [process.env.RAZORPAY_KEY_ID, process.env.RAZORPAY_KEY_SECRET],
+    [process.env.API_KEY_3, process.env.API_KEY_4],
+    [process.env.API_KEY_3, process.env.API_KEY_3_SECRET || process.env.API_SECRET_3]
+  ];
+  const [keyId, keySecret] = candidates.find(([id, secret]) => id && secret) || [];
+  return keyId && keySecret ? { keyId, keySecret } : null;
+}
 function getRazorpay() {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
-  if (!keyId || !keySecret) return null;
-  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  const credentials = getRazorpayCredentials();
+  if (!credentials) return null;
+  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: credentials.keyId, key_secret: credentials.keySecret });
   return razorpayClient;
 }
 
+const connectDB = require("./db/db");
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
 
@@ -63,10 +73,16 @@ app.use((req, res, next) => {
   next();
 });
 let databaseConnectionPromise = null;
+async function ensureDatabase() {
+  if (mongoose.connection.readyState === 1) return true;
+  if (!databaseConnectionPromise) databaseConnectionPromise = connectDB().then(() => true).catch(() => false).finally(() => { databaseConnectionPromise = null; });
+  return databaseConnectionPromise;
+}
 const rateLimitState = new Map();
 function sensitiveRouteRateLimit(req, res, next) {
   const key = `${req.ip}:${req.path}`;
   const now = Date.now();
+  if (rateLimitState.size > 5000) for (const [entryKey, entry] of rateLimitState) if (now - entry.startedAt >= 60_000) rateLimitState.delete(entryKey);
   const current = rateLimitState.get(key);
   if (!current || now - current.startedAt >= 60_000) {
     rateLimitState.set(key, { startedAt: now, count: 1 });
@@ -229,12 +245,13 @@ app.post("/api/orders", async (req, res) => {
     const deliveryFee = Number(body.deliveryFee || 0);
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const total = Number(body.total);
+    const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
-      return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - (calculatedTotal + deliveryFee)) > 0.01 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+      return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
@@ -282,7 +299,7 @@ app.post("/api/orders", async (req, res) => {
     } catch (saveError) {
       console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
       if (saveError.name === "ValidationError" || saveError.name === "CastError") {
-        return res.status(400).json({ ok: false, message: "Order data is invalid", details: saveError.message });
+        return res.status(400).json({ ok: false, message: "Order data is invalid" });
       }
       if (saveError.code === 11000 && idempotencyKey) {
         const duplicate = await OrderModel.findOne({ idempotencyKey }).lean();
@@ -312,7 +329,7 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     }
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
-    const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;
+    const calculatedAmount = Math.round(paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
@@ -321,7 +338,7 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
-      receipt: token ? `sk_${token}`.slice(0, 40) : `sk_${Date.now()}`,
+      receipt: token ? `sk${token}`.replace(/[^a-zA-Z0-9]/g, '').slice(0, 40) : `sk${Date.now()}`,
       notes: { source: "SK Graphics checkout", idempotencyKey: token || "none" }
     });
 
@@ -330,11 +347,12 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3
+      keyId: getRazorpayCredentials().keyId
     });
   } catch (error) {
-    console.error("RAZORPAY ORDER ERROR:", error.message);
-    return res.status(502).json({ ok: false, message: "Unable to start payment. Please try again." });
+    const paymentError = error?.error?.description || error?.response?.description || error?.message || "Razorpay request failed";
+    console.error("RAZORPAY ORDER ERROR:", paymentError);
+    return res.status(502).json({ ok: false, message: paymentError === "Authentication failed" ? "Razorpay credentials are invalid. Please use the active Razorpay test/live keys." : "Unable to start payment. Please try again." });
   }
 });
 
@@ -344,11 +362,11 @@ app.post("/api/payments/qr", async (req, res) => {
     if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid QR payment amount" });
     const razorpay = getRazorpay();
     if (!razorpay) return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
-    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account" });
+    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account. Use the Razorpay checkout QR option." });
     const qr = await razorpay.qrCode.create({ type: "upi", name: "SK Graphics", usage: "single_use", fixed_amount: true, payment_amount: parsed.data.amount, description: "SK Graphics order", close_by: Math.floor(Date.now() / 1000) + 1800, notes: { idempotencyKey: parsed.data.idempotencyKey || "none" } });
     return res.status(201).json({ ok: true, qrId: qr.id, imageUrl: qr.image_url, amount: parsed.data.amount });
   } catch (error) {
-    console.error("RAZORPAY QR ERROR:", error.message);
+    console.error("RAZORPAY QR ERROR:", error?.error?.description || error?.message || error);
     return res.status(502).json({ ok: false, message: "Unable to create Razorpay QR. Please try UPI App payment." });
   }
 });
@@ -359,7 +377,8 @@ app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
     if (!parsed.success) return res.status(400).json({ ok: false, message: "Incomplete or invalid payment response" });
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = parsed.data;
 
-    const paymentSecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
+    const credentials = getRazorpayCredentials();
+    const paymentSecret = credentials?.keySecret;
     if (!paymentSecret) return res.status(503).json({ ok: false, message: "Payment verification is not configured on the server" });
 
     const expectedSignature = crypto
