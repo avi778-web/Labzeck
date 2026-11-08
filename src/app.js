@@ -19,7 +19,7 @@ const orderSchema = z.object({
     name: z.string().trim().min(1).max(120),
     phone: z.string().trim().min(10).max(30),
     address: z.string().trim().min(1).max(500),
-    location: z.object({ latitude: z.coerce.number().finite(), longitude: z.coerce.number().finite() }).optional()
+    location: z.object({ latitude: z.coerce.number().finite(), longitude: z.coerce.number().finite() }).nullable().optional()
   }).passthrough(),
   items: z.array(itemSchema).min(1).max(50),
   total: z.coerce.number().finite().nonnegative(),
@@ -38,6 +38,14 @@ const paymentVerificationSchema = z.object({
   razorpay_signature: z.string().trim().regex(/^[a-f0-9]{64}$/i)
 });
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
+let razorpayClient = null;
+function getRazorpay() {
+  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
+  if (!keyId || !keySecret) return null;
+  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  return razorpayClient;
+}
 
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
@@ -292,13 +300,12 @@ app.post("/api/orders", async (req, res) => {
 
 app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   try {
+    const parsed = paymentOrderSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid payment request", issues: parsed.error.issues.map((issue) => issue.path.join(".")).slice(0, 10) });
     const razorpay = getRazorpay();
     if (!razorpay) {
-      return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+      return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in the deployment environment." });
     }
-
-    const parsed = paymentOrderSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid payment request" });
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
     const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;

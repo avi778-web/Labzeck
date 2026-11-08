@@ -1218,7 +1218,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     if (paymentMethod === 'UPI' && !verifiedPayment) { await startRazorpayPayment(); return; }
     if (orderSubmissionInProgress) return;
     orderSubmissionInProgress = true;
-    let location = {};
+    let location = null;
     if (navigator.geolocation) { try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; saving address only.'); } }
     const button = document.getElementById('orderSubmitBtn'); button.disabled = true; button.textContent = 'Saving order...';
     try {
