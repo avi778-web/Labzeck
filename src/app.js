@@ -362,11 +362,11 @@ app.post("/api/payments/qr", async (req, res) => {
     if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid QR payment amount" });
     const razorpay = getRazorpay();
     if (!razorpay) return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
-    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account" });
+    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account. Use the Razorpay checkout QR option." });
     const qr = await razorpay.qrCode.create({ type: "upi", name: "SK Graphics", usage: "single_use", fixed_amount: true, payment_amount: parsed.data.amount, description: "SK Graphics order", close_by: Math.floor(Date.now() / 1000) + 1800, notes: { idempotencyKey: parsed.data.idempotencyKey || "none" } });
     return res.status(201).json({ ok: true, qrId: qr.id, imageUrl: qr.image_url, amount: parsed.data.amount });
   } catch (error) {
-    console.error("RAZORPAY QR ERROR:", error.message);
+    console.error("RAZORPAY QR ERROR:", error?.error?.description || error?.message || error);
     return res.status(502).json({ ok: false, message: "Unable to create Razorpay QR. Please try UPI App payment." });
   }
 });
