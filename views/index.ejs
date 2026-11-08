@@ -186,6 +186,14 @@
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
     .search-suggestion small { display: block; color: var(--text-light); font-size: 11px; }
+    .search-history-heading { padding: 7px 12px 4px; color: var(--text-light); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .search-history-item { display:flex; align-items:center; gap:8px; padding:4px; border-radius:10px; }
+    .search-history-item:hover, .search-history-item:focus-within { background:var(--bg-light); }
+    .search-history-query { display:flex; align-items:center; gap:9px; flex:1; min-width:0; border:0; background:transparent; color:var(--text); padding:8px; text-align:left; font:inherit; cursor:pointer; }
+    .search-history-query span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .search-history-query i { color:var(--text-light); font-size:12px; }
+    .search-history-remove { width:28px; height:28px; border:0; border-radius:50%; background:transparent; color:var(--text-light); cursor:pointer; }
+    .search-history-remove:hover, .search-history-remove:focus-visible { background:#fee2e2; color:#b91c1c; }
     .search-no-result { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; padding:8px 12px; color:var(--text-light); font-size:13px; }
     .search-no-result button { border:0; background:var(--bg-light); color:var(--primary); border-radius:999px; padding:6px 10px; font:inherit; font-weight:700; cursor:pointer; }
     .search-results-note { display: none; margin: -24px 0 24px; color: var(--text-light); font-size: 14px; text-align: center; }
@@ -1023,7 +1031,13 @@
     { id:'canvas-printing', name:'Canvas Printing', description:'Photo-quality canvas prints on stretched frames for homes, offices, and gifts.', synonyms:['photo frame','wall frame','canvas photo','wall art','painting print','stretched canvas'] },
     { id:'fancy-boxes-packaging', name:'Fancy Boxes & Packaging', description:'Custom packaging, gift boxes, and carry bags with premium finishing options.', synonyms:['box','gift box','carry bag','paper bag','packaging box','sweet box','custom bag'] }
   ];
+  const SEARCH_HISTORY_KEY = 'sk_graphics_search_history';
+  let searchHistory = [];
+  try { const storedHistory = JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY) || '[]'); searchHistory = Array.isArray(storedHistory) ? storedHistory.filter(item => typeof item === 'string' && item.trim()).slice(0, 8) : []; } catch (_) { searchHistory = []; }
   const normalizeSearch = value => String(value || '').toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ');
+  function persistSearchHistory() { try { localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(searchHistory)); } catch (_) {} }
+  function rememberSearch(query) { const value = String(query || '').trim().replace(/\s+/g, ' '); if (!value) return; searchHistory = [value, ...searchHistory.filter(item => normalizeSearch(item) !== normalizeSearch(value))].slice(0, 8); persistSearchHistory(); }
+  function removeSearchHistory(query) { searchHistory = searchHistory.filter(item => item !== query); persistSearchHistory(); renderSearchSuggestions(document.getElementById('productSearch')?.value || ''); document.getElementById('productSearch')?.focus(); }
   function editDistance(left, right) {
     const row = Array.from({ length: right.length + 1 }, (_, index) => index);
     for (let i = 1; i <= left.length; i += 1) {
@@ -1068,19 +1082,25 @@
     const box = document.getElementById('searchSuggestions');
     if (!box) return;
     const normalizedQuery = normalizeSearch(query);
+    const history = searchHistory.filter(item => !normalizedQuery || fuzzyMatches(normalizedQuery, item));
     const results = PRODUCT_CATALOG_WITH_SYNONYMS.filter(product => {
       const haystack = [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ');
       return fuzzyMatches(normalizedQuery, haystack);
     }).slice(0, 6);
-    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-no-result" role="status"><span>No matching products</span><button type="button" class="search-no-result-clear" aria-label="Clear search">Clear</button></div>' : '');
+    const historyMarkup = history.length ? `<div class="search-history-heading">Recent searches</div>${history.map(item => `<div class="search-history-item" role="option"><button type="button" class="search-history-query" data-history-query="${escapeHtml(item)}"><i class="fas fa-clock" aria-hidden="true"></i><span>${escapeHtml(item)}</span></button><button type="button" class="search-history-remove" data-remove-history="${escapeHtml(item)}" aria-label="Remove ${escapeHtml(item)} from search history"><i class="fas fa-times" aria-hidden="true"></i></button></div>`).join('')}` : '';
+    const resultMarkup = results.length ? `<div class="search-history-heading">Products</div>${results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('')}` : (normalizedQuery ? '<div class="search-no-result" role="status"><span>No matching products</span><button type="button" class="search-no-result-clear" aria-label="Clear search">Clear</button></div>' : '');
+    box.innerHTML = historyMarkup + resultMarkup;
     box.querySelector('.search-no-result-clear')?.addEventListener('click', clearProductSearch);
     box.querySelectorAll('[data-product-id]').forEach(button => button.addEventListener('click', () => selectSearchProduct(button.dataset.productId)));
+    box.querySelectorAll('[data-history-query]').forEach(button => button.addEventListener('click', () => { const value = button.dataset.historyQuery || ''; const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { const input = document.getElementById('productSearch'); if (input) { input.value = value; filterProductCatalog(value); } } }));
+    box.querySelectorAll('[data-remove-history]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); removeSearchHistory(button.dataset.removeHistory || ''); }));
   }
   function selectSearchProduct(productId) {
     const product = PRODUCT_CATALOG_WITH_SYNONYMS.find(item => item.id === productId);
     const input = document.getElementById('productSearch');
     const note = document.getElementById('searchResultsNote');
     if (!product || !input) return;
+    rememberSearch(input.value || product.name);
     filterProductCatalog(product.name);
     input.value = '';
     input.closest('.hdr-search')?.classList.remove('has-query', 'search-active');
