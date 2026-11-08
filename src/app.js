@@ -51,6 +51,7 @@ function getRazorpay() {
   return razorpayClient;
 }
 
+const connectDB = require("./db/db");
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
 
@@ -63,10 +64,16 @@ app.use((req, res, next) => {
   next();
 });
 let databaseConnectionPromise = null;
+async function ensureDatabase() {
+  if (mongoose.connection.readyState === 1) return true;
+  if (!databaseConnectionPromise) databaseConnectionPromise = connectDB().then(() => true).catch(() => false).finally(() => { databaseConnectionPromise = null; });
+  return databaseConnectionPromise;
+}
 const rateLimitState = new Map();
 function sensitiveRouteRateLimit(req, res, next) {
   const key = `${req.ip}:${req.path}`;
   const now = Date.now();
+  if (rateLimitState.size > 5000) for (const [entryKey, entry] of rateLimitState) if (now - entry.startedAt >= 60_000) rateLimitState.delete(entryKey);
   const current = rateLimitState.get(key);
   if (!current || now - current.startedAt >= 60_000) {
     rateLimitState.set(key, { startedAt: now, count: 1 });
@@ -229,12 +236,13 @@ app.post("/api/orders", async (req, res) => {
     const deliveryFee = Number(body.deliveryFee || 0);
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const total = Number(body.total);
+    const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
-      return res.status(400).json({ ok: false, message: "Name, phone, address and cart items are required" });
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - (calculatedTotal + deliveryFee)) > 0.01 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+      return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
       return res.status(400).json({ ok: false, message: "Enter a valid phone number" });
@@ -282,7 +290,7 @@ app.post("/api/orders", async (req, res) => {
     } catch (saveError) {
       console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
       if (saveError.name === "ValidationError" || saveError.name === "CastError") {
-        return res.status(400).json({ ok: false, message: "Order data is invalid", details: saveError.message });
+        return res.status(400).json({ ok: false, message: "Order data is invalid" });
       }
       if (saveError.code === 11000 && idempotencyKey) {
         const duplicate = await OrderModel.findOne({ idempotencyKey }).lean();
