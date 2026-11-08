@@ -177,7 +177,7 @@ app.post("/api/newsletter", async (req, res) => {
 
     await newEmail.save();
 
-    console.log("✅ EMAIL SAVED:", email);
+    console.log("Newsletter subscription saved");
 
     return res.status(201).json({
       ok: true,
