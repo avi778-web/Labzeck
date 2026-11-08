@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preload" as="image" href="/assets/sk-hero-online-print-shop.png" fetchpriority="high">
   <style>
     /* RESET & BASE */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -190,7 +191,22 @@
     .search-results-active .cats-grid { grid-template-columns: 1fr; max-width: 980px; margin-left: auto; margin-right: auto; }
     .search-results-active .cat-card { display: grid; grid-template-columns: 180px 1fr auto; align-items: center; text-align: left; gap: 20px; }
     .search-results-active .cat-card .cat-icon { margin: 0; }
-    .search-backdrop { display: none; }
+    .search-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.58); z-index: 1000; }
+    .search-backdrop[aria-hidden="false"] { display: block; }
+    .mobile-nav-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:1200; }
+    .mobile-nav-overlay.open { display:block; }
+    .mobile-nav-drawer { width:min(320px,86vw); height:100%; padding:24px; background:#fff; box-shadow:8px 0 30px rgba(15,23,42,.18); display:flex; flex-direction:column; gap:8px; }
+    .mobile-nav-drawer a { min-height:48px; display:flex; align-items:center; padding:12px 14px; border-radius:8px; color:var(--text); font-weight:700; }
+    .mobile-nav-drawer a:hover { background:var(--bg-light); color:var(--primary); }
+    .mobile-nav-close { align-self:flex-end; border:0; background:transparent; font-size:30px; line-height:1; color:var(--text-light); cursor:pointer; padding:8px; }
+    body.search-mode .search-backdrop { display:block; }
+    body.search-mode .ann-bar, body.search-mode .main-header > .container-fluid > .brand, body.search-mode .main-header nav, body.search-mode .hdr-social, body.search-mode .hdr-icons, body.search-mode .mob-toggle { visibility:hidden; }
+    body.search-mode .main-header { position:relative; z-index:1101; background:transparent; border:0; }
+    body.search-mode .hdr-search { visibility:visible; }
+    .first-order-badge { margin-top:10px; padding:10px 12px; border-radius:8px; background:#ecfdf3; color:#087443; font-size:13px; font-weight:700; }
+    .btn.is-loading { opacity:.7; cursor:wait; }
+    .btn.is-loading::before { content:''; width:15px; height:15px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
     .hdr-search button {
       position: absolute; right: 0; top: 0; height: 100%; padding: 0 14px;
       background: var(--primary); border: none; border-radius: 0 25px 25px 0;
@@ -340,6 +356,8 @@
       font-size: 15px; transition: all .2s;
     }
     .f-soc-icon:hover { color: #fff; background: var(--primary); }
+    .f-soc-icon.instagram-link { color: #e1306c; background: rgba(225,48,108,.1); }
+    .f-soc-icon.instagram-link:hover { color: #fff; background: linear-gradient(135deg,#f58529,#dd2a7b 55%,#8134af); }
     .f-col h6 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 18px; text-transform: uppercase; letter-spacing: .8px; }
     .f-col ul li { margin-bottom: 9px; }
     .f-col ul li a { font-size: 13.5px; color: rgba(255,255,255,.62); transition: all .2s; display: flex; align-items: center; gap: 7px; }
@@ -472,10 +490,20 @@
       .search-results-active .cat-card .cat-icon { margin: 0 auto; }
     }
   </style>
-<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+
 </head>
 <body>
 <div id="searchBackdrop" class="search-backdrop" aria-hidden="true"></div>
+<div id="mobileNavOverlay" class="mobile-nav-overlay" onclick="if(event.target===this)toggleMobileNav()">
+  <nav class="mobile-nav-drawer" aria-label="Mobile navigation">
+    <button type="button" class="mobile-nav-close" aria-label="Close navigation menu" onclick="toggleMobileNav()">×</button>
+    <a href="#products" onclick="toggleMobileNav()">Our Products</a>
+    <a href="#products" onclick="toggleMobileNav()">All Products</a>
+    <a href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer">YouTube</a>
+    <a href="#contact" onclick="toggleMobileNav()">Contact / Support</a>
+  </nav>
+</div>
 
 <!-- ANNOUNCEMENT BAR -->
 <div class="ann-bar">
@@ -550,7 +578,7 @@
     </div>
 
     <div class="hdr-social" aria-label="Social media links">
-      <a class="social-link" href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm8.8 1.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg><span>Instagram</span></a>
+      <a class="social-link instagram-link" href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm8.8 1.5a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg><span>Instagram</span></a>
       <a class="social-link" href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer" aria-label="YouTube @surajpal-1518u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.8 31.8 0 0 0 0 12a31.8 31.8 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.8 31.8 0 0 0 24 12a31.8 31.8 0 0 0-.5-5.8ZM9.6 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg><span>YouTube</span></a>
     </div>
 
@@ -564,7 +592,7 @@
       </a>
     </div>
 
-    <button class="mob-toggle" onclick="openCart()">
+    <button class="mob-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" onclick="toggleMobileNav()">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -574,7 +602,7 @@
 <section class="hero" id="home">
   <div class="hero-banner-wrapper">
     <!-- Aapki provide ki gayi online print shop image -->
-    <img src="/assets/sk-hero-online-print-shop.png" alt="SK Graphics online print shop">
+    <img decoding="async" src="/assets/sk-hero-online-print-shop.png" alt="SK Graphics online print shop" width="1600" height="560" loading="eager" fetchpriority="high">
   </div>
 </section>
 
@@ -602,7 +630,7 @@
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
-          <img src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy"><div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-business-cards.png" alt="Business Cards" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Business Cards</h5>
@@ -613,8 +641,8 @@
       <!-- 2. Flyers & Leaflets -->
       <div class="cat-card" onclick="openProductOptions('Color Pamphlets')">
         <div class="cat-img">
-          <img src="/assets/sk-flyers-clean.png" alt="Flyers & Leaflets" loading="lazy" onerror="this.onerror=null;this.src='/assets/sk-flyers-leaflets.png'">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-flyers-clean.png" alt="Flyers & Leaflets" loading="lazy" onerror="this.onerror=null;this.src='/assets/sk-flyers-leaflets.png'">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Color Pamphlets</h5>
@@ -626,8 +654,8 @@
       <!-- 3. Brochures -->
       <div class="cat-card" onclick="addToCart('Brochures', 299)">
         <div class="cat-img">
-          <img src="/assets/sk-brochures.png" alt="Brochures" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-brochures.png" alt="Brochures" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Brochures</h5>
@@ -639,8 +667,8 @@
       <!-- 4. Posters & Banners -->
       <div class="cat-card" onclick="addToCart('Posters & Banners', 599)">
         <div class="cat-img">
-          <img src="/assets/sk-banners.png" alt="Posters & Banners" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-banners.png" alt="Posters & Banners" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Posters &amp; Banners</h5>
@@ -652,8 +680,8 @@
       <!-- 5. Custom Mugs -->
       <div class="cat-card" onclick="addToCart('Custom Mugs', 199)">
         <div class="cat-img">
-          <img src="/assets/sk-mugs.png" alt="Custom Mugs" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-mugs.png" alt="Custom Mugs" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Custom Mugs</h5>
@@ -665,8 +693,8 @@
       <!-- 6. Stickers & Labels -->
       <div class="cat-card" onclick="addToCart('Stickers & Labels', 149)">
         <div class="cat-img">
-          <img src="/assets/sk-stickers.png" alt="Stickers & Labels" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-stickers.png" alt="Stickers & Labels" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Stickers &amp; Labels</h5>
@@ -678,8 +706,8 @@
       <!-- 7. Custom T-Shirts -->
       <div class="cat-card" onclick="addToCart('Custom T-Shirts', 299)">
         <div class="cat-img">
-          <img src="/assets/sk-tshirt.png" alt="Custom T-Shirts" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-tshirt.png" alt="Custom T-Shirts" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Custom T-Shirts</h5>
@@ -691,8 +719,8 @@
       <!-- 8. Roll-Up Banners -->
       <div class="cat-card" onclick="addToCart('Roll-Up Banners', 1299)">
         <div class="cat-img">
-          <img src="/assets/sk-roll-up-banner.png" alt="Roll-Up Banners" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-roll-up-banner.png" alt="Roll-Up Banners" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Roll-Up Banners</h5>
@@ -704,8 +732,8 @@
       <!-- 9. Diaries & Notebooks -->
       <div class="cat-card" onclick="addToCart('Diaries & Notebooks', 299)">
         <div class="cat-img">
-          <img src="/assets/sk-notebooks.png" alt="Diaries & Notebooks" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-notebooks.png" alt="Diaries & Notebooks" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Diaries &amp; Notebooks</h5>
@@ -715,10 +743,10 @@
       </div>
 
       <!-- 10. Presentation Folders -->
-      <div class="cat-card" onclick="addToCart('Folders', 349)">
+      <div class="cat-card" onclick="addToCart('Presentation Folders', 349)">
         <div class="cat-img">
-          <img src="/assets/sk-presentation-folders.png" alt="Presentation Folders" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-presentation-folders.png" alt="Presentation Folders" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Presentation Folders</h5>
@@ -730,8 +758,8 @@
       <!-- 11. Canvas Printing -->
       <div class="cat-card" onclick="addToCart('Canvas Printing', 799)">
         <div class="cat-img">
-          <img src="/assets/sk-canvas-printing.png" alt="Canvas Printing" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-canvas-printing.png" alt="Canvas Printing" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Canvas Printing</h5>
@@ -743,8 +771,8 @@
       <!-- 12. Fancy Boxes & Packaging -->
       <div class="cat-card" onclick="addToCart('Fancy Boxes & Packaging', 499)">
         <div class="cat-img">
-          <img src="/assets/sk-fancy-boxes.png" alt="Fancy Boxes & Packaging" loading="lazy">
- <div class="cat-circle-badge"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
+          <img decoding="async" src="/assets/sk-fancy-boxes.png" alt="Fancy Boxes & Packaging" loading="lazy">
+ <div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div>
  </div>
  <div class="cat-body">
           <h5>Fancy Boxes &amp; Packaging</h5>
@@ -852,7 +880,7 @@
           <p class="f-desc">One-stop shop for business cards, brochures, flyers, banners, cups, t-shirts, packaging & more.</p>
           <div class="f-social" aria-label="Social media links">
             <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-            <a href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm4.3 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg></a>
+            <a href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon instagram-link" aria-label="Instagram @avi.pal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm4.3 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg></a>
             <a href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon" aria-label="YouTube @surajpal-1518u"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.8 31.8 0 0 0 0 12a31.8 31.8 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.8 31.8 0 0 0 24 12a31.8 31.8 0 0 0-.5-5.8ZM9.6 15.5v-7l6.2 3.5-6.2 3.5Z"/></svg></a>
           </div>
         </div>
@@ -880,7 +908,7 @@
       </div>
     </div>
   </div>
-  <div class="payment-strip" aria-label="Accepted payment methods"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-L0uFxWxpgN0L3kyLrBgHVLgbhlXYjB.png" alt="Accepted cards and payment methods"></div>
+  <div class="payment-strip" aria-label="Accepted payment methods"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-L0uFxWxpgN0L3kyLrBgHVLgbhlXYjB.png" alt="Accepted cards and payment methods"></div>
   <div class="container">
     <div class="footer-bot">
       <p>© 2024 SK Graphics. All Rights Reserved.</p>
@@ -898,7 +926,7 @@
   </div>
 </div>
 
-<div class="options-overlay" id="qrOverlay" onclick="if(event.target===this)closeUPIQR()"><div class="options-modal qr-modal"><div class="om-hdr"><h3>Scan to pay via UPI</h3><button class="om-close" onclick="closeUPIQR()">×</button></div><div class="qr-content"><img id="upiQrImage" alt="UPI payment QR code"><strong id="upiQrAmount"></strong><small>UPI ID: skgraphics@upi</small></div></div></div>
+<div class="options-overlay" id="qrOverlay" onclick="if(event.target===this)closeUPIQR()"><div class="options-modal qr-modal"><div class="om-hdr"><h3>Scan to pay via UPI</h3><button class="om-close" onclick="closeUPIQR()">×</button></div><div class="qr-content"><img decoding="async" id="upiQrImage" alt="UPI payment QR code"><strong id="upiQrAmount"></strong><small>UPI ID: skgraphics@upi</small></div></div></div>
 
 <!-- CART PANEL -->
 <div class="cart-overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()">
@@ -931,27 +959,28 @@
     <div class="om-body">
       <form id="orderForm" onsubmit="submitOrder(event)">
         <div class="form-group">
-          <label>Your Name *</label>
+          <label for="custName">Your Name *</label>
           <input type="text" id="custName" placeholder="e.g. Rahul Sharma" required>
         </div>
         <div class="form-group">
-          <label>Contact Number *</label>
+          <label for="custPhone">Contact Number *</label>
           <input type="tel" id="custPhone" placeholder="e.g. 9876543210" required>
         </div>
         <div class="form-group">
-          <label>Delivery Address *</label>
+          <label for="custAddress">Delivery Address *</label>
           <textarea id="custAddress" rows="3" placeholder="Enter full address with PIN code" required></textarea>
         </div>
         <div class="form-group">
-          <label>Payment Method *</label>
+          <label for="paymentMethod">Payment Method *</label>
           <select id="paymentMethod" required onchange="updatePaymentPanel()"><option value="COD">Cash on Delivery (COD)</option><option value="UPI">UPI Payment</option></select>
           <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with PhonePe, GPay, Paytm or another UPI app.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><button type="button" class="btn btn-outline" onclick="startRazorpayPayment()"><i class="fas fa-lock"></i> Pay with Razorpay</button><small id="upiFallback">Razorpay Checkout opens securely with the exact order total and QR/UPI options.</small></div>
         </div>
         <div class="form-group">
-          <label>Special Instructions / Printing Notes</label>
+          <label for="custNotes">Special Instructions / Printing Notes</label>
           <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
         </div>
         <div class="delivery-summary"><span><s>₹50</s> delivery charge</span><strong>FREE Delivery</strong></div>
+        <div id="firstOrderBadge" class="first-order-badge" hidden>First-time order special: Free Delivery</div>
         <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
           <button type="submit" class="btn btn-wp" id="orderSubmitBtn"><i class="fab fa-whatsapp"></i> Submit Order</button>
         </div>
@@ -987,6 +1016,24 @@
     { id:'fancy-boxes-packaging', name:'Fancy Boxes & Packaging', description:'Custom packaging, gift boxes, and carry bags with premium finishing options.', synonyms:['box','gift box','carry bag','paper bag','packaging box','sweet box','custom bag'] }
   ];
   const normalizeSearch = value => String(value || '').toLowerCase().trim().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ');
+  function editDistance(left, right) {
+    const row = Array.from({ length: right.length + 1 }, (_, index) => index);
+    for (let i = 1; i <= left.length; i += 1) {
+      let previous = row[0]; row[0] = i;
+      for (let j = 1; j <= right.length; j += 1) {
+        const current = row[j];
+        row[j] = left[i - 1] === right[j - 1] ? previous : 1 + Math.min(previous, row[j - 1], current);
+        previous = current;
+      }
+    }
+    return row[right.length];
+  }
+  function fuzzyMatches(query, haystack) {
+    const normalizedQuery = normalizeSearch(query);
+    if (!normalizedQuery) return true;
+    const words = normalizeSearch(haystack).split(' ').filter(Boolean);
+    return normalizedQuery.split(' ').every(queryWord => words.some(word => word.includes(queryWord) || editDistance(queryWord, word) <= (queryWord.length > 5 ? 2 : 1)));
+  }
   function filterProductCatalog(query) {
     const normalizedQuery = normalizeSearch(query);
     const cards = [...document.querySelectorAll('#productGrid .cat-card')];
@@ -995,7 +1042,7 @@
     cards.forEach((card, index) => {
       const product = PRODUCT_CATALOG_WITH_SYNONYMS[index];
       const haystack = product ? [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ') : normalizeSearch(card.textContent);
-      const matched = !normalizedQuery || haystack.includes(normalizedQuery);
+      const matched = fuzzyMatches(normalizedQuery, haystack);
       card.classList.toggle('search-hidden', !matched);
       if (matched) matches += 1;
     });
@@ -1015,9 +1062,9 @@
     const normalizedQuery = normalizeSearch(query);
     const results = PRODUCT_CATALOG_WITH_SYNONYMS.filter(product => {
       const haystack = [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ');
-      return normalizedQuery && haystack.includes(normalizedQuery);
+      return fuzzyMatches(normalizedQuery, haystack);
     }).slice(0, 6);
-    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-suggestion" role="status">No matching products</div>' : '<div class="search-suggestion" role="status">Search by product or keyword</div>');
+    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-suggestion" role="status">No matching products</div>' : '');
     box.querySelectorAll('[data-product-id]').forEach(button => button.addEventListener('click', () => selectSearchProduct(button.dataset.productId)));
   }
   function selectSearchProduct(productId) {
@@ -1049,16 +1096,13 @@
     input.addEventListener('keydown', event => { if (event.key === 'Escape') clearProductSearch(); if (event.key === 'Enter') { event.preventDefault(); const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => normalizeSearch(product.name) === normalizeSearch(input.value)) || PRODUCT_CATALOG_WITH_SYNONYMS.find(product => [product.name, ...product.synonyms].some(term => normalizeSearch(term) === normalizeSearch(input.value))); if (match) selectSearchProduct(match.id); } });
     document.querySelector('.search-clear')?.addEventListener('click', clearProductSearch);
     submit?.addEventListener('click', () => { if (input.value.trim()) { document.body.classList.add('search-results-active'); document.body.classList.remove('search-mode'); input.blur(); document.getElementById('products')?.scrollIntoView({ behavior:'smooth' }); } else input.focus(); });
-    document.getElementById('searchBackdrop')?.addEventListener('click', () => { search?.classList.remove('search-active'); input.blur(); document.body.classList.remove('search-mode'); });
+    document.getElementById('searchBackdrop')?.addEventListener('click', () => { clearProductSearch(); });
   }
   function addToCart(name, price, bundle = '', customization = null) {
     const lineName = bundle ? `${name} — ${bundle}` : name;
-    const existing = cart.find(i => i.name === lineName);
-    if (existing) {
-      existing.qty++;
-    } else {
-      cart.push({ name: lineName, price, qty: 1, customization });
-    }
+    cart = cart.some(item => item.name === lineName)
+      ? cart.map(item => item.name === lineName ? { ...item, qty: item.qty + 1 } : item)
+      : [...cart, { name: lineName, price: Number(price) || 0, qty: 1, customization }];
     updateCartUI();
     openCart();
   }
@@ -1068,9 +1112,8 @@
     document.getElementById('cartBadge').textContent = count;
     const body = document.getElementById('cartBody');
     const footer = document.getElementById('cartFooter');
-    const empty = document.getElementById('cartEmpty');
-    if (!cart.length) { empty.style.display = 'block'; footer.style.display = 'none'; body.innerHTML = ''; body.appendChild(empty); return; }
-    empty.style.display = 'none'; footer.style.display = 'block'; body.innerHTML = '';
+    if (!cart.length) { footer.style.display = 'none'; body.innerHTML = '<div class="cart-empty" id="cartEmpty"><i class="fas fa-shopping-cart" aria-hidden="true"></i><p>Your cart is empty.<br>Select any product to start.</p></div>'; return; }
+    footer.style.display = 'block'; body.innerHTML = '';
     cart.forEach((item, index) => {
       const div = document.createElement('div'); div.className = 'cart-line';
       div.innerHTML = `<div><strong>${item.name}</strong><div class="cart-line-meta">₹${item.price} each · ₹${item.price * item.qty}</div></div><div class="cart-line-actions"><button class="qty-btn" onclick="changeCartQty(${index},-1)" aria-label="Decrease quantity">−</button><span>${item.qty}</span><button class="qty-btn" onclick="changeCartQty(${index},1)" aria-label="Increase quantity">+</button><button class="remove-btn" onclick="removeCartItem(${index})" aria-label="Remove ${item.name}"><i class="fas fa-trash"></i></button></div>`;
@@ -1079,8 +1122,12 @@
     document.getElementById('cartTotalAmt').textContent = '₹' + cart.reduce((sum, item) => sum + item.price * item.qty, 0);
   }
 
-  function changeCartQty(index, amount) { cart[index].qty += amount; if (cart[index].qty <= 0) cart.splice(index, 1); updateCartUI(); }
-  function removeCartItem(index) { cart.splice(index, 1); updateCartUI(); }
+  function changeCartQty(index, amount) {
+    if (!cart[index]) return;
+    cart = cart.map((item, itemIndex) => itemIndex === index ? { ...item, qty: item.qty + amount } : item).filter(item => item.qty > 0);
+    updateCartUI();
+  }
+  function removeCartItem(index) { cart = cart.filter((_, itemIndex) => itemIndex !== index); updateCartUI(); }
 
   let selectedOption = null;
   let optionChoices = [];
@@ -1099,12 +1146,18 @@
   function selectProductOption(side, value) { const choices = optionChoices[side] || []; if (value === '') { selectedOption = { ...selectedOption, price: choices[0]?.price || 0, bundle: choices[0]?.bundle || '' }; } else { selectedOption = { ...selectedOption, ...choices[Number(value)] }; } if (side === 'single' && document.getElementById('doubleOption')) document.getElementById('doubleOption').value = ''; if (side === 'double' && document.getElementById('singleOption')) document.getElementById('singleOption').value = ''; updateOptionsPrice(); }
   function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
   function toggleUploadField(id, visible) { document.getElementById(id).hidden = !visible; }
-async function readCustomizationFile(inputId, outputId, previewId) { const file = document.getElementById(inputId).files[0]; if (!file) return; try { const dataUrl = file.type.startsWith('image/') ? await compressImage(file) : await readFileAsDataUrl(file); if (dataUrl.length > 900000) throw new Error('Please choose a smaller file (max 3MB before compression).'); const response = await fetch('/api/uploads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ data:dataUrl, mimeType:file.type }) }); const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Upload failed'); document.getElementById(outputId).value = result.url; const preview = document.getElementById(previewId); preview.innerHTML = `<img src="${file.type.startsWith('image/') ? dataUrl : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="50"%3E%3Crect width="64" height="50" rx="7" fill="%23edf7fd"/%3E%3Ctext x="32" y="30" text-anchor="middle" font-size="12" fill="%232579a9"%3EPDF%3C/text%3E%3C/svg%3E'}" alt="Uploaded file preview"><span>${file.name}</span><button type="button" onclick="clearCustomizationFile('${inputId}','${outputId}','${previewId}')">Remove</button>`; } catch (error) { document.getElementById(inputId).value = ''; alert(error.message || 'Could not upload file'); } }
+async function readCustomizationFile(inputId, outputId, previewId) { const file = document.getElementById(inputId).files[0]; if (!file) return; try { const dataUrl = file.type.startsWith('image/') ? await compressImage(file) : await readFileAsDataUrl(file); if (dataUrl.length > 900000) throw new Error('Please choose a smaller file (max 3MB before compression).'); const response = await fetch('/api/uploads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ data:dataUrl, mimeType:file.type }) }); const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Upload failed'); document.getElementById(outputId).value = result.url; const preview = document.getElementById(previewId); preview.innerHTML = `<img decoding="async" src="${file.type.startsWith('image/') ? dataUrl : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="50"%3E%3Crect width="64" height="50" rx="7" fill="%23edf7fd"/%3E%3Ctext x="32" y="30" text-anchor="middle" font-size="12" fill="%232579a9"%3EPDF%3C/text%3E%3C/svg%3E'}" alt="Uploaded file preview"><span>${file.name}</span><button type="button" onclick="clearCustomizationFile('${inputId}','${outputId}','${previewId}')">Remove</button>`; } catch (error) { document.getElementById(inputId).value = ''; alert(error.message || 'Could not upload file'); } }
 function readFileAsDataUrl(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
 function compressImage(file) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => { const scale = Math.min(1, 1600 / Math.max(image.width, image.height)); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale)); canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.78)); }; image.onerror = reject; image.src = URL.createObjectURL(file); }); }
 function clearCustomizationFile(inputId, outputId, previewId) { document.getElementById(inputId).value = ''; document.getElementById(outputId).value = ''; document.getElementById(previewId).innerHTML = ''; }
 function confirmProductOption() { if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
   function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); }
+  function toggleMobileNav() {
+    const overlay = document.getElementById('mobileNavOverlay');
+    const toggle = document.querySelector('.mob-toggle');
+    const isOpen = overlay.classList.toggle('open');
+    toggle?.setAttribute('aria-expanded', String(isOpen));
+  }
   function openCart() { document.getElementById('cartOverlay').classList.add('open'); }
   function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); }
   function openOrderModal() { closeCart(); document.getElementById('orderOverlay').classList.add('open'); }
@@ -1113,11 +1166,40 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   let verifiedPayment = null;
   let paymentInProgress = false;
   let orderSubmissionInProgress = false;
+  let razorpayLoaderPromise = null;
+  function loadRazorpay() {
+    if (window.Razorpay) return Promise.resolve(window.Razorpay);
+    if (razorpayLoaderPromise) return razorpayLoaderPromise;
+    razorpayLoaderPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-razorpay-checkout]');
+      const script = existing || document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.dataset.razorpayCheckout = 'true';
+      script.onload = () => window.Razorpay ? resolve(window.Razorpay) : reject(new Error('Payment checkout did not load.'));
+      script.onerror = () => reject(new Error('Secure payment could not load. Check your connection and try again.'));
+      if (!existing) document.head.appendChild(script);
+    });
+    return razorpayLoaderPromise;
+  }
   function getCartTotal() { return cart.reduce((sum, item) => sum + item.price * item.qty, 0); }
   function updatePaymentPanel() { const isUpi = document.getElementById('paymentMethod').value === 'UPI'; document.getElementById('upiPaymentPanel').hidden = !isUpi; }
-  async function startRazorpayPayment() { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); if (!window.Razorpay) return alert('Secure payment is still loading. Please try again.'); paymentInProgress = true; const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, handler: async function (payment) { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); }, modal:{ ondismiss:()=>{ paymentInProgress=false; button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
+  function updateFirstOrderBadge() {
+    const badge = document.getElementById('firstOrderBadge');
+    if (!badge) return;
+    try { badge.hidden = localStorage.getItem('sk_graphics_order_completed') === 'true'; } catch (_) { badge.hidden = false; }
+  }
+  async function startRazorpayPayment() { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
-  function showUPIQR() { startRazorpayPayment(); }
+  function showUPIQR() {
+    if (!cart.length) return alert('Add a product before opening the payment QR.');
+    const amount = getCartTotal().toFixed(2);
+    const upiId = 'skgraphics@upi';
+    const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('SK Graphics')}&am=${amount}&cu=INR&tn=${encodeURIComponent('SK Graphics order')}`;
+    document.getElementById('upiQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(upiString)}`;
+    document.getElementById('upiQrAmount').textContent = `Pay ₹${amount}`;
+    document.getElementById('qrOverlay').classList.add('open');
+  }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   async function submitOrder(e) {
     e.preventDefault();
@@ -1127,8 +1209,8 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     const notes = document.getElementById('custNotes').value.trim();
     const paymentMethod = document.getElementById('paymentMethod').value;
     const total = getCartTotal();
-    if (paymentMethod === 'UPI' && !verifiedPayment) { await startRazorpayPayment(); return; }
     if (!cart.length || !name || !phone || !address) return alert('Please complete your order details and add a product.');
+    if (paymentMethod === 'UPI' && !verifiedPayment) { await startRazorpayPayment(); return; }
     if (orderSubmissionInProgress) return;
     orderSubmissionInProgress = true;
     let location = {};
@@ -1137,12 +1219,13 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel();
+      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }
 
   initProductSearch();
+  updateFirstOrderBadge();
 
   /* Driver GPS sync hook (admin/driver phone connection) */
   function updateDriverLocation(lat, lng) {
