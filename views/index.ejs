@@ -176,12 +176,12 @@
       transition: border-color .2s; color: var(--text);
     }
     .hdr-search input:focus { border-color: var(--primary); }
-    .hdr-search.search-active { z-index: 1100; max-width: 100%; }
+    .hdr-search.search-active { position: relative; z-index: 1110; max-width: 100%; }
     .hdr-search input { height: 48px; transition: width .3s ease-in-out, border-color .2s, box-shadow .3s; }
     .hdr-search.search-active input { width: 100%; box-shadow: 0 8px 24px rgba(15,23,42,.14); }
     .search-clear { position: absolute; right: 48px; top: 0; height: 100%; width: 42px; border: 0; background: transparent; color: var(--text-light); cursor: pointer; display: none; }
     .hdr-search.has-query .search-clear { display: block; }
-    .search-suggestions { position: absolute; top: calc(100% + 8px); left: 0; right: 0; display: none; padding: 8px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.16); z-index: 1110; }
+    .search-suggestions { position: fixed; top: 80px; left: 50%; width: min(520px, calc(100vw - 24px)); transform: translateX(-50%); max-height: min(420px, 60vh); overflow-y: auto; display: none; padding: 8px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.16); z-index: 5000; }
     .hdr-search.search-active .search-suggestions { display: block; }
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
@@ -200,9 +200,9 @@
     .mobile-nav-drawer a { min-height:48px; display:flex; align-items:center; padding:12px 14px; border-radius:8px; color:var(--text); font-weight:700; }
     .mobile-nav-drawer a:hover { background:var(--bg-light); color:var(--primary); }
     .mobile-nav-close { align-self:flex-end; border:0; background:transparent; font-size:30px; line-height:1; color:var(--text-light); cursor:pointer; padding:8px; }
-    body.search-mode .search-backdrop { display:block; }
+    body.search-mode .search-backdrop { display:block; pointer-events:none; }
     body.search-mode .ann-bar, body.search-mode .main-header .sk-logo, body.search-mode .main-header .main-nav, body.search-mode .main-header .hdr-icons, body.search-mode .main-header .mob-toggle { visibility:hidden; }
-    body.search-mode .main-header { position:relative; z-index:1101; background:transparent; border:0; }
+    body.search-mode .main-header { position:relative; z-index:2000; background:transparent; border:0; }
     body.search-mode .hdr-search { visibility:visible; }
     .first-order-badge { margin-top:10px; padding:10px 12px; border-radius:8px; background:#ecfdf3; color:#087443; font-size:13px; font-weight:700; }
     .btn.is-loading { opacity:.7; cursor:wait; }
@@ -928,7 +928,7 @@
   </div>
 </div>
 
-<div class="options-overlay" id="qrOverlay" onclick="if(event.target===this)closeUPIQR()"><div class="options-modal qr-modal"><div class="om-hdr"><h3>Scan to pay via UPI</h3><button class="om-close" onclick="closeUPIQR()">×</button></div><div class="qr-content"><img decoding="async" id="upiQrImage" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" width="280" height="280" alt="UPI payment QR code" loading="lazy"><strong id="upiQrAmount"></strong><small>UPI ID: skgraphics@upi</small></div></div></div>
+<div class="options-overlay" id="qrOverlay" onclick="if(event.target===this)closeUPIQR()"><div class="options-modal qr-modal"><div class="om-hdr"><h3>Scan to pay via UPI</h3><button class="om-close" onclick="closeUPIQR()">×</button></div><div class="qr-content"><img decoding="async" id="upiQrImage" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" width="280" height="280" alt="UPI payment QR code" loading="lazy"><strong id="upiQrAmount"></strong><small>Secure Razorpay QR • Scan with any UPI app</small></div></div></div>
 
 <!-- CART PANEL -->
 <div class="cart-overlay" id="cartOverlay" onclick="if(event.target===this)closeCart()">
@@ -1074,11 +1074,13 @@
   function selectSearchProduct(productId) {
     const product = PRODUCT_CATALOG_WITH_SYNONYMS.find(item => item.id === productId);
     const input = document.getElementById('productSearch');
+    const note = document.getElementById('searchResultsNote');
     if (!product || !input) return;
-    input.value = product.name;
     filterProductCatalog(product.name);
-    document.body.classList.add('search-results-active');
-    document.body.classList.remove('search-mode');
+    input.value = '';
+    input.closest('.hdr-search')?.classList.remove('has-query', 'search-active');
+    if (note) { note.textContent = ''; note.classList.remove('visible'); }
+    document.body.classList.remove('search-results-active', 'search-mode');
     input.blur();
     document.getElementById('products')?.scrollIntoView({ behavior:'smooth', block:'start' });
   }
@@ -1099,7 +1101,7 @@
     input.addEventListener('focus', () => { search?.classList.add('search-active'); setSearchMode(true); renderSearchSuggestions(input.value); });
     input.addEventListener('keydown', event => { if (event.key === 'Escape') clearProductSearch(); if (event.key === 'Enter') { event.preventDefault(); const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => normalizeSearch(product.name) === normalizeSearch(input.value)) || PRODUCT_CATALOG_WITH_SYNONYMS.find(product => [product.name, ...product.synonyms].some(term => normalizeSearch(term) === normalizeSearch(input.value))); if (match) selectSearchProduct(match.id); } });
     document.querySelector('.search-clear')?.addEventListener('click', clearProductSearch);
-    submit?.addEventListener('click', () => { if (input.value.trim()) { document.body.classList.add('search-results-active'); document.body.classList.remove('search-mode'); input.blur(); document.getElementById('products')?.scrollIntoView({ behavior:'smooth' }); } else input.focus(); });
+    submit?.addEventListener('click', () => { if (input.value.trim()) { const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(input.value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { input.value = ''; clearProductSearch(); } } else input.focus(); });
     document.getElementById('searchBackdrop')?.addEventListener('click', () => { clearProductSearch(); });
   }
   function addToCart(name, price, bundle = '', customization = null) {
@@ -1196,14 +1198,23 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   }
   async function startRazorpayPayment() { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
-  function showUPIQR() {
+  async function showUPIQR() {
     if (!cart.length) return alert('Add a product before opening the payment QR.');
-    const amount = getCartTotal().toFixed(2);
-    const upiId = 'skgraphics@upi';
-    const upiString = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent('SK Graphics')}&am=${amount}&cu=INR&tn=${encodeURIComponent('SK Graphics order')}`;
-    document.getElementById('upiQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(upiString)}`;
-    document.getElementById('upiQrAmount').textContent = `Pay ₹${amount}`;
-    document.getElementById('qrOverlay').classList.add('open');
+    const amount = Math.round(getCartTotal() * 100);
+    const qrImage = document.getElementById('upiQrImage');
+    const qrOverlay = document.getElementById('qrOverlay');
+    qrOverlay.classList.add('open');
+    document.getElementById('upiQrAmount').textContent = 'Creating secure Razorpay QR...';
+    try {
+      const response = await fetch('/api/payments/qr', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount, idempotencyKey: orderToken }) });
+      const result = await parseResponse(response);
+      if (!response.ok || !result.imageUrl) throw new Error(result.message || 'Unable to create Razorpay QR');
+      qrImage.src = result.imageUrl;
+      document.getElementById('upiQrAmount').textContent = `Pay ₹${(result.amount / 100).toFixed(2)} securely via Razorpay`;
+    } catch (error) {
+      closeUPIQR();
+      alert(error.message || 'Unable to create Razorpay QR. Please try UPI App payment.');
+    }
   }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   async function submitOrder(e) {

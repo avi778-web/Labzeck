@@ -32,6 +32,10 @@ const paymentOrderSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   idempotencyKey: z.string().trim().max(100).optional()
 }).passthrough();
+const qrPaymentSchema = z.object({
+  amount: z.coerce.number().int().min(100).max(100000000),
+  idempotencyKey: z.string().trim().max(100).optional()
+});
 const paymentVerificationSchema = z.object({
   razorpay_order_id: z.string().trim().min(1).max(120),
   razorpay_payment_id: z.string().trim().min(1).max(120),
@@ -72,7 +76,7 @@ function sensitiveRouteRateLimit(req, res, next) {
   current.count += 1;
   return next();
 }
-app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
+app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
@@ -331,6 +335,21 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
   } catch (error) {
     console.error("RAZORPAY ORDER ERROR:", error.message);
     return res.status(502).json({ ok: false, message: "Unable to start payment. Please try again." });
+  }
+});
+
+app.post("/api/payments/qr", async (req, res) => {
+  try {
+    const parsed = qrPaymentSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Invalid QR payment amount" });
+    const razorpay = getRazorpay();
+    if (!razorpay) return res.status(503).json({ ok: false, message: "Razorpay is not configured on the server" });
+    if (!razorpay.qrCode?.create) return res.status(503).json({ ok: false, message: "Razorpay QR payments are not enabled for this account" });
+    const qr = await razorpay.qrCode.create({ type: "upi", name: "SK Graphics", usage: "single_use", fixed_amount: true, payment_amount: parsed.data.amount, description: "SK Graphics order", close_by: Math.floor(Date.now() / 1000) + 1800, notes: { idempotencyKey: parsed.data.idempotencyKey || "none" } });
+    return res.status(201).json({ ok: true, qrId: qr.id, imageUrl: qr.image_url, amount: parsed.data.amount });
+  } catch (error) {
+    console.error("RAZORPAY QR ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Unable to create Razorpay QR. Please try UPI App payment." });
   }
 });
 
