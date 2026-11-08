@@ -43,11 +43,20 @@ const paymentVerificationSchema = z.object({
 });
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 let razorpayClient = null;
+function getRazorpayCredentials() {
+  const candidates = [
+    [process.env.API_KEY, process.env.API_KEY_2],
+    [process.env.RAZORPAY_KEY_ID, process.env.RAZORPAY_KEY_SECRET],
+    [process.env.API_KEY_3, process.env.API_KEY_4],
+    [process.env.API_KEY_3, process.env.API_KEY_3_SECRET || process.env.API_SECRET_3]
+  ];
+  const [keyId, keySecret] = candidates.find(([id, secret]) => id && secret) || [];
+  return keyId && keySecret ? { keyId, keySecret } : null;
+}
 function getRazorpay() {
-  const keyId = process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
-  if (!keyId || !keySecret) return null;
-  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: keyId, key_secret: keySecret });
+  const credentials = getRazorpayCredentials();
+  if (!credentials) return null;
+  if (!razorpayClient) razorpayClient = new Razorpay({ key_id: credentials.keyId, key_secret: credentials.keySecret });
   return razorpayClient;
 }
 
@@ -320,7 +329,7 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     }
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
-    const calculatedAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100;
+    const calculatedAmount = Math.round(paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
@@ -329,7 +338,7 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",
-      receipt: token ? `sk_${token}`.slice(0, 40) : `sk_${Date.now()}`,
+      receipt: token ? `sk${token}`.replace(/[^a-zA-Z0-9]/g, '').slice(0, 40) : `sk${Date.now()}`,
       notes: { source: "SK Graphics checkout", idempotencyKey: token || "none" }
     });
 
@@ -338,11 +347,12 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || process.env.API_KEY_3
+      keyId: getRazorpayCredentials().keyId
     });
   } catch (error) {
-    console.error("RAZORPAY ORDER ERROR:", error.message);
-    return res.status(502).json({ ok: false, message: "Unable to start payment. Please try again." });
+    const paymentError = error?.error?.description || error?.response?.description || error?.message || "Razorpay request failed";
+    console.error("RAZORPAY ORDER ERROR:", paymentError);
+    return res.status(502).json({ ok: false, message: paymentError === "Authentication failed" ? "Razorpay credentials are invalid. Please use the active Razorpay test/live keys." : "Unable to start payment. Please try again." });
   }
 });
 
@@ -367,7 +377,8 @@ app.post(["/api/payments/verify", "/api/verify-payment"], async (req, res) => {
     if (!parsed.success) return res.status(400).json({ ok: false, message: "Incomplete or invalid payment response" });
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = parsed.data;
 
-    const paymentSecret = process.env.RAZORPAY_KEY_SECRET || process.env.API_KEY_3_SECRET || process.env.API_SECRET_3 || process.env.API_KEY_4;
+    const credentials = getRazorpayCredentials();
+    const paymentSecret = credentials?.keySecret;
     if (!paymentSecret) return res.status(503).json({ ok: false, message: "Payment verification is not configured on the server" });
 
     const expectedSignature = crypto

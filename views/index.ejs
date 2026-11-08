@@ -186,6 +186,8 @@
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
     .search-suggestion small { display: block; color: var(--text-light); font-size: 11px; }
+    .search-no-result { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; padding:8px 12px; color:var(--text-light); font-size:13px; }
+    .search-no-result button { border:0; background:var(--bg-light); color:var(--primary); border-radius:999px; padding:6px 10px; font:inherit; font-weight:700; cursor:pointer; }
     .search-results-note { display: none; margin: -24px 0 24px; color: var(--text-light); font-size: 14px; text-align: center; }
     .search-results-note.visible { display: block; }
     .cat-card.search-hidden { display: none; }
@@ -394,7 +396,8 @@
     .custom-fields { margin-top:18px; border-top:1px solid #e6eef3; padding-top:16px; }
     .custom-check { display:flex; gap:9px; align-items:flex-start; margin:12px 0; font-size:13px; line-height:1.4; }
     .custom-check input { margin-top:2px; accent-color:var(--primary); }
-    .upload-zone { display:block; border:1px dashed #9ab8c8; border-radius:10px; padding:12px; background:#f8fcfe; margin:7px 0 12px 25px; font-size:12px; color:var(--text-light); transition:.2s; }
+    .upload-zone[hidden] { display:none !important; }
+ .upload-zone { display:block; border:1px dashed #9ab8c8; border-radius:10px; padding:12px; background:#f8fcfe; margin:7px 0 12px 25px; font-size:12px; color:var(--text-light); transition:.2s; }
     .upload-zone:hover { border-color:var(--primary); background:#eef8fd; }
     .file-preview { display:flex; align-items:center; gap:10px; margin:6px 0 12px 25px; min-height:0; }
     .file-preview img { width:64px; height:50px; border-radius:7px; object-fit:cover; border:1px solid var(--border); }
@@ -1068,7 +1071,8 @@
       const haystack = [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ');
       return fuzzyMatches(normalizedQuery, haystack);
     }).slice(0, 6);
-    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-suggestion" role="status">No matching products</div>' : '');
+    box.innerHTML = results.length ? results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('') : (normalizedQuery ? '<div class="search-no-result" role="status"><span>No matching products</span><button type="button" class="search-no-result-clear" aria-label="Clear search">Clear</button></div>' : '');
+    box.querySelector('.search-no-result-clear')?.addEventListener('click', clearProductSearch);
     box.querySelectorAll('[data-product-id]').forEach(button => button.addEventListener('click', () => selectSearchProduct(button.dataset.productId)));
   }
   function selectSearchProduct(productId) {
@@ -1089,6 +1093,9 @@
     if (!input) return;
     input.value = '';
     filterProductCatalog('');
+    input.closest('.hdr-search')?.classList.remove('has-query', 'search-active');
+    const suggestions = document.getElementById('searchSuggestions');
+    if (suggestions) suggestions.innerHTML = '';
     document.body.classList.remove('search-results-active', 'search-mode');
     input.blur();
   }
@@ -1196,25 +1203,11 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     if (!badge) return;
     try { badge.hidden = localStorage.getItem('sk_graphics_order_completed') === 'true'; } catch (_) { badge.hidden = false; }
   }
-  async function startRazorpayPayment() { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
+  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
-  async function showUPIQR() {
+  function showUPIQR() {
     if (!cart.length) return alert('Add a product before opening the payment QR.');
-    const amount = Math.round(getCartTotal() * 100);
-    const qrImage = document.getElementById('upiQrImage');
-    const qrOverlay = document.getElementById('qrOverlay');
-    qrOverlay.classList.add('open');
-    document.getElementById('upiQrAmount').textContent = 'Creating secure Razorpay QR...';
-    try {
-      const response = await fetch('/api/payments/qr', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount, idempotencyKey: orderToken }) });
-      const result = await parseResponse(response);
-      if (!response.ok || !result.imageUrl) throw new Error(result.message || 'Unable to create Razorpay QR');
-      qrImage.src = result.imageUrl;
-      document.getElementById('upiQrAmount').textContent = `Pay ₹${(result.amount / 100).toFixed(2)} securely via Razorpay`;
-    } catch (error) {
-      closeUPIQR();
-      alert(error.message || 'Unable to create Razorpay QR. Please try UPI App payment.');
-    }
+    startRazorpayPayment('qr');
   }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   async function submitOrder(e) {
@@ -1235,7 +1228,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, total, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`, paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
+      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${window.location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }
