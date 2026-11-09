@@ -7,6 +7,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
 const { z } = require("zod");
+const { cloudinaryConfigured, uploadToCloudinary } = require("./cloudinary");
 
 const newsletterSchema = z.object({ email: z.string().trim().email().max(254) });
 const itemSchema = z.object({
@@ -107,22 +108,27 @@ try {
 }
 app.use("/uploads", express.static(uploadsDirectory));
 
-app.post("/api/uploads", (req, res) => {
+app.post("/api/uploads", async (req, res) => {
   try {
     const { data, mimeType } = req.body || {};
     if (typeof data !== "string" || !/^data:(image\/(png|jpeg|webp)|application\/pdf|application\/postscript|application\/illustrator|application\/x-photoshop|image\/vnd\.adobe\.photoshop);base64,/.test(data)) {
-      return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, or PDF files are supported" });
+      return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, PDF, AI, or PSD files are supported" });
     }
     const raw = data.split(",")[1];
     const buffer = Buffer.from(raw, "base64");
     if (!buffer.length || buffer.length > 50 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 50MB." });
+    if (cloudinaryConfigured()) {
+      const upload = await uploadToCloudinary(data, { folder: "sk-graphics/artwork" });
+      return res.status(201).json({ ok: true, url: upload.secureUrl, imageUrl: upload.secureUrl, publicId: upload.publicId, storage: "cloudinary" });
+    }
     const extension = mimeType === "application/pdf" ? "pdf" : mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
     const filename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${extension}`;
     fs.writeFileSync(path.join(uploadsDirectory, filename), buffer, { flag: "wx" });
-    return res.status(201).json({ ok: true, url: `/uploads/${filename}` });
+    return res.status(201).json({ ok: true, url: `/uploads/${filename}`, imageUrl: `/uploads/${filename}`, storage: "local-fallback" });
   } catch (error) {
     console.error("UPLOAD ERROR:", error.message);
-    return res.status(500).json({ ok: false, message: "Could not save upload" });
+    const status = error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode : 500;
+    return res.status(status).json({ ok: false, message: error.message || "Could not save upload" });
   }
 });
 
@@ -283,6 +289,8 @@ app.post("/api/orders", async (req, res) => {
           fontStyle: String(item.customization.fontStyle || '').slice(0, 80),
           printText: String(item.customization.printText || '').slice(0, 2000),
           designFile: String(item.customization.designFile || '').slice(0, 3000000),
+          imageUrl: String(item.customization.imageUrl || item.customization.designFile || '').slice(0, 3000000),
+          imageLink: String(item.customization.imageLink || item.customization.designFile || '').slice(0, 3000000),
           extraAsset: String(item.customization.extraAsset || '').slice(0, 3000000),
           options: item.customization.options && typeof item.customization.options === 'object' ? item.customization.options : undefined
         }
