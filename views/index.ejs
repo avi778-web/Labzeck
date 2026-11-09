@@ -168,7 +168,10 @@
     }
     .prod-links a:hover { background: rgba(43,118,166,.08); color: var(--primary); padding-left: 16px; }
 
-    .hdr-search { position: relative; flex: 1; max-width: 310px; }
+    .hdr-search { position: relative; flex: 0 0 52px; max-width: 52px; transition: flex-basis .3s ease, max-width .3s ease; }
+    .hdr-search:not(.search-active) input { width: 0; min-width: 0; opacity: 0; padding: 0; border: 0; pointer-events: none; }
+    .hdr-search:not(.search-active) .search-clear { display: none; }
+    .hdr-search.search-active { flex: 1 1 310px; max-width: 520px; }
     .hdr-search input {
       width: 100%; padding: 9px 42px 9px 16px;
       border: 1.5px solid var(--border); border-radius: 25px;
@@ -180,14 +183,16 @@
     .hdr-search input { height: 48px; transition: width .3s ease-in-out, border-color .2s, box-shadow .3s; }
     .hdr-search.search-active input { width: 100%; box-shadow: 0 8px 24px rgba(15,23,42,.14); }
     .search-clear { position: absolute; right: 48px; top: 0; height: 100%; width: 42px; border: 0; background: transparent; color: var(--text-light); cursor: pointer; display: none; }
-    .hdr-search.has-query .search-clear { display: block; }
+    .hdr-search.has-query .search-clear, .hdr-search.search-active .search-clear { display: block; }
     .search-suggestions { position: fixed; top: 80px; left: 50%; width: min(520px, calc(100vw - 24px)); transform: translateX(-50%); max-height: min(420px, 60vh); overflow-y: auto; display: none; padding: 8px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.16); z-index: 5000; }
     .hdr-search.search-active .search-suggestions { display: block; }
-    @media (min-width: 901px) { .search-suggestions { display: none !important; } }
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
     .search-suggestion small { display: block; color: var(--text-light); font-size: 11px; }
     .search-history-heading { padding: 7px 12px 4px; color: var(--text-light); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .search-history-heading-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .search-history-clear { border:0; background:transparent; color:var(--primary); cursor:pointer; font:inherit; font-size:10px; font-weight:800; letter-spacing:0; text-transform:none; }
+    .search-history-clear:hover { text-decoration:underline; }
     .search-history-item { display:flex; align-items:center; gap:8px; padding:4px; border-radius:10px; }
     .search-history-item:hover, .search-history-item:focus-within { background:var(--bg-light); }
     .search-history-query { display:flex; align-items:center; gap:9px; flex:1; min-width:0; border:0; background:transparent; color:var(--text); padding:8px; text-align:left; font:inherit; cursor:pointer; }
@@ -1058,6 +1063,7 @@
   function persistSearchHistory() { try { localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(searchHistory)); } catch (_) {} }
   function rememberSearch(query) { const value = String(query || '').trim().replace(/\s+/g, ' '); if (!value) return; searchHistory = [value, ...searchHistory.filter(item => normalizeSearch(item) !== normalizeSearch(value))].slice(0, 8); persistSearchHistory(); }
   function removeSearchHistory(query) { searchHistory = searchHistory.filter(item => item !== query); persistSearchHistory(); renderSearchSuggestions(document.getElementById('productSearch')?.value || ''); document.getElementById('productSearch')?.focus(); }
+  function clearSearchHistory() { searchHistory = []; persistSearchHistory(); renderSearchSuggestions(document.getElementById('productSearch')?.value || ''); document.getElementById('productSearch')?.focus(); }
   function editDistance(left, right) {
     const row = Array.from({ length: right.length + 1 }, (_, index) => index);
     for (let i = 1; i <= left.length; i += 1) {
@@ -1105,17 +1111,18 @@
   function renderSearchSuggestions(query) {
     const box = document.getElementById('searchSuggestions');
     if (!box) return;
-    if (!isMobileSearch()) { box.innerHTML = ''; return; }
     const normalizedQuery = normalizeSearch(query);
+    if (!normalizedQuery) { box.innerHTML = ''; return; }
     const history = searchHistory.filter(item => !normalizedQuery || fuzzyMatches(normalizedQuery, item));
     const results = PRODUCT_CATALOG_WITH_SYNONYMS.filter(product => {
       const haystack = [product.name, product.description, ...product.synonyms].map(normalizeSearch).join(' ');
       return fuzzyMatches(normalizedQuery, haystack);
     }).slice(0, 6);
-    const historyMarkup = history.length ? `<div class="search-history-heading">Recent searches</div>${history.map(item => `<div class="search-history-item" role="option"><button type="button" class="search-history-query" data-history-query="${escapeHtml(item)}"><i class="fas fa-clock" aria-hidden="true"></i><span>${escapeHtml(item)}</span></button><button type="button" class="search-history-remove" data-remove-history="${escapeHtml(item)}" aria-label="Remove ${escapeHtml(item)} from search history"><i class="fas fa-times" aria-hidden="true"></i></button></div>`).join('')}` : '';
+    const historyMarkup = history.length ? `<div class="search-history-heading search-history-heading-row"><span>Recent searches</span><button type="button" class="search-history-clear" data-clear-history>Clear History</button></div>${history.map(item => `<div class="search-history-item" role="option"><button type="button" class="search-history-query" data-history-query="${escapeHtml(item)}"><i class="fas fa-clock" aria-hidden="true"></i><span>${escapeHtml(item)}</span></button><button type="button" class="search-history-remove" data-remove-history="${escapeHtml(item)}" aria-label="Remove ${escapeHtml(item)} from search history"><i class="fas fa-times" aria-hidden="true"></i></button></div>`).join('')}` : '';
     const resultMarkup = results.length ? `<div class="search-history-heading">Products</div>${results.map(product => `<button type="button" class="search-suggestion" role="option" data-product-id="${product.id}"><span><strong>${product.name}</strong><small>${product.description}</small></span></button>`).join('')}` : (normalizedQuery ? '<div class="search-no-result" role="status"><span>No matching products found</span><button type="button" class="search-no-result-clear" aria-label="Clear search">Clear</button></div>' : '');
     box.innerHTML = historyMarkup + resultMarkup;
     box.querySelector('.search-no-result-clear')?.addEventListener('click', clearProductSearch);
+    box.querySelector('[data-clear-history]')?.addEventListener('click', clearSearchHistory);
     box.querySelectorAll('[data-product-id]').forEach(button => button.addEventListener('click', () => selectSearchProduct(button.dataset.productId)));
     box.querySelectorAll('[data-history-query]').forEach(button => button.addEventListener('click', () => { const value = button.dataset.historyQuery || ''; const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { const input = document.getElementById('productSearch'); if (input) { input.value = value; filterProductCatalog(value); } } }));
     box.querySelectorAll('[data-remove-history]').forEach(button => button.addEventListener('click', event => { event.stopPropagation(); removeSearchHistory(button.dataset.removeHistory || ''); }));
@@ -1151,7 +1158,7 @@
     const search = document.querySelector('.hdr-search');
     const submit = document.querySelector('.search-submit');
     input.addEventListener('input', () => { search?.classList.toggle('has-query', Boolean(input.value)); filterProductCatalog(input.value); renderSearchSuggestions(input.value); });
-    input.addEventListener('focus', () => { if (!isMobileSearch()) { closeSearchMode(); return; } search?.classList.add('search-active'); setSearchMode(true); renderSearchSuggestions(input.value); });
+    input.addEventListener('focus', () => { search?.classList.add('search-active'); setSearchMode(true); renderSearchSuggestions(input.value); });
     input.addEventListener('keydown', event => { if (event.key === 'Escape') clearProductSearch(); if (event.key === 'Enter') { event.preventDefault(); const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => normalizeSearch(product.name) === normalizeSearch(input.value)) || PRODUCT_CATALOG_WITH_SYNONYMS.find(product => [product.name, ...product.synonyms].some(term => normalizeSearch(term) === normalizeSearch(input.value))); if (match) selectSearchProduct(match.id); } });
     document.querySelector('.search-clear')?.addEventListener('click', clearProductSearch);
     submit?.addEventListener('click', () => { if (input.value.trim()) { const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(input.value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { input.value = ''; clearProductSearch(); } } else input.focus(); });
