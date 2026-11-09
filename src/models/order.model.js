@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema(
         longitude: { type: Number, min: -180, max: 180 }
       }
     },
-    items: [{ name: String, price: Number, quantity: Number, customization: { hasDesign: Boolean, addExtraAsset: Boolean, fontStyle: String, printText: String, designFile: String, extraAsset: String } }],
+    items: [{ name: String, price: Number, quantity: Number, customization: { hasDesign: Boolean, addExtraAsset: Boolean, fontStyle: String, printText: String, designFile: String, extraAsset: String, options: { type: mongoose.Schema.Types.Mixed } } }],
     total: { type: Number, required: true, min: 0 },
     notes: { type: String, trim: true, maxlength: 1000 },
     paymentMethod: { type: String, enum: ["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },

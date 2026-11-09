@@ -94,7 +94,7 @@ function sensitiveRouteRateLimit(req, res, next) {
 }
 app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "70mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use("/assets", express.static(path.join(__dirname, "..", "assets")));
 const uploadsDirectory = process.env.VERCEL
@@ -110,12 +110,12 @@ app.use("/uploads", express.static(uploadsDirectory));
 app.post("/api/uploads", (req, res) => {
   try {
     const { data, mimeType } = req.body || {};
-    if (typeof data !== "string" || !/^data:(image\/(png|jpeg|webp)|application\/pdf);base64,/.test(data)) {
+    if (typeof data !== "string" || !/^data:(image\/(png|jpeg|webp)|application\/pdf|application\/postscript|application\/illustrator|application\/x-photoshop|image\/vnd\.adobe\.photoshop);base64,/.test(data)) {
       return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, or PDF files are supported" });
     }
     const raw = data.split(",")[1];
     const buffer = Buffer.from(raw, "base64");
-    if (!buffer.length || buffer.length > 700 * 1024) return res.status(413).json({ ok: false, message: "File is too large after compression" });
+    if (!buffer.length || buffer.length > 50 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 50MB." });
     const extension = mimeType === "application/pdf" ? "pdf" : mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
     const filename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${extension}`;
     fs.writeFileSync(path.join(uploadsDirectory, filename), buffer, { flag: "wx" });
@@ -283,7 +283,8 @@ app.post("/api/orders", async (req, res) => {
           fontStyle: String(item.customization.fontStyle || '').slice(0, 80),
           printText: String(item.customization.printText || '').slice(0, 2000),
           designFile: String(item.customization.designFile || '').slice(0, 3000000),
-          extraAsset: String(item.customization.extraAsset || '').slice(0, 3000000)
+          extraAsset: String(item.customization.extraAsset || '').slice(0, 3000000),
+          options: item.customization.options && typeof item.customization.options === 'object' ? item.customization.options : undefined
         }
       })),
       total,
