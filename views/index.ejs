@@ -183,6 +183,7 @@
     .hdr-search.has-query .search-clear { display: block; }
     .search-suggestions { position: fixed; top: 80px; left: 50%; width: min(520px, calc(100vw - 24px)); transform: translateX(-50%); max-height: min(420px, 60vh); overflow-y: auto; display: none; padding: 8px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 40px rgba(15,23,42,.16); z-index: 5000; }
     .hdr-search.search-active .search-suggestions { display: block; }
+    @media (min-width: 901px) { .search-suggestions { display: none !important; } }
     .search-suggestion { display: flex; width: 100%; min-height: 48px; gap: 10px; align-items: center; padding: 8px 12px; border: 0; border-radius: 9px; background: transparent; text-align: left; cursor: pointer; font: inherit; color: var(--text); }
     .search-suggestion:hover, .search-suggestion:focus-visible { background: var(--bg-light); outline: none; }
     .search-suggestion small { display: block; color: var(--text-light); font-size: 11px; }
@@ -1078,9 +1079,14 @@
     document.querySelector('.hdr-search')?.classList.toggle('search-active', active);
     document.getElementById('searchBackdrop')?.setAttribute('aria-hidden', String(!active));
   }
+  function closeSearchMode() { setSearchMode(false); document.getElementById('productSearch')?.blur(); }
+  const mobileSearchMedia = window.matchMedia('(max-width: 900px)');
+  const isMobileSearch = () => mobileSearchMedia.matches;
+  mobileSearchMedia.addEventListener?.('change', () => { if (!isMobileSearch()) closeSearchMode(); else renderSearchSuggestions(document.getElementById('productSearch')?.value || ''); });
   function renderSearchSuggestions(query) {
     const box = document.getElementById('searchSuggestions');
     if (!box) return;
+    if (!isMobileSearch()) { box.innerHTML = ''; return; }
     const normalizedQuery = normalizeSearch(query);
     const history = searchHistory.filter(item => !normalizedQuery || fuzzyMatches(normalizedQuery, item));
     const results = PRODUCT_CATALOG_WITH_SYNONYMS.filter(product => {
@@ -1126,7 +1132,7 @@
     const search = document.querySelector('.hdr-search');
     const submit = document.querySelector('.search-submit');
     input.addEventListener('input', () => { search?.classList.toggle('has-query', Boolean(input.value)); filterProductCatalog(input.value); renderSearchSuggestions(input.value); });
-    input.addEventListener('focus', () => { search?.classList.add('search-active'); setSearchMode(true); renderSearchSuggestions(input.value); });
+    input.addEventListener('focus', () => { if (!isMobileSearch()) { closeSearchMode(); return; } search?.classList.add('search-active'); setSearchMode(true); renderSearchSuggestions(input.value); });
     input.addEventListener('keydown', event => { if (event.key === 'Escape') clearProductSearch(); if (event.key === 'Enter') { event.preventDefault(); const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => normalizeSearch(product.name) === normalizeSearch(input.value)) || PRODUCT_CATALOG_WITH_SYNONYMS.find(product => [product.name, ...product.synonyms].some(term => normalizeSearch(term) === normalizeSearch(input.value))); if (match) selectSearchProduct(match.id); } });
     document.querySelector('.search-clear')?.addEventListener('click', clearProductSearch);
     submit?.addEventListener('click', () => { if (input.value.trim()) { const match = PRODUCT_CATALOG_WITH_SYNONYMS.find(product => fuzzyMatches(input.value, [product.name, ...product.synonyms].join(' '))); if (match) selectSearchProduct(match.id); else { input.value = ''; clearProductSearch(); } } else input.focus(); });
