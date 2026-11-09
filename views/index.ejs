@@ -479,7 +479,21 @@
     @media (max-width: 768px) {
       .main-nav, .top-bar, .hdr-social { display: none; }
       body { overflow-x: hidden; }
+      .hdr-inner { gap: 10px; padding: 10px 22px; }
+      .sk-logo .sk-name { font-size: clamp(20px, 4vw, 24px); }
+      .sk-logo .sk-sub { font-size: clamp(8px, 1.8vw, 10.5px); letter-spacing: .9px; }
+      .hdr-search { flex: 0 0 74px; max-width: 74px; }
+      .hdr-search input { padding: 0 48px 0 0; font-size: 0; border-color: #d9e0e6; }
+      .hdr-search input::placeholder { color: transparent; }
+      .hdr-search .search-submit { width: 50px; padding: 0; border-radius: 0 25px 25px 0; }
+      .hdr-search .search-clear { display: none !important; }
+      .hdr-icons { margin-left: auto; gap: 0; }
+      .hdr-icon-btn { padding: 8px 7px; }
       .mob-toggle { display: flex; }
+      body.search-mode .hdr-search { position: fixed; left: 14px; right: 14px; top: 12px; max-width: none; width: auto; flex: none; }
+      body.search-mode .hdr-search input { height: 48px; padding: 0 92px 0 16px; font-size: 16px; background: #fff; }
+      body.search-mode .hdr-search .search-submit { width: 50px; }
+      body.search-mode .search-suggestions { max-height: 55vh; overflow-y: auto; }
       .footer-grid, .why-layout, .legacy-how-works .steps-grid { grid-template-columns: 1fr; }
       .cats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
     }
