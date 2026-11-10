@@ -25,9 +25,19 @@ const orderSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   total: z.coerce.number().finite().nonnegative(),
   deliveryFee: z.coerce.number().finite().nonnegative().optional(),
+  couponCode: z.string().trim().max(80).optional(),
+  couponApplied: z.object({ code: z.string().trim().max(80), discountAmount: z.coerce.number().nonnegative() }).optional(),
   paymentMethod: z.enum(["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
 }).passthrough();
+const couponDiscounts = new Map([
+  ['SK@150#VIP!', 150], ['SURAJ?150#MAX', 150], ['AVI$150,SUPER', 150], ['LABZECK!150?PRO', 150], ['SK_GRAPHICS#150?', 150],
+  ['SK@100#MEGA!', 100], ['SURAJ$100?DEAL', 100], ['AVI#100!BONUS', 100], ['LABZECK,100@GOLD', 100], ['PRINT?100#SAVE$', 100],
+  ...Array.from({ length: 30 }, (_, i) => [`SK30-${i + 1}`, 30]),
+  ...Array.from({ length: 30 }, (_, i) => [`SK20-${i + 1}`, 20]),
+  ...Array.from({ length: 30 }, (_, i) => [`SK10-${i + 1}`, 10])
+]);
+const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
 const paymentOrderSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
   items: z.array(itemSchema).min(1).max(50),
@@ -233,6 +243,14 @@ app.post("/api/newsletter", async (req, res) => {
    STANDARD ORDERS
 ========================= */
 
+app.post('/api/coupons/validate', async (req, res) => {
+  const code = normalizeCoupon(req.body?.code);
+  const subtotal = Number(req.body?.subtotal);
+  const discountAmount = couponDiscounts.get(code);
+  if (!code || !Number.isFinite(subtotal) || subtotal < 0 || !discountAmount) return res.status(400).json({ ok: false, message: 'Invalid or Expired Coupon Code' });
+  return res.json({ ok: true, discountAmount: Math.min(discountAmount, subtotal), deliveryFee: 0 });
+});
+
 app.post("/api/orders", async (req, res) => {
   try {
     const parsed = orderSchema.safeParse(req.body);
@@ -248,15 +266,19 @@ app.post("/api/orders", async (req, res) => {
     const paymentStatus = String(body.paymentStatus || (paymentMethod === "COD" ? "cod" : "pending"));
     const transactionId = String(body.transactionId || "").trim().slice(0, 120);
     const razorpayOrderId = String(body.razorpayOrderId || "").trim().slice(0, 120);
-    const deliveryFee = Number(body.deliveryFee || 0);
-    const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
+    const deliveryFee = 0;
     const total = Number(body.total);
     const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
+    const couponCode = normalizeCoupon(body.couponCode || body.couponApplied?.code);
+    const couponDiscount = couponCode ? (couponDiscounts.get(couponCode) || 0) : 0;
+    const subtotal = calculatedTotal;
+    const expectedTotal = Math.max(0, subtotal - couponDiscount);
+    const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - (calculatedTotal + deliveryFee)) > 0.01 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - expectedTotal) > 0.01 || (couponCode && !couponDiscount) || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
@@ -295,7 +317,12 @@ app.post("/api/orders", async (req, res) => {
           options: item.customization.options && typeof item.customization.options === 'object' ? item.customization.options : undefined
         }
       })),
-      total,
+      subtotal,
+      total: expectedTotal,
+      couponApplied: couponCode ? { code: couponCode, discountAmount: couponDiscount } : undefined,
+      isPrepaid: paymentStatus === 'paid' || ['UPI', 'PhonePe', 'Razorpay', 'GPay', 'Paytm', 'UPI QR Code'].includes(paymentMethod) && paymentStatus === 'paid',
+      uploadedDesignUrl: String(body.uploadedDesignUrl || '').trim().slice(0, 2000) || undefined,
+      uploadedPhotoUrl: String(body.uploadedPhotoUrl || '').trim().slice(0, 2000) || undefined,
       notes,
       paymentMethod,
       paymentStatus: ["pending", "paid", "cod", "failed"].includes(paymentStatus) ? paymentStatus : "pending",
@@ -338,7 +365,10 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     }
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
-    const calculatedAmount = Math.round(paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100);
+    const subtotalAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0);
+    const couponCode = normalizeCoupon(parsed.data.couponCode);
+    const couponDiscount = couponCode ? (couponDiscounts.get(couponCode) || 0) : 0;
+    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });

@@ -12,7 +12,12 @@ const orderSchema = new mongoose.Schema(
       }
     },
     items: [{ name: String, price: Number, quantity: Number, customization: { hasDesign: Boolean, addExtraAsset: Boolean, fontStyle: String, printText: String, designFile: String, imageUrl: String, imageLink: String, extraAsset: String, options: { type: mongoose.Schema.Types.Mixed } } }],
+    subtotal: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
+    couponApplied: { code: { type: String, trim: true, maxlength: 80 }, discountAmount: { type: Number, min: 0 } },
+    isPrepaid: { type: Boolean, default: false },
+    uploadedDesignUrl: { type: String, trim: true, maxlength: 2000 },
+    uploadedPhotoUrl: { type: String, trim: true, maxlength: 2000 },
     notes: { type: String, trim: true, maxlength: 1000 },
     paymentMethod: { type: String, enum: ["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },
     paymentStatus: { type: String, enum: ["pending", "paid", "cod", "failed"], default: "pending" },
