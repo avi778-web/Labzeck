@@ -154,6 +154,8 @@ app.set("views", viewsDirectory);
    HOME PAGE
 ========================= */
 
+app.get('/configurator', (req, res) => res.render('configurator'));
+
 app.get("/", (req, res, next) => {
   try {
     return res.render("index");
