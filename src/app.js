@@ -26,18 +26,17 @@ const orderSchema = z.object({
   total: z.coerce.number().finite().nonnegative(),
   deliveryFee: z.coerce.number().finite().nonnegative().optional(),
   couponCode: z.string().trim().max(80).optional(),
-  couponApplied: z.object({ code: z.string().trim().max(80), discountAmount: z.coerce.number().nonnegative() }).optional(),
+  couponCodes: z.array(z.string().trim().max(40)).max(2).optional(),
+  couponApplied: z.object({ codes: z.array(z.string().trim().max(40)).max(2).optional(), code: z.string().trim().max(80).optional(), discountAmount: z.coerce.number().nonnegative() }).optional(),
   paymentMethod: z.enum(["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
 }).passthrough();
-const couponDiscounts = new Map([
-  ['SK@150#VIP!', 150], ['SURAJ?150#MAX', 150], ['AVI$150,SUPER', 150], ['LABZECK!150?PRO', 150], ['SK_GRAPHICS#150?', 150],
-  ['SK@100#MEGA!', 100], ['SURAJ$100?DEAL', 100], ['AVI#100!BONUS', 100], ['LABZECK,100@GOLD', 100], ['PRINT?100#SAVE$', 100],
-  ...Array.from({ length: 30 }, (_, i) => [`SK30-${i + 1}`, 30]),
-  ...Array.from({ length: 30 }, (_, i) => [`SK20-${i + 1}`, 20]),
-  ...Array.from({ length: 30 }, (_, i) => [`SK10-${i + 1}`, 10])
+const couponRegistry = new Map([
+  ['SKG100', { type: 'fixed', value: 100 }], ['FIRST50', { type: 'fixed', value: 50 }], ['VIPPROMO01', { type: 'fixed', value: 150 }], ['VIPPROMO02', { type: 'fixed', value: 150 }], ['VIPPROMO03', { type: 'percent', value: 10 }], ['VIPPROMO04', { type: 'percent', value: 10 }], ['VIPPROMO05', { type: 'fixed', value: 150 }], ['VIPPROMO06', { type: 'fixed', value: 150 }], ['VIPPROMO07', { type: 'percent', value: 15 }], ['VIPPROMO08', { type: 'percent', value: 15 }]
 ]);
+const claimedCoupons = new Set();
 const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
+const calculateCouponDiscount = (code, subtotal) => { const coupon = couponRegistry.get(code); if (!coupon) return 0; return Math.min(subtotal, coupon.type === 'percent' ? Math.round(subtotal * coupon.value / 100) : coupon.value); };
 const paymentOrderSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
   items: z.array(itemSchema).min(1).max(50),
@@ -121,12 +120,12 @@ app.use("/uploads", express.static(uploadsDirectory));
 app.post("/api/uploads", async (req, res) => {
   try {
     const { data, mimeType } = req.body || {};
-    if (typeof data !== "string" || !/^data:(image\/(png|jpeg|webp)|application\/pdf|application\/postscript|application\/illustrator|application\/x-photoshop|image\/vnd\.adobe\.photoshop);base64,/.test(data)) {
-      return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, PDF, AI, or PSD files are supported" });
+    if (typeof data !== "string" || !/^data:(image\/(png|jpeg)|application\/pdf|application\/postscript|application\/illustrator|application\/x-photoshop|image\/vnd\.adobe\.photoshop);base64,/.test(data)) {
+      return res.status(400).json({ ok: false, message: "Only PNG, JPG, PDF, AI, or PSD files are supported" });
     }
     const raw = data.split(",")[1];
     const buffer = Buffer.from(raw, "base64");
-    if (!buffer.length || buffer.length > 50 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 50MB." });
+    if (!buffer.length || buffer.length > 15 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 50MB." });
     if (cloudinaryConfigured()) {
       const upload = await uploadToCloudinary(data, { folder: "sk-graphics/artwork" });
       return res.status(201).json({ ok: true, url: upload.secureUrl, imageUrl: upload.secureUrl, publicId: upload.publicId, storage: "cloudinary" });
@@ -245,15 +244,19 @@ app.post("/api/newsletter", async (req, res) => {
    STANDARD ORDERS
 ========================= */
 
-app.post('/api/coupons/validate', async (req, res) => {
-  const code = normalizeCoupon(req.body?.code);
+app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   const subtotal = Number(req.body?.subtotal);
-  const discountAmount = couponDiscounts.get(code);
-  if (!code || !Number.isFinite(subtotal) || subtotal < 0 || !discountAmount) return res.status(400).json({ ok: false, message: 'Invalid or Expired Coupon Code' });
-  return res.json({ ok: true, discountAmount: Math.min(discountAmount, subtotal), deliveryFee: 0 });
+  const codes = [...new Set((Array.isArray(req.body?.codes) ? req.body.codes : [req.body?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
+  if (!codes.length || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
+  const invalid = codes.find(code => !couponRegistry.has(code));
+  const claimed = codes.find(code => claimedCoupons.has(code));
+  if (invalid) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
+  if (claimed) return res.status(409).json({ ok: false, message: 'Coupon Expired / Already Used' });
+  const coupons = codes.map(code => ({ code, discountAmount: calculateCouponDiscount(code, subtotal) }));
+  return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
 });
 
-app.post("/api/orders", async (req, res) => {
+app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
   try {
     const parsed = orderSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ ok: false, message: "Order data is invalid", issues: parsed.error.issues.map((issue) => issue.path.join(".")).slice(0, 10) });
@@ -271,16 +274,19 @@ app.post("/api/orders", async (req, res) => {
     const deliveryFee = 0;
     const total = Number(body.total);
     const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
-    const couponCode = normalizeCoupon(body.couponCode || body.couponApplied?.code);
-    const couponDiscount = couponCode ? (couponDiscounts.get(couponCode) || 0) : 0;
+    const submittedCouponCodes = [...new Set((Array.isArray(body.couponCodes) ? body.couponCodes : [body.couponCode || body.couponApplied?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
+    const invalidCoupon = submittedCouponCodes.find(code => !couponRegistry.has(code));
+    const claimedCoupon = submittedCouponCodes.find(code => claimedCoupons.has(code));
+    const couponDiscount = submittedCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, calculatedTotal), 0);
     const subtotal = calculatedTotal;
-    const expectedTotal = Math.max(0, subtotal - couponDiscount);
+    const gst = Math.round(Math.max(0, subtotal - couponDiscount) * 0.18);
+    const expectedTotal = Math.max(0, subtotal - couponDiscount + gst);
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - expectedTotal) > 0.01 || (couponCode && !couponDiscount) || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - expectedTotal) > 0.01 || invalidCoupon || claimedCoupon || submittedCouponCodes.length > 2 || !["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
@@ -321,7 +327,7 @@ app.post("/api/orders", async (req, res) => {
       })),
       subtotal,
       total: expectedTotal,
-      couponApplied: couponCode ? { code: couponCode, discountAmount: couponDiscount } : undefined,
+      couponApplied: submittedCouponCodes.length ? { code: submittedCouponCodes[0], codes: submittedCouponCodes, discountAmount: couponDiscount } : undefined,
       isPrepaid: paymentStatus === 'paid' || ['UPI', 'PhonePe', 'Razorpay', 'GPay', 'Paytm', 'UPI QR Code'].includes(paymentMethod) && paymentStatus === 'paid',
       uploadedDesignUrl: String(body.uploadedDesignUrl || '').trim().slice(0, 2000) || undefined,
       uploadedPhotoUrl: String(body.uploadedPhotoUrl || '').trim().slice(0, 2000) || undefined,
@@ -334,6 +340,7 @@ app.post("/api/orders", async (req, res) => {
       idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
       });
+      submittedCouponCodes.forEach(code => claimedCoupons.add(code));
     } catch (saveError) {
       console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
       if (saveError.name === "ValidationError" || saveError.name === "CastError") {
@@ -368,9 +375,11 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
     const subtotalAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0);
-    const couponCode = normalizeCoupon(parsed.data.couponCode);
-    const couponDiscount = couponCode ? (couponDiscounts.get(couponCode) || 0) : 0;
-    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 100);
+    const paymentCouponCodes = [...new Set((Array.isArray(parsed.data.couponCodes) ? parsed.data.couponCodes : [parsed.data.couponCode]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
+    if (paymentCouponCodes.some(code => !couponRegistry.has(code) || claimedCoupons.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or expired coupon' });
+    const couponDiscount = paymentCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, subtotalAmount), 0);
+    const gst = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 0.18);
+    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount + gst) * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
