@@ -19,7 +19,7 @@ const orderSchema = new mongoose.Schema(
     uploadedDesignUrl: { type: String, trim: true, maxlength: 2000 },
     uploadedPhotoUrl: { type: String, trim: true, maxlength: 2000 },
     notes: { type: String, trim: true, maxlength: 1000 },
-    paymentMethod: { type: String, enum: ["COD", "UPI", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },
+    paymentMethod: { type: String, enum: ["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"], default: "UPI" },
     paymentStatus: { type: String, enum: ["pending", "paid", "cod", "failed"], default: "pending" },
     transactionId: { type: String, trim: true, maxlength: 120 },
     razorpayOrderId: { type: String, trim: true, maxlength: 120 },

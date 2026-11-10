@@ -538,7 +538,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
 .search-results-active .cats-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none;margin:0}
 .search-results-active .cat-card{display:flex;flex-direction:column;align-items:stretch;text-align:center;gap:10px}
 .search-results-active .cat-card .cat-icon{margin:0 auto}
-.cat-link{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:var(--primary);color:#fff!important;border-radius:9px;padding:9px 13px;font-weight:800;text-decoration:none}
+ .cat-link{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:#0f172a!important;color:#fff!important;border:0;border-radius:9px;padding:10px 14px;font-weight:800;text-decoration:none;opacity:1!important;transition:background-color .2s ease,transform .2s ease,box-shadow .2s ease}.cat-link:hover,.cat-link:focus-visible{background:#2563eb!important;color:#fff!important;transform:translateY(-1px);box-shadow:0 8px 18px rgba(37,99,235,.24);outline:none}.cat-link:active{transform:translateY(0)}
  .coupon-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.coupon-badge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#168548;font-size:11px;font-weight:800}.order-success-panel{width:min(460px,calc(100vw - 28px));background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(15,23,42,.3);text-align:center}.order-success-panel h3{margin:10px 0 5px;font-size:24px}.order-success-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#dcfce7;color:#168548;font-size:27px}.order-success-summary{margin:18px 0;padding:13px;border-radius:10px;background:#f7f8fc;text-align:left;white-space:pre-line;color:#475569;font-size:13px}.order-success-actions{display:flex;gap:8px}.order-success-actions .btn{flex:1}
 @media(max-width:700px){.search-results-active .cats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.order-success-actions{flex-direction:column}}
 </style>
@@ -686,7 +686,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  </div>
  <div class="cat-body">
           <h5>Business Cards</h5>
-          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <p>Standard, UV spot, foil, and premium finish options for lasting impressions.</p><button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -699,7 +699,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Color Pamphlets</h5>
           <p>Full-colour, double-sided flyers in A4, A5, A6 and custom sizes.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -712,7 +712,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Brochures</h5>
           <p>Bi-fold, tri-fold and Z-fold brochures on premium art paper.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -725,7 +725,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Posters &amp; Banners</h5>
           <p>Vibrant large-format vinyl banners, posters, and flex prints for every event.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -738,7 +738,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Custom Mugs</h5>
           <p>Personalized ceramic mugs — ideal corporate gifts with your logo or photo.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -751,7 +751,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Stickers &amp; Labels</h5>
           <p>Die-cut, roll, and sheet stickers in any shape — waterproof options available.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -764,7 +764,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Custom T-Shirts</h5>
           <p>Sublimation, DTG, and screen-printed t-shirts for events, teams, and gifting.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -777,7 +777,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Roll-Up Banners</h5>
           <p>Retractable standees for exhibitions, retail, and corporate events.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -790,7 +790,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Diaries &amp; Notebooks</h5>
           <p>Custom-branded hardcover and softcover diaries, notepads, and planners.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -803,7 +803,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Presentation Folders</h5>
           <p>Premium printed folders for presentations, proposals, and corporate kits.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -816,7 +816,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Canvas Printing</h5>
           <p>Photo-quality canvas prints on stretched frames for homes, offices, and gifts.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
 
@@ -829,13 +829,13 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  <div class="cat-body">
           <h5>Fancy Boxes &amp; Packaging</h5>
           <p>Custom packaging, gift boxes, and carry bags with premium finishing options.</p>
-          <span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span>
+          <button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button>
         </div>
       </div>
       <!-- Startup packaging products -->
-      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Heat Shrink Sleeve Labels')"><div class="cat-img"><img decoding="async" src="/assets/sk-shrink-sleeve.png" alt="Custom heat shrink sleeve labels" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Heat Shrink Sleeve Labels</h5><p>PVC and PETG shrink labels for bottles, jars and cosmetics.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div></div>
-      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Stand-Up Zip Lock Pouches')"><div class="cat-img"><img decoding="async" src="/assets/sk-standup-pouches.png" alt="Custom stand-up zip lock pouches" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Stand-Up Zip Lock Pouches</h5><p>Printed pouches for dry fruits, spices, tea and snacks.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div></div>
-      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Branded Packaging Tape')"><div class="cat-img"><img decoding="async" src="/assets/sk-branded-tape.png" alt="Custom branded packaging tape" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Branded Packaging Tape</h5><p>Logo-printed cello tape for ecommerce cartons and shipping boxes.</p><span class="cat-link">Add to Cart <i class="fas fa-plus"></i></span></div></div>
+      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Heat Shrink Sleeve Labels')"><div class="cat-img"><img decoding="async" src="/assets/sk-shrink-sleeve.png" alt="Custom heat shrink sleeve labels" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Heat Shrink Sleeve Labels</h5><p>PVC and PETG shrink labels for bottles, jars and cosmetics.</p><button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button></div></div>
+      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Stand-Up Zip Lock Pouches')"><div class="cat-img"><img decoding="async" src="/assets/sk-standup-pouches.png" alt="Custom stand-up zip lock pouches" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Stand-Up Zip Lock Pouches</h5><p>Printed pouches for dry fruits, spices, tea and snacks.</p><button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button></div></div>
+      <div class="cat-card" onclick="openConfiguredProductOptions('Custom Branded Packaging Tape')"><div class="cat-img"><img decoding="async" src="/assets/sk-branded-tape.png" alt="Custom branded packaging tape" loading="lazy"><div class="cat-circle-badge"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-6B9VsEQX1C1XedOB5Z0l6grVD479ub.png" alt="SK Graphics logo"></div></div><div class="cat-body"><h5>Branded Packaging Tape</h5><p>Logo-printed cello tape for ecommerce cartons and shipping boxes.</p><button type="button" class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Add to Cart +</span></button></div></div>
     </div>
 
     <div style="text-align:center;margin-top:36px">
@@ -1035,8 +1035,8 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
         <div class="checkout-total" aria-live="polite"><span>Subtotal</span><strong id="checkoutSubtotal">₹0</strong><span>Tier discount</span><strong id="checkoutTierDiscount">₹0</strong><span>Dual coupons</span><strong id="checkoutCouponDiscount">₹0</strong><span>GST (18%)</span><strong id="checkoutGST">₹0</strong><span>Delivery</span><strong>FREE</strong><span>Grand total</span><strong id="checkoutTotal">₹0</strong></div>
         <div class="form-group">
           <label for="paymentMethod">Payment Method *</label>
-          <select id="paymentMethod" required onchange="updatePaymentPanel()"><option value="COD">Cash on Delivery (COD)</option><option value="UPI">UPI Payment</option></select>
-          <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with PhonePe, GPay, Paytm or another UPI app.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><button type="button" class="btn btn-outline" onclick="startRazorpayPayment()"><i class="fas fa-lock"></i> Pay with Razorpay</button><small id="upiFallback">Razorpay Checkout opens securely with the exact order total and QR/UPI options.</small></div>
+          <select id="paymentMethod" required onchange="updatePaymentPanel()"><option value="COD">Cash on Delivery (COD)</option><option value="UPI">UPI Payment</option><option value="Netbanking">Netbanking / Cards</option></select>
+          <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with UPI apps, cards, or Netbanking via Razorpay Checkout.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><button type="button" class="btn btn-outline" onclick="startRazorpayPayment()"><i class="fas fa-lock"></i> Pay with Razorpay</button><small id="upiFallback">Razorpay Checkout opens securely with the exact order total. If test keys are unavailable, the local simulation confirms the payment flow safely.</small></div>
         </div>
         <div class="form-group">
           <label for="custNotes">Special Instructions / Printing Notes</label>
@@ -1321,13 +1321,13 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
  function getCartTotal() { return getCheckoutBreakdown().total; }
  function updateCheckoutTotals() { const breakdown=getCheckoutBreakdown(); document.getElementById('checkoutSubtotal')?.replaceChildren(document.createTextNode(`₹${breakdown.subtotal}`)); document.getElementById('checkoutTierDiscount')?.replaceChildren(document.createTextNode(`₹${breakdown.tierDiscount}`)); document.getElementById('checkoutCouponDiscount')?.replaceChildren(document.createTextNode(`₹${breakdown.couponDiscount}`)); document.getElementById('checkoutGST')?.replaceChildren(document.createTextNode(`₹${breakdown.gst}`)); document.getElementById('checkoutTotal')?.replaceChildren(document.createTextNode(`₹${breakdown.total}`)); }
  async function applyCoupon() { const inputs=[document.getElementById('couponCode'),document.getElementById('couponCode2')]; const codes=[...new Set(inputs.map(input=>input?.value.trim().toUpperCase()).filter(Boolean))]; const message=document.getElementById('couponMessage'); const badges=document.getElementById('couponBadges'); if (!codes.length) return; const button=document.getElementById('applyCouponBtn'); button.disabled=true; try { const response=await fetch('/api/coupons/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codes,subtotal:getCartSubtotal()})}); const result=await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Invalid Coupon Code'); couponApplied={codes:result.coupons.map(coupon=>coupon.code),discountAmount:result.discountAmount}; message.textContent=`${result.coupons.length} coupon${result.coupons.length>1?'s':''} verified`; message.className='coupon-message success'; badges.innerHTML=result.coupons.map(coupon=>`<span class="coupon-badge">${escapeHtml(coupon.code)} · ₹${coupon.discountAmount} OFF · Coupon Applied!</span>`).join(''); inputs.forEach(input=>{input.readOnly=true}); button.textContent='Applied'; updateCheckoutTotals(); } catch(error) { couponApplied=null; badges.innerHTML=''; message.textContent=error.message.includes('Already')?'Coupon Expired / Already Used':error.message.includes('Invalid')?'Invalid Coupon Code':'Coupon verification failed'; message.className='coupon-message error'; updateCheckoutTotals(); } finally { button.disabled=false; } }
-  function updatePaymentPanel() { const isUpi = document.getElementById('paymentMethod').value === 'UPI'; document.getElementById('upiPaymentPanel').hidden = !isUpi; if (!isUpi) { verifiedPayment = null; resetPaymentState(); } }
+  function updatePaymentPanel() { const isOnline = document.getElementById('paymentMethod').value !== 'COD'; document.getElementById('upiPaymentPanel').hidden = !isOnline; if (!isOnline) { verifiedPayment = null; resetPaymentState(); } }
   function updateFirstOrderBadge() {
     const badge = document.getElementById('firstOrderBadge');
     if (!badge) return;
     try { badge.hidden = localStorage.getItem('sk_graphics_order_completed') === 'true'; } catch (_) { badge.hidden = false; }
   }
-  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), couponCodes: couponApplied?.codes || [], idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
+  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), couponCodes: couponApplied?.codes || [], idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); if (order.simulated) { verifiedPayment={ paymentStatus:'paid', transactionId:`sim_${Date.now()}`, razorpayOrderId:order.orderId }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); return; } const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
   function showUPIQR() {
     if (!cart.length) return alert('Add a product before opening the payment QR.');
@@ -1347,7 +1347,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     const paymentMethod = document.getElementById('paymentMethod').value;
     const total = getCartTotal();
     if (!cart.length || !name || !phone || !address) return alert('Please complete your order details and add a product.');
-    if (paymentMethod === 'UPI' && !verifiedPayment) { await startRazorpayPayment(); return; }
+    if (paymentMethod !== 'COD' && !verifiedPayment) { await startRazorpayPayment(paymentMethod === 'Netbanking' ? 'netbanking' : 'upi'); return; }
     if (orderSubmissionInProgress) return;
     orderSubmissionInProgress = true;
     let location = null;
@@ -1356,7 +1356,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, subtotal: getCartSubtotal(), total, couponCodes: couponApplied?.codes || [], couponApplied, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`,  paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      showSuccessModal(result.orderId, total, paymentMethod, cart); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${window.location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Subtotal:* ₹${getCartSubtotal()}\\n*Coupon:* ${couponApplied ? `₹${couponApplied.discountAmount} OFF (${couponApplied.codes.join(', ')})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
+      showSuccessModal(result.orderId, total, paymentMethod, cart); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Subtotal:* ₹${getCartSubtotal()}\\n*Coupon:* ${couponApplied ? `₹${couponApplied.discountAmount} OFF (${couponApplied.codes.join(', ')})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }
