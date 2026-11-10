@@ -366,6 +366,7 @@
  .f-soc-icon.whatsapp-link:hover, .f-soc-icon.whatsapp-link:focus-visible, .f-soc-icon.whatsapp-link:active { background:#25D366; box-shadow:0 0 18px rgba(37,211,102,.38); }
  .f-soc-icon.instagram-link:hover, .f-soc-icon.instagram-link:focus-visible, .f-soc-icon.instagram-link:active { background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); box-shadow:0 0 18px rgba(214,36,159,.4); }
  .f-soc-icon.facebook-link:hover, .f-soc-icon.facebook-link:focus-visible, .f-soc-icon.facebook-link:active { background:#1877F2; box-shadow:0 0 18px rgba(24,119,242,.4); }
+ .f-soc-icon.youtube-link:hover, .f-soc-icon.youtube-link:focus-visible, .f-soc-icon.youtube-link:active { background:#FF0000; box-shadow:0 0 18px rgba(255,0,0,.4); }
     .f-col h6 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 18px; text-transform: uppercase; letter-spacing: .8px; }
     .f-col ul li { margin-bottom: 9px; }
     .f-col ul li a { font-size: 13.5px; color: rgba(255,255,255,.62); transition: all .2s; display: flex; align-items: center; gap: 7px; }
@@ -527,7 +528,20 @@
       .search-results-active .cat-card { grid-template-columns: 1fr; gap: 10px; }
       .search-results-active .cat-card .cat-icon { margin: 0 auto; }
     }
-  </style>
+  /* Search stays inline: filtering never creates a modal, backdrop, or suggestion card. */
+.search-backdrop,.search-suggestions,body.search-mode .search-backdrop{display:none!important;pointer-events:none!important;background:transparent!important;backdrop-filter:none!important}
+body.search-mode .ann-bar,body.search-mode .main-header .sk-logo,body.search-mode .main-header .main-nav,body.search-mode .main-header .hdr-icons,body.search-mode .main-header .mob-toggle{visibility:visible}
+body.search-mode .main-header{position:relative;z-index:1;background:#fff;border-bottom:1px solid var(--border)}
+body.search-mode .hdr-search{position:relative;left:auto;right:auto;top:auto;width:100%;max-width:360px;flex:none}
+body.search-mode .hero,body.search-mode .feat-bar,body.search-mode>section:not(#products),body.search-mode footer{display:block}
+body.search-mode #products{position:static;margin-top:0;background:#fff}
+.search-results-active .cats-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:none;margin:0}
+.search-results-active .cat-card{display:flex;flex-direction:column;align-items:stretch;text-align:center;gap:10px}
+.search-results-active .cat-card .cat-icon{margin:0 auto}
+.cat-link{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:var(--primary);color:#fff!important;border-radius:9px;padding:9px 13px;font-weight:800;text-decoration:none}
+.order-success-panel{width:min(460px,calc(100vw - 28px));background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(15,23,42,.3);text-align:center}.order-success-panel h3{margin:10px 0 5px;font-size:24px}.order-success-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#dcfce7;color:#168548;font-size:27px}.order-success-summary{margin:18px 0;padding:13px;border-radius:10px;background:#f7f8fc;text-align:left;white-space:pre-line;color:#475569;font-size:13px}.order-success-actions{display:flex;gap:8px}.order-success-actions .btn{flex:1}
+@media(max-width:700px){.search-results-active .cats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.order-success-actions{flex-direction:column}}
+</style>
 
 </head>
 <body>
@@ -920,6 +934,7 @@
             <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon whatsapp-link" aria-label="Contact on WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <a href="https://instagram.com/hey.avipal" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon instagram-link" aria-label="Follow on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.7 2h8.6A5.7 5.7 0 0 1 22 7.7v8.6a5.7 5.7 0 0 1-5.7 5.7H7.7A5.7 5.7 0 0 1 2 16.3V7.7A5.7 5.7 0 0 1 7.7 2Zm0 2A3.7 3.7 0 0 0 4 7.7v8.6A3.7 3.7 0 0 0 7.7 20h8.6a3.7 3.7 0 0 0 3.7-3.7V7.7A3.7 3.7 0 0 0 16.3 4H7.7Zm4.3 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0-3-3Z"/></svg></a>
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon facebook-link" aria-label="Visit Facebook"><i class="fab fa-facebook-f"></i></a>
+ <a href="https://youtube.com/@surajpal-1518u" target="_blank" rel="noopener noreferrer" class="social-link f-soc-icon youtube-link" aria-label="Visit YouTube"><i class="fab fa-youtube"></i></a>
           </div>
         </div>
         <div class="f-col">
@@ -1032,6 +1047,8 @@
     </div>
   </div>
 </div>
+
+<div class="order-overlay" id="successOverlay" aria-hidden="true"><div class="order-success-panel" role="dialog" aria-modal="true" aria-labelledby="successTitle"><div class="order-success-icon"><i class="fas fa-check" aria-hidden="true"></i></div><h3 id="successTitle">Order confirmed</h3><p id="successOrderId"></p><div class="order-success-summary" id="successSummary"></div><div class="order-success-actions"><button class="btn btn-primary" id="successWhatsApp"><i class="fab fa-whatsapp"></i> Send to WhatsApp</button><button class="btn btn-outline" onclick="closeSuccessModal()">Continue shopping</button></div></div></div>
 
 <!-- FLOATING BUTTONS -->
 <a href="https://wa.me/918447459316" target="_blank" class="wp-float" title="Chat on WhatsApp">
@@ -1306,6 +1323,10 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     startRazorpayPayment('qr');
   }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
+  function closeSuccessModal() { document.getElementById('successOverlay').classList.remove('open'); document.getElementById('successOverlay').setAttribute('aria-hidden','true'); syncOverlayScrollLock(); }
+  function showSuccessModal(orderId, total, paymentMethod, items) { const overlay=document.getElementById('successOverlay'); document.getElementById('successOrderId').textContent=`Order ID: ${orderId}`; document.getElementById('successSummary').textContent=`${items.map(item=>`${item.name} × ${item.qty}`).join('\\n')}\\n\\nTotal: ₹${total}\\nPayment: ${paymentMethod}\\nDelivery: FREE`; document.getElementById('successWhatsApp').onclick=()=>window.open(`https://wa.me/918447459316?text=${encodeURIComponent(`SK Graphics order ${orderId}\\nTotal: ₹${total}\\nPayment: ${paymentMethod}`)}`,'_blank','noopener,noreferrer'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); syncOverlayScrollLock(); }
+  function closeSuccessModal() { document.getElementById('successOverlay').classList.remove('open'); document.getElementById('successOverlay').setAttribute('aria-hidden','true'); syncOverlayScrollLock(); }
+  function showSuccessModal(orderId, total, paymentMethod, items) { const overlay=document.getElementById('successOverlay'); document.getElementById('successOrderId').textContent=`Order ID: ${orderId}`; document.getElementById('successSummary').textContent=`${items.map(item=>`${item.name} × ${item.qty}`).join('\\n')}\\n\\nTotal: ₹${total}\\nPayment: ${paymentMethod}\\nDelivery: FREE`; document.getElementById('successWhatsApp').onclick=()=>window.open(`https://wa.me/918447459316?text=${encodeURIComponent(`SK Graphics order ${orderId}\\nTotal: ₹${total}\\nPayment: ${paymentMethod}`)}`,'_blank','noopener,noreferrer'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); syncOverlayScrollLock(); }
   async function submitOrder(e) {
     e.preventDefault();
     const name = document.getElementById('custName').value.trim();
@@ -1324,7 +1345,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     try {
       const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, subtotal: getCartSubtotal(), total, couponCode: couponApplied?.code, couponApplied, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`,  paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      alert(`Order saved successfully. Order ID: ${result.orderId}`); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${window.location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Subtotal:* ₹${getCartSubtotal()}\\n*Coupon:* ${couponApplied ? `₹${couponApplied.discountAmount} OFF (${couponApplied.code})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
+      showSuccessModal(result.orderId, total, paymentMethod, cart); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${window.location.origin}${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Subtotal:* ₹${getCartSubtotal()}\\n*Coupon:* ${couponApplied ? `₹${couponApplied.discountAmount} OFF (${couponApplied.code})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }
