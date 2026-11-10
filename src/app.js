@@ -31,7 +31,8 @@ const orderSchema = z.object({
   paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
 }).passthrough();
 const couponDiscounts = new Map([
-  ['SK@150#VIP!', 150], ['SURAJ?150#MAX', 150], ['SK@100#MEGA!', 100], ['SURAJ$100?DEAL', 100],
+  ['SK@150#VIP!', 150], ['SURAJ?150#MAX', 150], ['AVI$150,SUPER', 150], ['LABZECK!150?PRO', 150], ['SK_GRAPHICS#150?', 150],
+  ['SK@100#MEGA!', 100], ['SURAJ$100?DEAL', 100], ['AVI#100!BONUS', 100], ['LABZECK,100@GOLD', 100], ['PRINT?100#SAVE$', 100],
   ...Array.from({ length: 30 }, (_, i) => [`SK30-${i + 1}`, 30]),
   ...Array.from({ length: 30 }, (_, i) => [`SK20-${i + 1}`, 20]),
   ...Array.from({ length: 30 }, (_, i) => [`SK10-${i + 1}`, 10])
