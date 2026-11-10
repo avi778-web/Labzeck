@@ -374,8 +374,8 @@
       font-size: 15px; transition: all .2s;
     }
     .f-soc-icon:hover { color: #fff; background: var(--primary); }
-    .f-soc-icon.instagram-link { color: #e1306c; background: rgba(225,48,108,.1); }
-    .f-soc-icon.instagram-link:hover { color: #fff; background: linear-gradient(135deg,#f58529,#dd2a7b 55%,#8134af); }
+ .f-soc-icon.instagram-link { color: #fff; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); transition: all .1s ease-in-out; }
+ .f-soc-icon.instagram-link:hover, .f-soc-icon.instagram-link:focus-visible, .f-soc-icon.instagram-link:active { color: #fff; transform: scale(1.1); filter: saturate(1.35) brightness(1.15); box-shadow: 0 0 20px rgba(214,36,159,.65); }
     .f-col h6 { font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 18px; text-transform: uppercase; letter-spacing: .8px; }
     .f-col ul li { margin-bottom: 9px; }
     .f-col ul li a { font-size: 13.5px; color: rgba(255,255,255,.62); transition: all .2s; display: flex; align-items: center; gap: 7px; }
@@ -487,8 +487,9 @@
       .hdr-inner { gap: 10px; padding: 10px 22px; }
       .sk-logo .sk-name { font-size: clamp(20px, 4vw, 24px); }
       .sk-logo .sk-sub { font-size: clamp(8px, 1.8vw, 10.5px); letter-spacing: .9px; }
-      .hdr-search { flex: 0 0 74px; max-width: 74px; }
-      .hdr-search input { padding: 0 48px 0 0; font-size: 0; border-color: #d9e0e6; }
+ .hdr-search { flex: 0 0 52px; width: 52px; min-width: 52px; max-width: 52px; }
+ .hdr-search.search-active { flex: 1 1 auto; width: auto; max-width: calc(100vw - 210px); }
+ .hdr-search input { padding: 0 48px 0 0; font-size: 0; border-color: #d9e0e6; }
       .hdr-search input::placeholder { color: transparent; }
       .hdr-search .search-submit { width: 50px; padding: 0; border-radius: 0 25px 25px 0; }
       .hdr-search .search-clear { display: none !important; }
@@ -950,7 +951,7 @@
   <div class="payment-strip" aria-label="Accepted payment methods"><img decoding="async" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-L0uFxWxpgN0L3kyLrBgHVLgbhlXYjB.png" alt="Accepted cards and payment methods"></div>
   <div class="container">
     <div class="footer-bot">
-      <p>© 2024 SK Graphics. All Rights Reserved.</p>
+      <p>© 2026 SK Graphics. All Rights Reserved.</p>
     </div>
   </div>
 </footer>
