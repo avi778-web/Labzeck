@@ -243,6 +243,14 @@ app.post("/api/newsletter", async (req, res) => {
    STANDARD ORDERS
 ========================= */
 
+app.post('/api/coupons/validate', async (req, res) => {
+  const code = normalizeCoupon(req.body?.code);
+  const subtotal = Number(req.body?.subtotal);
+  const discountAmount = couponDiscounts.get(code);
+  if (!code || !Number.isFinite(subtotal) || subtotal < 0 || !discountAmount) return res.status(400).json({ ok: false, message: 'Invalid or Expired Coupon Code' });
+  return res.json({ ok: true, discountAmount: Math.min(discountAmount, subtotal), deliveryFee: 0 });
+});
+
 app.post("/api/orders", async (req, res) => {
   try {
     const parsed = orderSchema.safeParse(req.body);
@@ -357,7 +365,10 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     }
     const requestedAmount = parsed.data.amount;
     const paymentItems = parsed.data.items;
-    const calculatedAmount = Math.round(paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0) * 100);
+    const subtotalAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0);
+    const couponCode = normalizeCoupon(parsed.data.couponCode);
+    const couponDiscount = couponCode ? (couponDiscounts.get(couponCode) || 0) : 0;
+    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
