@@ -576,7 +576,7 @@ app.post("/api/support/chat", async (req, res) => {
   }
   const normalized = message.toLowerCase();
   if (/\b(order|track|tracking|status|delivery|deliver|shipment|where)\b|ऑर्डर|आर्डर|स्टेटस|डिलीवरी|डिलीवर/u.test(normalized)) return res.json({ ok: true, reply: "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status." });
-  if (/\b(return|refund|exchange)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) return res.json({ ok: true, reply: "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order." });
+  if (/\b(returns?|refunds?|exchanges?)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) return res.json({ ok: true, reply: "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order." });
   try {
     const { generateText } = await import("ai");
     const result = await generateText({
@@ -588,7 +588,7 @@ app.post("/api/support/chat", async (req, res) => {
     return res.json({ ok: true, reply: reply || "I’m here to help. Please share a little more detail, or call +91 84474 59316." });
   } catch (error) {
     console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError");
-    return res.status(503).json({ ok: false, message: "The AI assistant is temporarily unavailable. Please call +91 84474 59316 or email shubhprinters88@gmail.com." });
+    return res.json({ ok: true, reply: "Our live assistant is temporarily unavailable. Please share your question with our team at +91 84474 59316 or shubhprinters88@gmail.com, and we’ll help you shortly." });
   }
 });
 
