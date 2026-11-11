@@ -472,6 +472,25 @@
       cursor: pointer; z-index: 999; border: none;
     }
 
+    .coupon-row { display:flex; gap:10px; align-items:stretch; }
+    .coupon-row input, .coupon-next-row input { flex:1; min-width:0; border:1px solid #dbe2ea; border-radius:12px; padding:12px 14px; }
+    .coupon-row .btn { white-space:nowrap; border-radius:12px; padding-inline:20px; }
+    .coupon-message { display:block; min-height:18px; margin-top:7px; font-weight:700; }
+    .coupon-message.success { color:#168548; }
+    .coupon-message.error { color:#c0392b; }
+    .coupon-next-row { display:flex; gap:10px; margin-top:10px; }
+    .coupon-applied-chip { display:inline-flex; margin-top:8px; padding:6px 10px; border-radius:999px; background:#ecfdf3; color:#168548; font-size:12px; font-weight:800; }
+    .billing-card { display:grid; gap:11px; padding:18px; margin:14px 0; border:1px solid #e2e8f0; border-radius:16px; background:#fff; box-shadow:0 8px 24px rgba(15,23,42,.05); }
+    .billing-card h4 { margin:0 0 2px; font-size:15px; color:#0f172a; }
+    .billing-line { display:flex; align-items:center; justify-content:space-between; gap:16px; color:#475569; font-size:14px; }
+    .billing-line strong { color:#0f172a; font-weight:700; }
+    .billing-line[hidden] { display:none; }
+    .coupon-breakdown { display:grid; gap:8px; }
+    .coupon-breakdown:empty { display:none; }
+    .free-delivery-badge { padding:4px 9px; border-radius:999px; background:#dcfce7; color:#15803d!important; font-size:12px; }
+    .billing-grand-total { margin-top:4px; padding-top:13px; border-top:1px solid #e2e8f0; color:#0f172a; font-weight:800; }
+    .billing-grand-total strong { color:var(--primary); font-size:22px; }
+
     @media (max-width: 768px) {
       .main-nav, .top-bar, .hdr-social { display: none; }
       body { overflow-x: hidden; }
@@ -504,14 +523,6 @@
       .whatsapp-btn { right: 14px; bottom: 76px; width: 52px; height: 52px; }
       .btt-btn { right: 18px; bottom: 18px; }
       .payment-strip { padding: 10px 12px; }
- .coupon-row { display:flex; gap:8px; align-items:stretch; }
- .coupon-row input { flex:1; min-width:0; }
- .coupon-row .btn { white-space:nowrap; }
- .coupon-message { display:block; min-height:18px; margin-top:6px; font-weight:700; }
- .coupon-message.success { color:#168548; }
- .coupon-message.error { color:#c0392b; }
- .checkout-total { display:grid; grid-template-columns:1fr auto; gap:8px 16px; padding:12px; margin:12px 0; border:1px solid var(--border); border-radius:10px; background:#f7fbfd; }
- .checkout-total strong:last-child { color:var(--primary); font-size:18px; }
       .options-overlay { align-items:flex-end; }
       .options-modal { width:100%; max-height:calc(100vh - 10px); border-radius:18px 18px 0 0; }
       .options-body { padding:18px 16px 8px; }
@@ -541,6 +552,35 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  .cat-link{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:#0f172a!important;color:#fff!important;border:0;border-radius:9px;padding:10px 14px;font-weight:800;text-decoration:none;opacity:1!important;transition:background-color .2s ease,transform .2s ease,box-shadow .2s ease}.cat-link:hover,.cat-link:focus-visible{background:#2563eb!important;color:#fff!important;transform:translateY(-1px);box-shadow:0 8px 18px rgba(37,99,235,.24);outline:none}.cat-link:active{transform:translateY(0)}
  .coupon-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.coupon-badge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#168548;font-size:11px;font-weight:800}.order-success-panel{width:min(460px,calc(100vw - 28px));background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(15,23,42,.3);text-align:center}.order-success-panel h3{margin:10px 0 5px;font-size:24px}.order-success-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#dcfce7;color:#168548;font-size:27px}.order-success-summary{margin:18px 0;padding:13px;border-radius:10px;background:#f7f8fc;text-align:left;white-space:pre-line;color:#475569;font-size:13px}.order-success-actions{display:flex;gap:8px}.order-success-actions .btn{flex:1}
 @media(max-width:700px){.search-results-active .cats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.order-success-actions{flex-direction:column}}
+
+    /* Website support chat */
+    .support-chat-toggle.wp-float { background:var(--primary); color:#fff; border:0; cursor:pointer; font-size:20px; }
+    .support-chat-toggle.wp-float:hover { background:var(--primary-dark); }
+    .support-chat-panel { position:fixed; z-index:1300; right:24px; bottom:144px; width:min(390px,calc(100vw - 32px)); height:min(620px,calc(100dvh - 180px)); min-height:390px; display:flex; flex-direction:column; overflow:hidden; border:1px solid #dbe3eb; border-radius:18px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.24); font-family:'Open Sans',sans-serif; }
+    .support-chat-panel[hidden] { display:none; }
+    .support-chat-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; color:#fff; background:#17324d; }
+    .support-chat-brand { display:flex; align-items:center; gap:11px; }
+    .support-chat-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; color:#17324d; background:#fff; font-weight:800; }
+    .support-chat-header h2 { margin:0; font-size:15px; font-weight:800; }
+    .support-chat-header p { margin:3px 0 0; color:#d9e6f2; font-size:11px; }
+    .support-chat-close { width:34px; height:34px; border:0; border-radius:9px; color:#fff; background:rgba(255,255,255,.12); cursor:pointer; font-size:20px; }
+    .support-chat-log { flex:1; min-height:0; display:flex; flex-direction:column; gap:10px; padding:16px; overflow:auto; overscroll-behavior:contain; background:#f5f8fb; }
+    .support-chat-message { max-width:92%; align-self:flex-start; padding:10px 12px; border:1px solid #e2e8f0; border-radius:4px 14px 14px 14px; background:#fff; color:#263648; font-size:13px; line-height:1.55; white-space:pre-line; overflow-wrap:anywhere; }
+    .support-chat-message.is-user { align-self:flex-end; border-color:#d8eaf7; border-radius:14px 4px 14px 14px; background:#eaf4fb; }
+    .support-chat-order-form { padding:12px 14px 8px; border-top:1px solid #e6ebf0; background:#fff; }
+    .support-chat-order-form[hidden] { display:none; }
+    .support-chat-order-form label { display:block; margin-bottom:6px; color:#344256; font-size:12px; font-weight:700; }
+    .support-chat-input-row { display:flex; gap:8px; }
+    .support-chat-input-row input { min-width:0; flex:1; height:42px; padding:0 11px; border:1px solid #cbd5e1; border-radius:9px; font:inherit; font-size:14px; }
+    .support-chat-input-row button { padding:0 14px; border:0; border-radius:9px; color:#fff; background:var(--primary); font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+    .support-chat-form-status { min-height:16px; margin:5px 0 0; color:#64748b; font-size:11px; }
+    .support-chat-menu { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:12px 14px; border-top:1px solid #e6ebf0; background:#fff; }
+    .support-chat-menu button { min-height:40px; padding:8px 9px; border:1px solid #dbe3eb; border-radius:10px; color:#24435e; background:#fff; font:inherit; font-size:12px; font-weight:700; text-align:left; cursor:pointer; transition:background .15s,border-color .15s; }
+    .support-chat-menu button:hover { border-color:#9fc3df; background:#f1f8fd; }
+    .support-chat-contact { padding:0 14px 12px; color:#64748b; background:#fff; font-size:11px; text-align:center; }
+    .support-chat-contact a { color:var(--primary-dark); font-weight:700; text-decoration:underline; }
+    @media(max-width:700px) { .support-chat-panel { right:12px; bottom:142px; width:calc(100vw - 24px); height:min(620px,calc(100dvh - 162px)); min-height:360px; } }
+    @media(prefers-reduced-motion:reduce) { .support-chat-panel *, .support-chat-toggle { scroll-behavior:auto; transition:none!important; } }
 </style>
 
 </head>
@@ -679,6 +719,10 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
     </div>
     <p id="searchResultsNote" class="search-results-note" aria-live="polite"></p>
     <div class="cats-grid" id="productGrid">
+      <a class="cat-card id-card-lanyard-card" href="/products/id-card-with-lanyard" style="color:inherit;text-decoration:none">
+        <div class="cat-img"><img decoding="async" src="/assets/sk-id-card-lanyard.png" alt="Custom ID card with branded lanyard" loading="lazy"></div>
+        <div class="cat-body"><h5>Custom ID Card + Lanyard</h5><p>Personalized team ID cards with a custom branded lanyard, from ₹70 per set.</p><span class="cat-link"><i class="fas fa-shopping-bag" aria-hidden="true"></i><span> Customize &amp; Order</span></span></div>
+      </a>
       <!-- 1. Business Cards -->
       <div class="cat-card" onclick="openProductOptions('Business Cards')">
         <div class="cat-img">
@@ -1028,22 +1072,28 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
           <textarea id="custAddress" rows="3" placeholder="Enter full address with PIN code" required></textarea>
         </div>
         <div class="form-group coupon-group">
-          <label for="couponCode">Have a Coupon Code?</label>
-          <div class="coupon-row"><input id="couponCode" type="text" maxlength="40" autocomplete="off" placeholder="Enter first coupon"><input id="couponCode2" type="text" maxlength="40" autocomplete="off" placeholder="Enter second coupon (optional)"><button type="button" class="btn btn-outline" id="applyCouponBtn" onclick="applyCoupon()">Verify up to 2</button></div>
-          <small id="couponMessage" class="coupon-message" aria-live="polite"></small><div id="couponBadges" class="coupon-badges" aria-live="polite"></div>
+          <label for="couponCode">Have a coupon?</label>
+          <div class="coupon-row"><input id="couponCode" type="text" maxlength="40" autocomplete="off" placeholder="Enter coupon code" aria-label="Coupon code"><button type="button" class="btn btn-outline" id="applyCouponBtn" onclick="applyCoupon()">Submit</button></div>
+          <div id="nextCouponInput"></div>
+          <small id="couponMessage" class="coupon-message" aria-live="polite"></small>
         </div>
-        <div class="checkout-total" aria-live="polite"><span>Subtotal</span><strong id="checkoutSubtotal">₹0</strong><span>Tier discount</span><strong id="checkoutTierDiscount">₹0</strong><span>Dual coupons</span><strong id="checkoutCouponDiscount">₹0</strong><span>GST (18%)</span><strong id="checkoutGST">₹0</strong><span>Delivery</span><strong>FREE</strong><span>Grand total</span><strong id="checkoutTotal">₹0</strong></div>
+        <section class="billing-card" aria-label="Order total">
+          <h4>Order summary</h4>
+          <div class="billing-line"><span>Item total</span><strong id="checkoutSubtotal">₹0</strong></div>
+          <div class="billing-line" id="bulkDiscountRow" hidden><span>Bulk discount</span><strong id="checkoutTierDiscount">−₹0</strong></div>
+          <div id="couponBreakdown" class="coupon-breakdown" aria-live="polite"></div>
+          <div class="billing-line"><span>Delivery</span><strong class="free-delivery-badge">FREE</strong></div>
+          <div class="billing-line billing-grand-total"><span>Grand total</span><strong id="checkoutTotal">₹0</strong></div>
+        </section>
         <div class="form-group">
           <label for="paymentMethod">Payment Method *</label>
           <select id="paymentMethod" required onchange="updatePaymentPanel()"><option value="COD">Cash on Delivery (COD)</option><option value="UPI">UPI Payment</option><option value="Netbanking">Netbanking / Cards</option></select>
-          <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with UPI apps, cards, or Netbanking via Razorpay Checkout.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><button type="button" class="btn btn-outline" onclick="startRazorpayPayment()"><i class="fas fa-lock"></i> Pay with Razorpay</button><small id="upiFallback">Razorpay Checkout opens securely with the exact order total. If test keys are unavailable, the local simulation confirms the payment flow safely.</small></div>
+          <div id="upiPaymentPanel" class="upi-panel" hidden><p>Pay securely with UPI apps, cards, or Netbanking via Razorpay Checkout.</p><button type="button" class="btn btn-primary" onclick="launchUPIPayment()"><i class="fas fa-mobile-alt"></i> Pay via UPI App</button><button type="button" class="btn btn-outline" onclick="showUPIQR()"><i class="fas fa-qrcode"></i> Show QR Code</button><button type="button" class="btn btn-outline" onclick="startRazorpayPayment()"><i class="fas fa-lock"></i> Pay with Razorpay</button></div>
         </div>
         <div class="form-group">
           <label for="custNotes">Special Instructions / Printing Notes</label>
           <textarea id="custNotes" rows="2" placeholder="Quantity details, color specifications, etc."></textarea>
         </div>
-        <div class="delivery-summary"><span><s>₹50</s> delivery charge</span><strong>FREE Delivery</strong></div>
-        <div id="firstOrderBadge" class="first-order-badge" hidden>First-time order special: Free Delivery</div>
         <div class="om-footer" style="padding:16px 0 0;border-top:1px solid var(--border)">
           <button type="submit" class="btn btn-wp" id="orderSubmitBtn"><i class="fab fa-whatsapp"></i> Submit Order</button>
         </div>
@@ -1054,10 +1104,37 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
 
 <div class="order-overlay" id="successOverlay" aria-hidden="true"><div class="order-success-panel" role="dialog" aria-modal="true" aria-labelledby="successTitle"><div class="order-success-icon"><i class="fas fa-check" aria-hidden="true"></i></div><h3 id="successTitle">Order confirmed</h3><p id="successOrderId"></p><div class="order-success-summary" id="successSummary"></div><div class="order-success-actions"><button class="btn btn-primary" id="successWhatsApp"><i class="fab fa-whatsapp"></i> Send to WhatsApp</button><button class="btn btn-outline" onclick="closeSuccessModal()">Continue shopping</button></div></div></div>
 
+<!-- WEBSITE SUPPORT CHAT -->
+<section class="support-chat-panel" id="supportChatPanel" role="dialog" aria-modal="false" aria-labelledby="supportChatTitle" hidden>
+  <header class="support-chat-header">
+    <div class="support-chat-brand">
+      <span class="support-chat-mark" aria-hidden="true">SK</span>
+      <div><h2 id="supportChatTitle">SK Graphics support</h2><p>Orders, products &amp; printing help</p></div>
+    </div>
+    <button class="support-chat-close" id="supportChatClose" type="button" aria-label="Close support chat">×</button>
+  </header>
+  <div class="support-chat-log" id="supportChatLog" role="log" aria-live="polite" aria-relevant="additions text"></div>
+  <form class="support-chat-order-form" id="supportOrderForm" hidden>
+    <label for="supportOrderPhone">Phone number used for your order</label>
+    <div class="support-chat-input-row">
+      <input id="supportOrderPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="e.g. 98765 43210" required>
+      <button type="submit" id="supportOrderSubmit">Check status</button>
+    </div>
+    <p class="support-chat-form-status" id="supportOrderStatus" aria-live="polite"></p>
+  </form>
+  <nav class="support-chat-menu" aria-label="Permanent support options">
+    <button type="button" data-support-action="track">Track an order</button>
+    <button type="button" data-support-action="products">Products &amp; printing</button>
+    <button type="button" data-support-action="delivery">Delivery &amp; timing</button>
+    <button type="button" data-support-action="artwork">Artwork help</button>
+  </nav>
+  <p class="support-chat-contact">Need a person? <a href="tel:+918447459316">Call</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
+</section>
+
 <!-- FLOATING BUTTONS -->
-<a href="https://wa.me/918447459316" target="_blank" class="wp-float" title="Chat on WhatsApp">
-  <i class="fab fa-whatsapp"></i>
-</a>
+<button type="button" class="wp-float support-chat-toggle" id="supportChatToggle" aria-label="Open SK Graphics support chat" aria-controls="supportChatPanel" aria-expanded="false" title="Open support chat">
+  <i class="fas fa-comments" aria-hidden="true"></i>
+</button>
 <button class="btt-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <i class="fas fa-chevron-up"></i>
 </button>
@@ -1317,17 +1394,17 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     return razorpayLoaderPromise;
   }
   function getCartSubtotal() { return cart.reduce((sum, item) => sum + item.price * item.qty, 0); }
- function getCheckoutBreakdown() { const subtotal=getCartSubtotal(); const tierDiscount=cart.reduce((sum,item)=>sum+Number(item.customization?.tierDiscount||0),0); const couponDiscount=couponApplied?.discountAmount || 0; const taxable=Math.max(0, subtotal-couponDiscount); const gst=Math.round(taxable*.18); return {subtotal, tierDiscount, couponDiscount, gst, total:taxable+gst}; }
+ function getCheckoutBreakdown() { const subtotal=getCartSubtotal(); const tierDiscount=cart.reduce((sum,item)=>sum+Math.max(0,Number(item.customization?.tierDiscount||0)),0); const coupons=couponApplied?.coupons||[]; const couponDiscount=coupons.reduce((sum,coupon)=>sum+Math.max(0,Number(coupon.discountAmount||0)),0); return {subtotal,tierDiscount,coupons,couponDiscount,total:Math.max(0,subtotal-tierDiscount-couponDiscount)}; }
  function getCartTotal() { return getCheckoutBreakdown().total; }
- function updateCheckoutTotals() { const breakdown=getCheckoutBreakdown(); document.getElementById('checkoutSubtotal')?.replaceChildren(document.createTextNode(`₹${breakdown.subtotal}`)); document.getElementById('checkoutTierDiscount')?.replaceChildren(document.createTextNode(`₹${breakdown.tierDiscount}`)); document.getElementById('checkoutCouponDiscount')?.replaceChildren(document.createTextNode(`₹${breakdown.couponDiscount}`)); document.getElementById('checkoutGST')?.replaceChildren(document.createTextNode(`₹${breakdown.gst}`)); document.getElementById('checkoutTotal')?.replaceChildren(document.createTextNode(`₹${breakdown.total}`)); }
- async function applyCoupon() { const inputs=[document.getElementById('couponCode'),document.getElementById('couponCode2')]; const codes=[...new Set(inputs.map(input=>input?.value.trim().toUpperCase()).filter(Boolean))]; const message=document.getElementById('couponMessage'); const badges=document.getElementById('couponBadges'); if (!codes.length) return; const button=document.getElementById('applyCouponBtn'); button.disabled=true; try { const response=await fetch('/api/coupons/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codes,subtotal:getCartSubtotal()})}); const result=await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Invalid Coupon Code'); couponApplied={codes:result.coupons.map(coupon=>coupon.code),discountAmount:result.discountAmount}; message.textContent=`${result.coupons.length} coupon${result.coupons.length>1?'s':''} verified`; message.className='coupon-message success'; badges.innerHTML=result.coupons.map(coupon=>`<span class="coupon-badge">${escapeHtml(coupon.code)} · ₹${coupon.discountAmount} OFF · Coupon Applied!</span>`).join(''); inputs.forEach(input=>{input.readOnly=true}); button.textContent='Applied'; updateCheckoutTotals(); } catch(error) { couponApplied=null; badges.innerHTML=''; message.textContent=error.message.includes('Already')?'Coupon Expired / Already Used':error.message.includes('Invalid')?'Invalid Coupon Code':'Coupon verification failed'; message.className='coupon-message error'; updateCheckoutTotals(); } finally { button.disabled=false; } }
+ function updateCheckoutTotals() { const breakdown=getCheckoutBreakdown(); document.getElementById('checkoutSubtotal')?.replaceChildren(document.createTextNode(`₹${breakdown.subtotal}`)); document.getElementById('checkoutTierDiscount')?.replaceChildren(document.createTextNode(`−₹${breakdown.tierDiscount}`)); document.getElementById('bulkDiscountRow').hidden=breakdown.tierDiscount<=0; document.getElementById('couponBreakdown').innerHTML=breakdown.coupons.map(coupon=>`<div class="billing-line"><span>Coupon applied: ${escapeHtml(coupon.code)}</span><strong>−₹${Number(coupon.discountAmount)}</strong></div>`).join(''); document.getElementById('checkoutTotal')?.replaceChildren(document.createTextNode(`₹${breakdown.total}`)); }
+ async function applyCoupon(inputId='couponCode') { const input=document.getElementById(inputId); const code=input?.value.trim().toUpperCase(); const message=document.getElementById('couponMessage'); const button=input?.parentElement.querySelector('button'); if (!code) { message.textContent='Enter a coupon code first.'; message.className='coupon-message error'; input?.focus(); return; } if ((couponApplied?.codes||[]).includes(code)) { message.textContent='Invalid or Already Used Coupon'; message.className='coupon-message error'; return; } if ((couponApplied?.codes||[]).length>=2) return; button.disabled=true; try { const remaining=Math.max(0,getCartSubtotal()-getCheckoutBreakdown().tierDiscount-(couponApplied?.discountAmount||0)); const response=await fetch('/api/coupons/validate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,subtotal:remaining,reservationId:orderToken})}); const result=await parseResponse(response); if (!response.ok) throw new Error(result.message||'Invalid or Already Used Coupon'); const applied=result.coupons[0]; couponApplied=couponApplied||{codes:[],coupons:[],discountAmount:0}; couponApplied.codes.push(applied.code); couponApplied.coupons.push(applied); couponApplied.discountAmount+=Number(applied.discountAmount); input.readOnly=true; button.textContent='Applied'; button.disabled=true; const chip=document.createElement('div'); chip.className='coupon-applied-chip'; chip.textContent=`Discount applied: −₹${applied.discountAmount}`; input.parentElement.insertAdjacentElement('afterend',chip); message.textContent=''; message.className='coupon-message'; if (couponApplied.codes.length===1) { document.getElementById('nextCouponInput').innerHTML='<div class="coupon-next-row"><input id="couponCode2" type="text" maxlength="40" autocomplete="off" placeholder="Second coupon (optional)" aria-label="Second coupon code"><button type="button" class="btn btn-outline" onclick="applyCoupon(\'couponCode2\')">Submit</button></div>'; } else { document.getElementById('nextCouponInput').replaceChildren(); } updateCheckoutTotals(); } catch(error) { if (button) button.disabled=false; message.textContent='Invalid or Already Used Coupon'; message.className='coupon-message error'; } finally { if (button && !input.readOnly) button.disabled=false; } }
   function updatePaymentPanel() { const isOnline = document.getElementById('paymentMethod').value !== 'COD'; document.getElementById('upiPaymentPanel').hidden = !isOnline; if (!isOnline) { verifiedPayment = null; resetPaymentState(); } }
   function updateFirstOrderBadge() {
     const badge = document.getElementById('firstOrderBadge');
     if (!badge) return;
     try { badge.hidden = localStorage.getItem('sk_graphics_order_completed') === 'true'; } catch (_) { badge.hidden = false; }
   }
-  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), couponCodes: couponApplied?.codes || [], idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); if (order.simulated) { verifiedPayment={ paymentStatus:'paid', transactionId:`sim_${Date.now()}`, razorpayOrderId:order.orderId }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); return; } const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
+  async function startRazorpayPayment(preferredMethod = 'upi') { if (paymentInProgress) return; if (!cart.length) return alert('Add a product before starting payment.'); paymentInProgress = true; const buttons = [...document.querySelectorAll('#upiPaymentPanel .btn')]; buttons.forEach(button => { button.disabled = true; button.classList.add('is-loading'); }); const button = document.getElementById('orderSubmitBtn'); button.disabled = true; try { await loadRazorpay(); const response = await fetch('/api/create-order', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ amount: Math.round(getCartTotal() * 100), bulkDiscount:getCheckoutBreakdown().tierDiscount, claimToken:orderToken, items: cart.map(item => ({ name:item.name, price:item.price, qty:item.qty })), couponCodes: couponApplied?.codes || [], idempotencyKey: orderToken }) }); const order = await parseResponse(response); if (!response.ok) throw new Error(order.message || 'Unable to start payment'); if (order.simulated) { verifiedPayment={ paymentStatus:'paid', transactionId:`sim_${Date.now()}`, razorpayOrderId:order.orderId }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); return; } const razorpay = new Razorpay({ key: order.keyId, amount: order.amount, currency: order.currency, name:'SK Graphics', description:'SK Graphics order', order_id:order.orderId, config: preferredMethod === 'qr' ? { display: { blocks: { upi: { name: 'Scan QR with any UPI app', instruments: [{ method: 'upi' }] } }, sequence: ['block.upi'], preferences: { show_default_blocks: false } } } : undefined, handler: async function (payment) { try { const verified = await fetch('/api/payments/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payment) }); const result = await parseResponse(verified); if (!verified.ok || !result.confirmed) throw new Error(result.message || 'Payment verification failed'); verifiedPayment = { paymentStatus:'paid', transactionId:payment.razorpay_payment_id, razorpayOrderId:payment.razorpay_order_id }; resetPaymentState(); document.getElementById('orderForm').requestSubmit(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment verification failed.'); } }, modal:{ ondismiss:()=>{ paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; } }, prefill:{ name:document.getElementById('custName').value, contact:document.getElementById('custPhone').value } }); razorpay.open(); } catch (error) { paymentInProgress=false; buttons.forEach(item => { item.disabled=false; item.classList.remove('is-loading'); }); button.disabled=false; alert(error.message || 'Payment could not be started.'); } }
   function launchUPIPayment() { startRazorpayPayment(); }
   function showUPIQR() {
     if (!cart.length) return alert('Add a product before opening the payment QR.');
@@ -1335,9 +1412,7 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   }
   function closeUPIQR() { document.getElementById('qrOverlay').classList.remove('open'); }
   function closeSuccessModal() { document.getElementById('successOverlay').classList.remove('open'); document.getElementById('successOverlay').setAttribute('aria-hidden','true'); syncOverlayScrollLock(); }
-  function showSuccessModal(orderId, total, paymentMethod, items) { const overlay=document.getElementById('successOverlay'); const breakdown=getCheckoutBreakdown(); document.getElementById('successOrderId').textContent=`Order ID: ${orderId}`; document.getElementById('successSummary').textContent=`${items.map(item=>`${item.name} × ${item.qty}`).join('\\n')}\\n\\nSubtotal: ₹${breakdown.subtotal}\\nTier discount: ₹${breakdown.tierDiscount}\\nDual coupons: ₹${breakdown.couponDiscount}\\nGST (18%): ₹${breakdown.gst}\\nGrand total: ₹${total}\\nPayment: ${paymentMethod}\\nDelivery: FREE`; document.getElementById('successWhatsApp').onclick=()=>window.open(`https://wa.me/918447459316?text=${encodeURIComponent(`SK Graphics order ${orderId}\\nTotal: ₹${total}\\nPayment: ${paymentMethod}`)}`,'_blank','noopener,noreferrer'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); syncOverlayScrollLock(); }
-  function closeSuccessModal() { document.getElementById('successOverlay').classList.remove('open'); document.getElementById('successOverlay').setAttribute('aria-hidden','true'); syncOverlayScrollLock(); }
-  function showSuccessModal(orderId, total, paymentMethod, items) { const overlay=document.getElementById('successOverlay'); const breakdown=getCheckoutBreakdown(); document.getElementById('successOrderId').textContent=`Order ID: ${orderId}`; document.getElementById('successSummary').textContent=`${items.map(item=>`${item.name} × ${item.qty}`).join('\\n')}\\n\\nSubtotal: ₹${breakdown.subtotal}\\nTier discount: ₹${breakdown.tierDiscount}\\nDual coupons: ₹${breakdown.couponDiscount}\\nGST (18%): ₹${breakdown.gst}\\nGrand total: ₹${total}\\nPayment: ${paymentMethod}\\nDelivery: FREE`; document.getElementById('successWhatsApp').onclick=()=>window.open(`https://wa.me/918447459316?text=${encodeURIComponent(`SK Graphics order ${orderId}\\nTotal: ₹${total}\\nPayment: ${paymentMethod}`)}`,'_blank','noopener,noreferrer'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); syncOverlayScrollLock(); }
+  function showSuccessModal(orderId, total, paymentMethod, items) { const overlay=document.getElementById('successOverlay'); const breakdown=getCheckoutBreakdown(); document.getElementById('successOrderId').textContent=`Order ID: ${orderId}`; document.getElementById('successSummary').textContent=`${items.map(item=>`${item.name} × ${item.qty}`).join('\\n')}\\n\\nItem total: ₹${breakdown.subtotal}\\nBulk discount: −₹${breakdown.tierDiscount}\\nCoupon discount: −₹${breakdown.couponDiscount}\\nDelivery: FREE\\nGrand total: ₹${total}\\nPayment: ${paymentMethod}`; document.getElementById('successWhatsApp').onclick=()=>window.open(`https://wa.me/918447459316?text=${encodeURIComponent(`SK Graphics order ${orderId}\\nTotal: ₹${total}\\nPayment: ${paymentMethod}`)}`,'_blank','noopener,noreferrer'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); syncOverlayScrollLock(); }
   async function submitOrder(e) {
     e.preventDefault();
     const name = document.getElementById('custName').value.trim();
@@ -1354,9 +1429,9 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
     if (navigator.geolocation) { try { const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })); location = { latitude: position.coords.latitude, longitude: position.coords.longitude }; } catch (_) { console.warn('Location permission unavailable; saving address only.'); } }
     const button = document.getElementById('orderSubmitBtn'); button.disabled = true; button.textContent = 'Saving order...';
     try {
-      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, subtotal: getCartSubtotal(), total, couponCodes: couponApplied?.codes || [], couponApplied, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`,  paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
+      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customer: { name, phone, address, location }, items: cart, subtotal: getCartSubtotal(), bulkDiscount:getCheckoutBreakdown().tierDiscount, claimToken:orderToken, total, couponCodes: couponApplied?.codes || [], couponApplied, notes: `${notes}${notes ? ' | ' : ''}Payment: ${paymentMethod}`,  paymentMethod, paymentStatus: verifiedPayment?.paymentStatus || (paymentMethod === 'COD' ? 'cod' : 'pending'), transactionId: verifiedPayment?.transactionId || '', razorpayOrderId: verifiedPayment?.razorpayOrderId || '', deliveryFee: 0, idempotencyKey: orderToken }) });
       const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Could not save order');
-      showSuccessModal(result.orderId, total, paymentMethod, cart); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Subtotal:* ₹${getCartSubtotal()}\\n*Coupon:* ${couponApplied ? `₹${couponApplied.discountAmount} OFF (${couponApplied.codes.join(', ')})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
+      showSuccessModal(result.orderId, total, paymentMethod, cart); const itemsList = cart.map(item => `${item.name} (Qty: ${item.qty}) - ₹${item.price * item.qty}${item.customization ? ` | Font: ${item.customization.fontStyle || 'Arial'} | Print text: ${item.customization.printText || 'None'} | Design upload: ${item.customization.hasDesign ? 'Yes' : 'No'} | Extra logo/photo: ${item.customization.addExtraAsset ? 'Yes' : 'No'}${item.customization.designFile ? ` | Design: ${item.customization.designFile}` : ''}${item.customization.extraAsset ? ` | Extra: ${window.location.origin}${item.customization.extraAsset}` : ''}` : ''}`).join('\\n'); const message = `*ORDER - SK GRAPHICS*\\n*Customer:* ${name}\\n*Phone:* ${phone}\\n*Address:* ${address}\\n*Items:*\\n${itemsList}\\n*Item total:* ₹${getCartSubtotal()}\\n*Bulk discount:* −₹${getCheckoutBreakdown().tierDiscount}\\n*Coupon:* ${couponApplied ? `−₹${couponApplied.discountAmount} (${couponApplied.codes.join(', ')})` : 'None'}\\n*Delivery:* FREE\\n*Total:* ₹${total}\\n*Payment:* ${paymentMethod}\\n*Notes:* ${notes || 'None'}`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); cart = []; couponApplied = null; verifiedPayment = null; orderToken = createOrderToken(); try { localStorage.setItem('sk_graphics_order_completed', 'true'); } catch (_) {} updateCartUI(); closeOrderModal(); document.getElementById('orderForm').reset(); updatePaymentPanel(); updateFirstOrderBadge();
     } catch (error) { alert(error.message || 'Could not save order. Please try again.'); }
     finally { orderSubmissionInProgress = false; button.disabled = false; button.textContent = 'Submit Order'; }
   }
@@ -1368,6 +1443,103 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   function updateDriverLocation(lat, lng) {
     // Realtime driver update hook (WebSocket / Socket.io / Firebase)
   }
+
+  (() => {
+    const panel = document.getElementById('supportChatPanel');
+    const toggle = document.getElementById('supportChatToggle');
+    const closeButton = document.getElementById('supportChatClose');
+    const log = document.getElementById('supportChatLog');
+    const orderForm = document.getElementById('supportOrderForm');
+    const phoneInput = document.getElementById('supportOrderPhone');
+    const orderStatus = document.getElementById('supportOrderStatus');
+    const submitButton = document.getElementById('supportOrderSubmit');
+
+    function addSupportMessage(text, role = 'assistant') {
+      const message = document.createElement('div');
+      message.className = `support-chat-message${role === 'user' ? ' is-user' : ''}`;
+      message.textContent = text;
+      log.appendChild(message);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function setChatOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) closeButton.focus();
+      else toggle.focus();
+    }
+
+    addSupportMessage('Hello! I can help with order status, printing options, delivery timing, and artwork. Choose an option below to get started.');
+
+    toggle.addEventListener('click', () => setChatOpen(panel.hidden));
+    closeButton.addEventListener('click', () => setChatOpen(false));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) setChatOpen(false);
+    });
+
+    panel.querySelector('.support-chat-menu').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-support-action]');
+      if (!button) return;
+      const action = button.dataset.supportAction;
+      if (action === 'track') {
+        addSupportMessage('Track an order', 'user');
+        addSupportMessage('Enter the phone number used at checkout. I’ll show the latest order status and a short order summary.');
+        orderForm.hidden = false;
+        orderStatus.textContent = '';
+        phoneInput.focus();
+      } else if (action === 'products') {
+        addSupportMessage('Products & printing', 'user');
+        addSupportMessage('We offer custom business cards, flyers, brochures, banners, stickers, packaging, apparel, mugs, and more. Browse the product catalog on this page to see available options.');
+      } else if (action === 'delivery') {
+        addSupportMessage('Delivery & timing', 'user');
+        addSupportMessage('Turnaround and delivery depend on the product, quantity, and approval of the final artwork. For an exact estimate, call or email our team using the contact links below.');
+      } else if (action === 'artwork') {
+        addSupportMessage('Artwork help', 'user');
+        addSupportMessage('For crisp printing, send high-resolution artwork and carefully check text, colors, and sizing before approval. If you need help preparing a file, contact our team and tell us which product you’re ordering.');
+      }
+    });
+
+    orderForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const phone = phoneInput.value.trim();
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length < 10 || digits.length > 15) {
+        orderStatus.textContent = 'Enter a valid phone number with at least 10 digits.';
+        phoneInput.focus();
+        return;
+      }
+      submitButton.disabled = true;
+      orderStatus.textContent = 'Checking your recent orders…';
+      try {
+        const response = await fetch('/api/support/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Could not check order status.');
+        addSupportMessage('Check order status', 'user');
+        if (!result.orders.length) {
+          addSupportMessage('I couldn’t find an order with that phone number. Check the number used at checkout, or call our team for help.');
+        } else {
+          addSupportMessage(`I found ${result.orders.length} recent ${result.orders.length === 1 ? 'order' : 'orders'}. Order progress is shown below. Courier tracking IDs aren’t available in this order record.`);
+          const statusLabels = { received: 'Order received', processing: 'In production / packing', completed: 'Marked complete' };
+          result.orders.forEach((order) => {
+            const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date unavailable';
+            const items = (order.items || []).map((item) => `${item.name} × ${item.quantity}`).join(', ') || 'Order details unavailable';
+            const total = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.total);
+            addSupportMessage(`Order #${order.id} · ${date}\nStatus: ${statusLabels[order.status] || 'Order received'}\n${items}\nTotal: ${total}`);
+          });
+        }
+        orderStatus.textContent = '';
+        phoneInput.value = '';
+      } catch (error) {
+        orderStatus.textContent = error.message || 'Could not check order status. Please try again.';
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  })();
 </script>
 </body>
 </html>

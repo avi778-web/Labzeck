@@ -6,6 +6,8 @@ const fs = require("fs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
+const { get, head } = require("@vercel/blob");
+const { handleUpload } = require("@vercel/blob/client");
 const { z } = require("zod");
 const { cloudinaryConfigured, uploadToCloudinary } = require("./cloudinary");
 
@@ -31,12 +33,16 @@ const orderSchema = z.object({
   paymentMethod: z.enum(["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
 }).passthrough();
-const couponRegistry = new Map([
-  ['SKG100', { type: 'fixed', value: 100 }], ['FIRST50', { type: 'fixed', value: 50 }], ['VIPPROMO01', { type: 'fixed', value: 150 }], ['VIPPROMO02', { type: 'fixed', value: 150 }], ['VIPPROMO03', { type: 'percent', value: 10 }], ['VIPPROMO04', { type: 'percent', value: 10 }], ['VIPPROMO05', { type: 'fixed', value: 150 }], ['VIPPROMO06', { type: 'fixed', value: 150 }], ['VIPPROMO07', { type: 'percent', value: 15 }], ['VIPPROMO08', { type: 'percent', value: 15 }]
-]);
-const claimedCoupons = new Set();
+const COUPON_DATABASE = [
+  { code: 'SK@150#VIP!', discount: 150 }, { code: 'SURAJ?150#MAX', discount: 150 }, { code: 'AVI$150,SUPER', discount: 150 }, { code: 'LABZECK!150?PRO', discount: 150 }, { code: 'SK_GRAPHICS#150?', discount: 150 },
+  { code: 'SK@100#MEGA!', discount: 100 }, { code: 'SURAJ$100?DEAL', discount: 100 }, { code: 'AVI#100!BONUS', discount: 100 }, { code: 'LABZECK,100@GOLD', discount: 100 }, { code: 'PRINT?100#SAVE$', discount: 100 },
+  { code: 'SK@30#SAVE!', discount: 30 }, { code: 'SURAJ?30$OFF', discount: 30 }, { code: 'AVI!30,PRINT#', discount: 30 }, { code: 'LABZECK#30?DEAL', discount: 30 }, { code: 'SK$30@CARD!', discount: 30 }, { code: 'SURAJ,30#FLYER?', discount: 30 }, { code: 'AVI?30!BANNER$', discount: 30 }, { code: 'LABZECK@30#MUG,', discount: 30 }, { code: 'SK!30?TSHIRT#', discount: 30 }, { code: 'SURAJ#30$ORDER!', discount: 30 }, { code: 'AVI,30@CUT?', discount: 30 }, { code: 'LABZECK?30!PRO#', discount: 30 }, { code: 'SK#30$GIFT,', discount: 30 }, { code: 'SURAJ!30@BEST?', discount: 30 }, { code: 'AVI@30#NOW!', discount: 30 }, { code: 'LABZECK$30?WIN,', discount: 30 }, { code: 'SK?30,FAST#', discount: 30 }, { code: 'SURAJ!30#LOOT$', discount: 30 }, { code: 'AVI#30?EXTRA!', discount: 30 }, { code: 'LABZECK,30@TOP$', discount: 30 }, { code: 'SK@30!DISCOUNT?', discount: 30 }, { code: 'SURAJ$30#CART,', discount: 30 }, { code: 'AVI?30,PRESS!', discount: 30 }, { code: 'LABZECK!30#SHOP$', discount: 30 }, { code: 'SK#30?EXPRESS,', discount: 30 }, { code: 'SURAJ,30@PLUS!', discount: 30 }, { code: 'AVI!30#SMART?', discount: 30 }, { code: 'LABZECK$30,QUICK!', discount: 30 }, { code: 'SK?30#SUPER$', discount: 30 }, { code: 'SURAJ@30!DEAL?', discount: 30 },
+  { code: 'SK@20#MINI!', discount: 20 }, { code: 'SURAJ?20$SAVER', discount: 20 }, { code: 'AVI!20,CASH#', discount: 20 }, { code: 'LABZECK#20?LITE', discount: 20 }, { code: 'SK$20@OFFER!', discount: 20 }, { code: 'SURAJ,20#PACK?', discount: 20 }, { code: 'AVI?20!FLEX$', discount: 20 }, { code: 'LABZECK@20#TINY,', discount: 20 }, { code: 'SK!20?DROP#', discount: 20 }, { code: 'SURAJ#20$FLASH!', discount: 20 }, { code: 'AVI,20@LESS?', discount: 20 }, { code: 'LABZECK?20!EASY#', discount: 20 }, { code: 'SK#20$COIN,', discount: 20 }, { code: 'SURAJ!20@CHIP?', discount: 20 }, { code: 'AVI@20#PASS!', discount: 20 }, { code: 'LABZECK$20?LINK,', discount: 20 }, { code: 'SK?20,ITEM#', discount: 20 }, { code: 'SURAJ!20#TICK$', discount: 20 }, { code: 'AVI#20?SNAP!', discount: 20 }, { code: 'LABZECK,20@SPOT$', discount: 20 }, { code: 'SK@20!FAST?', discount: 20 }, { code: 'SURAJ$20#SAFE,', discount: 20 }, { code: 'AVI?20,COOL!', discount: 20 }, { code: 'LABZECK!20#NICE$', discount: 20 }, { code: 'SK#20?GOOD,', discount: 20 }, { code: 'SURAJ,20@BEST!', discount: 20 }, { code: 'AVI!20#FINE?', discount: 20 }, { code: 'LABZECK$20,SURE!', discount: 20 }, { code: 'SK?20#REAL$', discount: 20 }, { code: 'SURAJ@20!TRUE?', discount: 20 },
+  { code: 'SK@10#TOKEN!', discount: 10 }, { code: 'SURAJ?10$TINY', discount: 10 }, { code: 'AVI!10,DISC#', discount: 10 }, { code: 'LABZECK#10?PERK', discount: 10 }, { code: 'SK$10@STAR!', discount: 10 }, { code: 'SURAJ,10#NOTE?', discount: 10 }, { code: 'AVI?10!DOT$', discount: 10 }, { code: 'LABZECK@10#POINT,', discount: 10 }, { code: 'SK!10?MARK#', discount: 10 }, { code: 'SURAJ#10$BIT!', discount: 10 }, { code: 'AVI,10@BYTE?', discount: 10 }, { code: 'LABZECK?10!MICRO#', discount: 10 }, { code: 'SK#10$CENT,', discount: 10 }, { code: 'SURAJ!10@MINI?', discount: 10 }, { code: 'AVI@10#SMALL!', discount: 10 }, { code: 'LABZECK$10?LITTLE,', discount: 10 }, { code: 'SK?10,ONE#', discount: 10 }, { code: 'SURAJ!10#ZERO$', discount: 10 }, { code: 'AVI#10?FIRST!', discount: 10 }, { code: 'LABZECK,10@BASE$', discount: 10 }, { code: 'SK@10!LOW?', discount: 10 }, { code: 'SURAJ$10#SLIM,', discount: 10 }, { code: 'AVI?10,LIGHT!', discount: 10 }, { code: 'LABZECK!10#SOFT$', discount: 10 }, { code: 'SK#10?EASY,', discount: 10 }, { code: 'SURAJ,10@PURE!', discount: 10 }, { code: 'AVI!10#SIMPLE?', discount: 10 }, { code: 'LABZECK$10,PLAIN!', discount: 10 }, { code: 'SK?10#FLAT$', discount: 10 }, { code: 'SURAJ@10!BASIC?', discount: 10 }
+];
+const couponRegistry = new Map(COUPON_DATABASE.map(({ code, discount }) => [code, discount]));
 const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
-const calculateCouponDiscount = (code, subtotal) => { const coupon = couponRegistry.get(code); if (!coupon) return 0; return Math.min(subtotal, coupon.type === 'percent' ? Math.round(subtotal * coupon.value / 100) : coupon.value); };
+const calculateCouponDiscount = (code, subtotal) => Math.min(Math.max(0, subtotal), couponRegistry.get(code) || 0);
 const paymentOrderSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
   items: z.array(itemSchema).min(1).max(50),
@@ -51,16 +57,35 @@ const paymentVerificationSchema = z.object({
   razorpay_payment_id: z.string().trim().min(1).max(120),
   razorpay_signature: z.string().trim().regex(/^[a-f0-9]{64}$/i)
 });
+const idCardOrderSchema = z.object({
+  idempotencyKey: z.string().trim().uuid(),
+  quantity: z.coerce.number().int().min(10).max(5000),
+  name: z.string().trim().min(1).max(120),
+  cardHolderText: z.string().trim().min(1).max(120),
+  designation: z.string().trim().max(80).optional().default(""),
+  phone: z.string().trim().min(10).max(30),
+  address: z.string().trim().min(5).max(500),
+  lanyardText: z.string().trim().max(160).optional().default(""),
+  instructions: z.string().trim().min(1).max(1000),
+  uploads: z.object({
+    cardDesign: z.object({ pathname: z.string().trim().min(1).max(300), signature: z.string().trim().regex(/^[a-f0-9]{64}$/i) }),
+    lanyardLogo: z.object({ pathname: z.string().trim().min(1).max(300), signature: z.string().trim().regex(/^[a-f0-9]{64}$/i) })
+  })
+});
+const idCardPaymentVerificationSchema = paymentVerificationSchema.extend({ orderRecordId: z.string().trim().regex(/^[a-f0-9]{24}$/i) });
+const supportChatSchema = z.object({ message: z.string().trim().min(1).max(600) });
 const mongoConnectionString = process.env.MONGODB_CONNECTION_STRING_3 || process.env.MONGODB_URI || process.env.MONGODB_CONNECTION_STRING || process.env.MONGO_URI;
 let razorpayClient = null;
 function getRazorpayCredentials() {
   const candidates = [
-    [process.env.API_KEY, process.env.API_KEY_2],
     [process.env.RAZORPAY_KEY_ID, process.env.RAZORPAY_KEY_SECRET],
+    [process.env.API_KEY, process.env.API_KEY_2],
     [process.env.API_KEY_3, process.env.API_KEY_4],
     [process.env.API_KEY_3, process.env.API_KEY_3_SECRET || process.env.API_SECRET_3]
   ];
-  const [keyId, keySecret] = candidates.find(([id, secret]) => id && secret) || [];
+  const [keyId, keySecret] = candidates.find(([id, secret]) => id?.startsWith("rzp_live_") && secret)
+    || candidates.find(([id, secret]) => id && secret)
+    || [];
   return keyId && keySecret ? { keyId, keySecret } : null;
 }
 function getRazorpay() {
@@ -73,12 +98,15 @@ function getRazorpay() {
 const connectDB = require("./db/db");
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
+const CouponClaimModel = require("./models/coupon-claim.model");
 
 const app = express();
 app.disable("x-powered-by");
 app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Strict-Transport-Security", "max-age=63072000");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
   next();
 });
@@ -102,7 +130,90 @@ function sensitiveRouteRateLimit(req, res, next) {
   current.count += 1;
   return next();
 }
-app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
+function reserveSupportOrderLookup(req, res) {
+  res.set("Cache-Control", "no-store");
+  const key = `support-order-lookup:${req.ip}`;
+  const now = Date.now();
+  const current = rateLimitState.get(key);
+  if (!current || now - current.startedAt >= 10 * 60_000) {
+    rateLimitState.set(key, { startedAt: now, count: 1 });
+    return true;
+  }
+  if (current.count >= 8) return false;
+  current.count += 1;
+  return true;
+}
+function supportOrderLookupRateLimit(req, res, next) {
+  if (!reserveSupportOrderLookup(req, res)) return res.status(429).json({ ok: false, message: "For your privacy, order lookups are limited. Please try again later or call our team." });
+  return next();
+}
+function indiaDayNumber(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return Math.floor(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)) / 86_400_000);
+}
+function getDeliveryEstimate(order) {
+  if (!order?.createdAt || order.status === "completed") return null;
+  const orderDay = indiaDayNumber(order.createdAt);
+  const today = indiaDayNumber(new Date());
+  if (orderDay === null || today === null) return null;
+  const ageInDays = today - orderDay;
+  if (ageInDays <= 0) return "Aapka order aaj raat 9:00 PM se pehle deliver ho jayega.";
+  if (ageInDays === 1) return "Aapka order agle 2-3 dino me deliver hoga.";
+  return null;
+}
+async function findSupportOrdersByPhone(phone) {
+  const phoneDigits = String(phone || "").replace(/\D/g, "");
+  if (phoneDigits.length < 10 || phoneDigits.length > 15) throw new Error("Enter the phone number used when placing your order.");
+  if (!(await ensureDatabase())) throw new Error("Order status is temporarily unavailable. Please call our team.");
+  const lastTenDigits = phoneDigits.slice(-10);
+  const phonePattern = new RegExp(lastTenDigits.split("").join("\\D*"));
+  const orders = await OrderModel.find({ "customer.phone": { $regex: phonePattern }, $or: [{ orderType: { $ne: "id_card_lanyard" } }, { paymentStatus: "paid" }] })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select({ _id: 1, status: 1, createdAt: 1, total: 1, "items.name": 1, "items.quantity": 1 })
+    .lean();
+  return orders.map(order => ({
+    id: String(order._id).slice(-6).toUpperCase(),
+    status: order.status || "received",
+    createdAt: order.createdAt || null,
+    total: Number(order.total) || 0,
+    deliveryEstimate: getDeliveryEstimate(order),
+    items: (order.items || []).slice(0, 5).map(item => ({ name: String(item.name || "Printed item").slice(0, 100), quantity: Math.max(1, Math.min(999, Number(item.quantity) || 1)) }))
+  }));
+}
+function getLiveRazorpayCredentials() {
+  const credentials = getRazorpayCredentials();
+  return credentials?.keyId.startsWith("rzp_live_") ? credentials : null;
+}
+function artworkUploadRateLimit(req, res, next) {
+  const key = `id-card-artwork-upload:${req.ip}`;
+  const now = Date.now();
+  const current = rateLimitState.get(key);
+  if (!current || now - current.startedAt >= 10 * 60_000) {
+    rateLimitState.set(key, { startedAt: now, count: 1 });
+    return next();
+  }
+  if (current.count >= 10) return res.status(429).json({ ok: false, message: "Too many artwork uploads. Please try again later." });
+  current.count += 1;
+  return next();
+}
+function createIdCardUploadSignature(pathname) {
+  const credentials = getLiveRazorpayCredentials();
+  if (!credentials) return null;
+  return crypto.createHmac("sha256", credentials.keySecret).update(pathname).digest("hex");
+}
+function isValidIdCardUpload(pathname, signature, category) {
+  if (typeof pathname !== "string" || !pathname.startsWith(`id-card-lanyard/${category}/`) || !/^[a-f0-9]{64}$/i.test(String(signature || ""))) return false;
+  const expected = createIdCardUploadSignature(pathname);
+  if (!expected) return false;
+  const expectedBuffer = Buffer.from(expected, "hex");
+  const receivedBuffer = Buffer.from(String(signature), "hex");
+  return expectedBuffer.length === receivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
+}
+app.use(["/api/newsletter", "/api/uploads", "/api/id-card/upload-token", "/api/id-card/sign-upload", "/api/id-card/orders", "/api/id-card/verify", "/api/id-card/artwork", "/api/support/chat", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "70mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
@@ -154,6 +265,7 @@ app.set("views", viewsDirectory);
 ========================= */
 
 app.get('/configurator', (req, res) => res.render('configurator'));
+app.get('/products/id-card-with-lanyard', (req, res) => res.render('id-card-lanyard'));
 
 app.get("/", (req, res, next) => {
   try {
@@ -246,14 +358,238 @@ app.post("/api/newsletter", async (req, res) => {
 
 app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   const subtotal = Number(req.body?.subtotal);
+  const reservationId = String(req.body?.reservationId || '').trim().slice(0, 100);
   const codes = [...new Set((Array.isArray(req.body?.codes) ? req.body.codes : [req.body?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
-  if (!codes.length || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
-  const invalid = codes.find(code => !couponRegistry.has(code));
-  const claimed = codes.find(code => claimedCoupons.has(code));
-  if (invalid) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
-  if (claimed) return res.status(409).json({ ok: false, message: 'Coupon Expired / Already Used' });
-  const coupons = codes.map(code => ({ code, discountAmount: calculateCouponDiscount(code, subtotal) }));
-  return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
+  if (!codes.length || !reservationId || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+  if (codes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+  try {
+    if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+    const priorOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: codes } }, { 'couponApplied.code': { $in: codes } }] }).select('_id').lean();
+    if (priorOrder) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+    for (const code of codes) {
+      const existingClaim = await CouponClaimModel.findOne({ code }).lean();
+      if (existingClaim && (existingClaim.reservationId !== reservationId || existingClaim.state !== 'reserved')) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+      if (!existingClaim) {
+        try { await CouponClaimModel.create({ code, reservationId }); }
+        catch (claimError) { if (claimError.code === 11000) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' }); throw claimError; }
+      }
+    }
+    let remaining = subtotal;
+    const coupons = codes.map(code => { const discountAmount = calculateCouponDiscount(code, remaining); remaining -= discountAmount; return { code, discountAmount }; });
+    return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
+  } catch (error) {
+    console.error('COUPON VALIDATION ERROR:', error.message);
+    return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+  }
+});
+
+app.post("/api/support/orders", supportOrderLookupRateLimit, async (req, res) => {
+  try {
+    const orders = await findSupportOrdersByPhone(req.body?.phone);
+    return res.json({ ok: true, orders });
+  } catch (error) {
+    const invalidPhone = error.message === "Enter the phone number used when placing your order.";
+    if (invalidPhone) return res.status(400).json({ ok: false, message: error.message });
+    console.error("SUPPORT ORDER LOOKUP ERROR:", error.message);
+    return res.status(503).json({ ok: false, message: "Order status is temporarily unavailable. Please call our team." });
+  }
+});
+
+app.post("/api/id-card/upload-token", artworkUploadRateLimit, async (req, res) => {
+  try {
+    const result = await handleUpload({
+      request: req,
+      body: req.body,
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        let payload;
+        try { payload = JSON.parse(clientPayload || "{}"); } catch (_) { throw new Error("Invalid artwork upload request"); }
+        const match = pathname.match(/^id-card-lanyard\/(card-design|lanyard-logo)\/([a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})\.(pdf|ai|psd|png|jpe?g|webp)$/i);
+        if (!match || match[1] !== payload.category) throw new Error("Invalid artwork path");
+        const contentTypes = { pdf: "application/pdf", ai: "application/postscript", psd: "image/vnd.adobe.photoshop", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" };
+        return { allowedContentTypes: [contentTypes[match[3].toLowerCase()]], maximumSizeInBytes: 10 * 1024 * 1024, addRandomSuffix: false, tokenPayload: JSON.stringify({ category: match[1] }) };
+      }
+    });
+    return res.json(result);
+  } catch (error) {
+    console.error("ID CARD BLOB TOKEN ERROR:", error.name || "BlobError");
+    return res.status(400).json({ ok: false, message: "Could not authorize this artwork upload. Please choose a supported file and try again." });
+  }
+});
+
+app.post("/api/id-card/sign-upload", artworkUploadRateLimit, async (req, res) => {
+  const pathname = String(req.body?.pathname || "");
+  const category = String(req.body?.category || "");
+  const match = pathname.match(/^id-card-lanyard\/(card-design|lanyard-logo)\/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.(pdf|ai|psd|png|jpe?g|webp)$/i);
+  if (!match || match[1] !== category) return res.status(400).json({ ok: false, message: "Artwork upload could not be verified. Please upload the file again." });
+  try {
+    const metadata = await head(pathname, { access: "private" });
+    if (metadata.size > 10 * 1024 * 1024) return res.status(413).json({ ok: false, message: "Artwork must be 10 MB or smaller." });
+    const signature = createIdCardUploadSignature(metadata.pathname);
+    if (!signature) return res.status(503).json({ ok: false, message: "Live checkout is not configured yet. Please contact SK Graphics." });
+    return res.json({ ok: true, pathname: metadata.pathname, signature });
+  } catch (error) {
+    console.error("ID CARD BLOB SIGN ERROR:", error.name || "BlobError");
+    return res.status(400).json({ ok: false, message: "Artwork upload could not be verified. Please upload the file again." });
+  }
+});
+
+app.get("/api/id-card/artwork", async (req, res) => {
+  const pathname = String(req.query?.pathname || "");
+  const signature = String(req.query?.signature || "");
+  const category = pathname.startsWith("id-card-lanyard/card-design/") ? "card-design" : pathname.startsWith("id-card-lanyard/lanyard-logo/") ? "lanyard-logo" : "";
+  if (!category || !isValidIdCardUpload(pathname, signature, category)) return res.status(404).json({ ok: false, message: "Artwork not found." });
+  try {
+    const result = await get(pathname, { access: "private" });
+    if (!result || result.statusCode !== 200) return res.status(404).json({ ok: false, message: "Artwork not found." });
+    res.set({ "Content-Type": result.blob.contentType, "Content-Disposition": "attachment", "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" });
+    return require("stream").Readable.fromWeb(result.stream).pipe(res);
+  } catch (error) {
+    console.error("ID CARD PRIVATE DOWNLOAD ERROR:", error.name || "BlobError");
+    return res.status(503).json({ ok: false, message: "Artwork is temporarily unavailable." });
+  }
+});
+
+app.post("/api/id-card/orders", async (req, res) => {
+  try {
+    const parsed = idCardOrderSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Check the order details and artwork uploads, then try again." });
+    const body = parsed.data;
+    const phoneDigits = body.phone.replace(/\D/g, "");
+    if (phoneDigits.length < 10 || phoneDigits.length > 15) return res.status(400).json({ ok: false, message: "Enter a valid mobile number with 10 to 15 digits." });
+    const credentials = getLiveRazorpayCredentials();
+    if (!credentials) return res.status(503).json({ ok: false, message: "Live Razorpay checkout is not configured. Please contact SK Graphics." });
+    if (!isValidIdCardUpload(body.uploads.cardDesign.pathname, body.uploads.cardDesign.signature, "card-design") || !isValidIdCardUpload(body.uploads.lanyardLogo.pathname, body.uploads.lanyardLogo.signature, "lanyard-logo")) return res.status(400).json({ ok: false, message: "Artwork upload expired or could not be verified. Please upload both files again." });
+    if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: "The order service is reconnecting. Please try again shortly." });
+    const total = body.quantity * 70;
+    const existing = await OrderModel.findOne({ idempotencyKey: body.idempotencyKey }).lean();
+    if (existing) {
+      if (existing.orderType !== "id_card_lanyard" || Number(existing.total) !== total || existing.customer?.phone !== body.phone || !existing.razorpayOrderId) return res.status(409).json({ ok: false, message: "This checkout session is no longer valid. Refresh the page and try again." });
+      return res.status(200).json({ ok: true, orderRecordId: String(existing._id), razorpayOrderId: existing.razorpayOrderId, amount: total * 100, currency: "INR", keyId: credentials.keyId });
+    }
+    const razorpay = getRazorpay();
+    if (!razorpay) return res.status(503).json({ ok: false, message: "Live Razorpay checkout is not available. Please contact SK Graphics." });
+    const receipt = `idc${body.idempotencyKey.replace(/-/g, "").slice(0, 30)}`;
+    const razorpayOrder = await razorpay.orders.create({ amount: total * 100, currency: "INR", receipt, notes: { product: "Custom ID Card with Branded Lanyard", quantity: String(body.quantity) } });
+    const order = await OrderModel.create({
+      customer: { name: body.name, phone: body.phone, address: body.address },
+      items: [{ name: "Custom ID Card with Branded Lanyard", price: 70, quantity: body.quantity, customization: {
+        hasDesign: true,
+        addExtraAsset: true,
+        printText: body.instructions,
+        designFile: body.uploads.cardDesign.pathname,
+        extraAsset: body.uploads.lanyardLogo.pathname,
+        options: {
+          cardHolderText: body.cardHolderText,
+          designation: body.designation,
+          lanyardText: body.lanyardText,
+          cardDesignPath: body.uploads.cardDesign.pathname,
+          cardDesignSignature: body.uploads.cardDesign.signature,
+          lanyardLogoPath: body.uploads.lanyardLogo.pathname,
+          lanyardLogoSignature: body.uploads.lanyardLogo.signature,
+          storage: "vercel-blob-private"
+        }
+      } }],
+      subtotal: total,
+      total,
+      isPrepaid: false,
+      uploadedDesignUrl: body.uploads.cardDesign.pathname,
+      uploadedPhotoUrl: body.uploads.lanyardLogo.pathname,
+      notes: [body.lanyardText ? `Lanyard text: ${body.lanyardText}` : "", `Printing instructions: ${body.instructions}`].filter(Boolean).join("\n").slice(0, 1000),
+      paymentMethod: "Razorpay",
+      paymentStatus: "pending",
+      razorpayOrderId: razorpayOrder.id,
+      deliveryFee: 0,
+      idempotencyKey: body.idempotencyKey,
+      orderType: "id_card_lanyard",
+      status: "received"
+    });
+    return res.status(201).json({ ok: true, orderRecordId: String(order._id), razorpayOrderId: razorpayOrder.id, amount: razorpayOrder.amount, currency: razorpayOrder.currency, keyId: credentials.keyId });
+  } catch (error) {
+    if (error.code === 11000) {
+      try {
+        const duplicate = await OrderModel.findOne({ idempotencyKey: req.body?.idempotencyKey }).lean();
+        if (duplicate?.orderType === "id_card_lanyard" && duplicate.razorpayOrderId && Number(duplicate.total) === Number(req.body?.quantity) * 70) {
+          const credentials = getLiveRazorpayCredentials();
+          return res.status(200).json({ ok: true, orderRecordId: String(duplicate._id), razorpayOrderId: duplicate.razorpayOrderId, amount: Number(duplicate.total) * 100, currency: "INR", keyId: credentials?.keyId });
+        }
+      } catch (_) {}
+    }
+    console.error("ID CARD ORDER CREATE ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Unable to create your secure checkout. Please try again." });
+  }
+});
+
+app.post("/api/id-card/verify", async (req, res) => {
+  try {
+    const parsed = idCardPaymentVerificationSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ ok: false, message: "Incomplete or invalid payment response." });
+    const credentials = getLiveRazorpayCredentials();
+    if (!credentials) return res.status(503).json({ ok: false, message: "Live payment verification is not configured." });
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderRecordId } = parsed.data;
+    const expectedSignature = crypto.createHmac("sha256", credentials.keySecret).update(`${razorpay_order_id}|${razorpay_payment_id}`).digest("hex");
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+    const receivedBuffer = Buffer.from(razorpay_signature, "hex");
+    if (expectedBuffer.length !== receivedBuffer.length || !crypto.timingSafeEqual(expectedBuffer, receivedBuffer)) return res.status(400).json({ ok: false, message: "Payment signature could not be verified." });
+    if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: "Payment received; order confirmation is still connecting. Please contact support with your Razorpay receipt." });
+    const order = await OrderModel.findOne({ _id: orderRecordId, razorpayOrderId: razorpay_order_id, orderType: "id_card_lanyard" });
+    if (!order) return res.status(404).json({ ok: false, message: "Order record not found. Please contact support with your Razorpay receipt." });
+    if (order.paymentStatus === "paid" && order.transactionId === razorpay_payment_id) {
+      return res.json({ ok: true, confirmed: true, paymentId: razorpay_payment_id, orderId: String(order._id).slice(-6).toUpperCase(), trackingId: `SK-${String(order._id).slice(-6).toUpperCase()}`, deliveryMessage: getDeliveryEstimate(order) });
+    }
+    const razorpay = getRazorpay();
+    if (!razorpay) return res.status(503).json({ ok: false, message: "Live Razorpay verification is unavailable." });
+    const payment = await razorpay.payments.fetch(razorpay_payment_id);
+    if (payment.order_id !== razorpay_order_id || payment.status !== "captured" || payment.currency !== "INR" || Number(payment.amount) !== Math.round(Number(order.total) * 100)) return res.status(409).json({ ok: false, message: "Payment is not captured for this order yet. Please contact support if your account was charged." });
+    order.paymentStatus = "paid";
+    order.isPrepaid = true;
+    order.transactionId = payment.id;
+    await order.save();
+    return res.json({ ok: true, confirmed: true, paymentId: payment.id, orderId: String(order._id).slice(-6).toUpperCase(), trackingId: `SK-${String(order._id).slice(-6).toUpperCase()}`, deliveryMessage: getDeliveryEstimate(order) });
+  } catch (error) {
+    console.error("ID CARD PAYMENT VERIFY ERROR:", error.message);
+    return res.status(502).json({ ok: false, message: "Payment confirmation is delayed. Please contact support with your Razorpay receipt." });
+  }
+});
+
+app.post("/api/support/chat", async (req, res) => {
+  const parsed = supportChatSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ ok: false, message: "Enter a question up to 600 characters." });
+  const message = parsed.data.message;
+  const phoneMatch = message.match(/(?:\+?\d[\d\s().-]{8,}\d)/);
+  const phoneDigits = phoneMatch ? phoneMatch[0].replace(/\D/g, "") : "";
+  if (phoneDigits.length >= 10 && phoneDigits.length <= 15) {
+    if (!reserveSupportOrderLookup(req, res)) return res.status(429).json({ ok: false, message: "For your privacy, order lookups are limited. Please try again later or call our team." });
+    try {
+      const orders = await findSupportOrdersByPhone(phoneDigits);
+      if (!orders.length) return res.json({ ok: true, reply: "I couldn’t find an order with that mobile number. Check the number used at checkout, or contact our team at +91 84474 59316." });
+      const statusLabels = { received: "Order received", processing: "In production / packing", completed: "Marked complete" };
+      const reply = orders.slice(0, 3).map(order => {
+        const items = order.items.map(item => `${item.name} × ${item.quantity}`).join(", ");
+        const delivery = order.deliveryEstimate ? `\n${order.deliveryEstimate}` : "";
+        return `Order #${order.id}\nStatus: ${statusLabels[order.status] || order.status}\n${items}\nTotal: ₹${order.total}${delivery}`;
+      }).join("\n\n");
+      return res.json({ ok: true, reply });
+    } catch (error) {
+      const invalidPhone = error.message === "Enter the phone number used when placing your order.";
+      return res.status(invalidPhone ? 400 : 503).json({ ok: false, message: invalidPhone ? error.message : "Order status is temporarily unavailable. Please call our team." });
+    }
+  }
+  const normalized = message.toLowerCase();
+  if (/\b(order|track|tracking|status|delivery|deliver|shipment|where)\b|ऑर्डर|आर्डर|स्टेटस|डिलीवरी|डिलीवर/u.test(normalized)) return res.json({ ok: true, reply: "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status." });
+  if (/\b(return|refund|exchange)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) return res.json({ ok: true, reply: "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order." });
+  try {
+    const { generateText } = await import("ai");
+    const result = await generateText({
+      model: "openai/gpt-6.1-sol-fast",
+      instructions: "You are the concise, helpful customer support assistant for SK Graphics, a custom printing business in India. Reply in the same language as the customer. Relevant facts: the custom ID card with branded lanyard costs ₹70 per set with a 10-set minimum; this product has free delivery; artwork is reviewed and approved before final printing. Do not invent delivery promises, order status, business hours, return/refund policy, or prices for other products. If a question needs order data, ask for the mobile number used at checkout; order status is handled by the store’s private lookup endpoint, not by you. For policy questions, explain that the team reviews requests case by case and provide +91 84474 59316 or shubhprinters88@gmail.com. Keep replies warm, practical, and under 100 words.",
+      prompt: message
+    });
+    const reply = String(result.text || "").trim().slice(0, 1500);
+    return res.json({ ok: true, reply: reply || "I’m here to help. Please share a little more detail, or call +91 84474 59316." });
+  } catch (error) {
+    console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError");
+    return res.status(503).json({ ok: false, message: "The AI assistant is temporarily unavailable. Please call +91 84474 59316 or email shubhprinters88@gmail.com." });
+  }
 });
 
 app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
@@ -276,17 +612,18 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
     const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
     const submittedCouponCodes = [...new Set((Array.isArray(body.couponCodes) ? body.couponCodes : [body.couponCode || body.couponApplied?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
     const invalidCoupon = submittedCouponCodes.find(code => !couponRegistry.has(code));
-    const claimedCoupon = submittedCouponCodes.find(code => claimedCoupons.has(code));
-    const couponDiscount = submittedCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, calculatedTotal), 0);
     const subtotal = calculatedTotal;
-    const gst = Math.round(Math.max(0, subtotal - couponDiscount) * 0.18);
-    const expectedTotal = Math.max(0, subtotal - couponDiscount + gst);
+    const bulkDiscount = Math.max(0, Number(body.bulkDiscount) || 0);
+    let remainingAfterBulk = Math.max(0, subtotal - bulkDiscount);
+    const couponDiscount = submittedCouponCodes.reduce((sum, code) => { const discount = calculateCouponDiscount(code, remainingAfterBulk); remainingAfterBulk -= discount; return sum + discount; }, 0);
+    const expectedTotal = remainingAfterBulk;
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
+    const claimToken = String(body.claimToken || idempotencyKey).trim().slice(0, 100);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - expectedTotal) > 0.01 || invalidCoupon || claimedCoupon || submittedCouponCodes.length > 2 || !["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || !Number.isFinite(bulkDiscount) || bulkDiscount > subtotal || Math.abs(total - expectedTotal) > 0.01 || invalidCoupon || submittedCouponCodes.length > 2 || !["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
@@ -298,6 +635,11 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
     if (idempotencyKey) {
       const existingOrder = await OrderModel.findOne({ idempotencyKey }).lean();
       if (existingOrder) return res.status(200).json({ ok: true, orderId: existingOrder._id, duplicate: true, message: "Order already recorded" });
+    }
+    if (submittedCouponCodes.length) {
+      const priorCouponOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: submittedCouponCodes } }, { 'couponApplied.code': { $in: submittedCouponCodes } }] }).select('_id').lean();
+      const reservations = await CouponClaimModel.find({ code: { $in: submittedCouponCodes }, reservationId: claimToken, state: 'reserved' }).select('code').lean();
+      if (priorCouponOrder || reservations.length !== submittedCouponCodes.length) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
     }
 
     let order;
@@ -326,6 +668,7 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
         }
       })),
       subtotal,
+      bulkDiscount,
       total: expectedTotal,
       couponApplied: submittedCouponCodes.length ? { code: submittedCouponCodes[0], codes: submittedCouponCodes, discountAmount: couponDiscount } : undefined,
       isPrepaid: paymentStatus === 'paid' || ['UPI', 'PhonePe', 'Razorpay', 'GPay', 'Paytm', 'UPI QR Code'].includes(paymentMethod) && paymentStatus === 'paid',
@@ -340,7 +683,7 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
       idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
       });
-      submittedCouponCodes.forEach(code => claimedCoupons.add(code));
+      if (submittedCouponCodes.length) await CouponClaimModel.updateMany({ code: { $in: submittedCouponCodes }, reservationId: claimToken, state: 'reserved' }, { $set: { state: 'redeemed', orderId: order._id } });
     } catch (saveError) {
       console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
       if (saveError.name === "ValidationError" || saveError.name === "CastError") {
@@ -372,10 +715,18 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     const paymentItems = parsed.data.items;
     const subtotalAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0);
     const paymentCouponCodes = [...new Set((Array.isArray(parsed.data.couponCodes) ? parsed.data.couponCodes : [parsed.data.couponCode]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
-    if (paymentCouponCodes.some(code => !couponRegistry.has(code) || claimedCoupons.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or expired coupon' });
-    const couponDiscount = paymentCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, subtotalAmount), 0);
-    const gst = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 0.18);
-    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount + gst) * 100);
+    const bulkDiscount = Math.max(0, Number(parsed.data.bulkDiscount) || 0);
+    const claimToken = String(parsed.data.claimToken || parsed.data.idempotencyKey || '').trim().slice(0, 100);
+    if (bulkDiscount > subtotalAmount || paymentCouponCodes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid payment amount or coupon' });
+    if (paymentCouponCodes.length) {
+      if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+      const priorOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: paymentCouponCodes } }, { 'couponApplied.code': { $in: paymentCouponCodes } }] }).select('_id').lean();
+      const reservations = await CouponClaimModel.find({ code: { $in: paymentCouponCodes }, reservationId: claimToken, state: 'reserved' }).select('code').lean();
+      if (priorOrder || reservations.length !== paymentCouponCodes.length) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+    }
+    let payable = Math.max(0, subtotalAmount - bulkDiscount);
+    const couponDiscount = paymentCouponCodes.reduce((sum, code) => { const discount = calculateCouponDiscount(code, payable); payable -= discount; return sum + discount; }, 0);
+    const calculatedAmount = Math.round(payable * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
