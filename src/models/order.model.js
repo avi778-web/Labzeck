@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema(
     },
     items: [{ name: String, price: Number, quantity: Number, customization: { hasDesign: Boolean, addExtraAsset: Boolean, fontStyle: String, printText: String, designFile: String, imageUrl: String, imageLink: String, extraAsset: String, options: { type: mongoose.Schema.Types.Mixed } } }],
     subtotal: { type: Number, required: true, min: 0 },
+    bulkDiscount: { type: Number, min: 0, default: 0 },
     total: { type: Number, required: true, min: 0 },
     couponApplied: { code: { type: String, trim: true, maxlength: 80 }, codes: { type: [String], default: undefined }, discountAmount: { type: Number, min: 0 } },
     isPrepaid: { type: Boolean, default: false },

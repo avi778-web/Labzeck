@@ -31,12 +31,16 @@ const orderSchema = z.object({
   paymentMethod: z.enum(["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"]).optional(),
   paymentStatus: z.enum(["pending", "paid", "cod", "failed"]).optional()
 }).passthrough();
-const couponRegistry = new Map([
-  ['SKG100', { type: 'fixed', value: 100 }], ['FIRST50', { type: 'fixed', value: 50 }], ['VIPPROMO01', { type: 'fixed', value: 150 }], ['VIPPROMO02', { type: 'fixed', value: 150 }], ['VIPPROMO03', { type: 'percent', value: 10 }], ['VIPPROMO04', { type: 'percent', value: 10 }], ['VIPPROMO05', { type: 'fixed', value: 150 }], ['VIPPROMO06', { type: 'fixed', value: 150 }], ['VIPPROMO07', { type: 'percent', value: 15 }], ['VIPPROMO08', { type: 'percent', value: 15 }]
-]);
-const claimedCoupons = new Set();
+const COUPON_DATABASE = [
+  { code: 'SK@150#VIP!', discount: 150 }, { code: 'SURAJ?150#MAX', discount: 150 }, { code: 'AVI$150,SUPER', discount: 150 }, { code: 'LABZECK!150?PRO', discount: 150 }, { code: 'SK_GRAPHICS#150?', discount: 150 },
+  { code: 'SK@100#MEGA!', discount: 100 }, { code: 'SURAJ$100?DEAL', discount: 100 }, { code: 'AVI#100!BONUS', discount: 100 }, { code: 'LABZECK,100@GOLD', discount: 100 }, { code: 'PRINT?100#SAVE$', discount: 100 },
+  { code: 'SK@30#SAVE!', discount: 30 }, { code: 'SURAJ?30$OFF', discount: 30 }, { code: 'AVI!30,PRINT#', discount: 30 }, { code: 'LABZECK#30?DEAL', discount: 30 }, { code: 'SK$30@CARD!', discount: 30 }, { code: 'SURAJ,30#FLYER?', discount: 30 }, { code: 'AVI?30!BANNER$', discount: 30 }, { code: 'LABZECK@30#MUG,', discount: 30 }, { code: 'SK!30?TSHIRT#', discount: 30 }, { code: 'SURAJ#30$ORDER!', discount: 30 }, { code: 'AVI,30@CUT?', discount: 30 }, { code: 'LABZECK?30!PRO#', discount: 30 }, { code: 'SK#30$GIFT,', discount: 30 }, { code: 'SURAJ!30@BEST?', discount: 30 }, { code: 'AVI@30#NOW!', discount: 30 }, { code: 'LABZECK$30?WIN,', discount: 30 }, { code: 'SK?30,FAST#', discount: 30 }, { code: 'SURAJ!30#LOOT$', discount: 30 }, { code: 'AVI#30?EXTRA!', discount: 30 }, { code: 'LABZECK,30@TOP$', discount: 30 }, { code: 'SK@30!DISCOUNT?', discount: 30 }, { code: 'SURAJ$30#CART,', discount: 30 }, { code: 'AVI?30,PRESS!', discount: 30 }, { code: 'LABZECK!30#SHOP$', discount: 30 }, { code: 'SK#30?EXPRESS,', discount: 30 }, { code: 'SURAJ,30@PLUS!', discount: 30 }, { code: 'AVI!30#SMART?', discount: 30 }, { code: 'LABZECK$30,QUICK!', discount: 30 }, { code: 'SK?30#SUPER$', discount: 30 }, { code: 'SURAJ@30!DEAL?', discount: 30 },
+  { code: 'SK@20#MINI!', discount: 20 }, { code: 'SURAJ?20$SAVER', discount: 20 }, { code: 'AVI!20,CASH#', discount: 20 }, { code: 'LABZECK#20?LITE', discount: 20 }, { code: 'SK$20@OFFER!', discount: 20 }, { code: 'SURAJ,20#PACK?', discount: 20 }, { code: 'AVI?20!FLEX$', discount: 20 }, { code: 'LABZECK@20#TINY,', discount: 20 }, { code: 'SK!20?DROP#', discount: 20 }, { code: 'SURAJ#20$FLASH!', discount: 20 }, { code: 'AVI,20@LESS?', discount: 20 }, { code: 'LABZECK?20!EASY#', discount: 20 }, { code: 'SK#20$COIN,', discount: 20 }, { code: 'SURAJ!20@CHIP?', discount: 20 }, { code: 'AVI@20#PASS!', discount: 20 }, { code: 'LABZECK$20?LINK,', discount: 20 }, { code: 'SK?20,ITEM#', discount: 20 }, { code: 'SURAJ!20#TICK$', discount: 20 }, { code: 'AVI#20?SNAP!', discount: 20 }, { code: 'LABZECK,20@SPOT$', discount: 20 }, { code: 'SK@20!FAST?', discount: 20 }, { code: 'SURAJ$20#SAFE,', discount: 20 }, { code: 'AVI?20,COOL!', discount: 20 }, { code: 'LABZECK!20#NICE$', discount: 20 }, { code: 'SK#20?GOOD,', discount: 20 }, { code: 'SURAJ,20@BEST!', discount: 20 }, { code: 'AVI!20#FINE?', discount: 20 }, { code: 'LABZECK$20,SURE!', discount: 20 }, { code: 'SK?20#REAL$', discount: 20 }, { code: 'SURAJ@20!TRUE?', discount: 20 },
+  { code: 'SK@10#TOKEN!', discount: 10 }, { code: 'SURAJ?10$TINY', discount: 10 }, { code: 'AVI!10,DISC#', discount: 10 }, { code: 'LABZECK#10?PERK', discount: 10 }, { code: 'SK$10@STAR!', discount: 10 }, { code: 'SURAJ,10#NOTE?', discount: 10 }, { code: 'AVI?10!DOT$', discount: 10 }, { code: 'LABZECK@10#POINT,', discount: 10 }, { code: 'SK!10?MARK#', discount: 10 }, { code: 'SURAJ#10$BIT!', discount: 10 }, { code: 'AVI,10@BYTE?', discount: 10 }, { code: 'LABZECK?10!MICRO#', discount: 10 }, { code: 'SK#10$CENT,', discount: 10 }, { code: 'SURAJ!10@MINI?', discount: 10 }, { code: 'AVI@10#SMALL!', discount: 10 }, { code: 'LABZECK$10?LITTLE,', discount: 10 }, { code: 'SK?10,ONE#', discount: 10 }, { code: 'SURAJ!10#ZERO$', discount: 10 }, { code: 'AVI#10?FIRST!', discount: 10 }, { code: 'LABZECK,10@BASE$', discount: 10 }, { code: 'SK@10!LOW?', discount: 10 }, { code: 'SURAJ$10#SLIM,', discount: 10 }, { code: 'AVI?10,LIGHT!', discount: 10 }, { code: 'LABZECK!10#SOFT$', discount: 10 }, { code: 'SK#10?EASY,', discount: 10 }, { code: 'SURAJ,10@PURE!', discount: 10 }, { code: 'AVI!10#SIMPLE?', discount: 10 }, { code: 'LABZECK$10,PLAIN!', discount: 10 }, { code: 'SK?10#FLAT$', discount: 10 }, { code: 'SURAJ@10!BASIC?', discount: 10 }
+];
+const couponRegistry = new Map(COUPON_DATABASE.map(({ code, discount }) => [code, discount]));
 const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
-const calculateCouponDiscount = (code, subtotal) => { const coupon = couponRegistry.get(code); if (!coupon) return 0; return Math.min(subtotal, coupon.type === 'percent' ? Math.round(subtotal * coupon.value / 100) : coupon.value); };
+const calculateCouponDiscount = (code, subtotal) => Math.min(Math.max(0, subtotal), couponRegistry.get(code) || 0);
 const paymentOrderSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
   items: z.array(itemSchema).min(1).max(50),
@@ -73,6 +77,7 @@ function getRazorpay() {
 const connectDB = require("./db/db");
 const Gmailmodel = require("./models/email.model");
 const OrderModel = require("./models/order.model");
+const CouponClaimModel = require("./models/coupon-claim.model");
 
 const app = express();
 app.disable("x-powered-by");
@@ -246,14 +251,29 @@ app.post("/api/newsletter", async (req, res) => {
 
 app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   const subtotal = Number(req.body?.subtotal);
+  const reservationId = String(req.body?.reservationId || '').trim().slice(0, 100);
   const codes = [...new Set((Array.isArray(req.body?.codes) ? req.body.codes : [req.body?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
-  if (!codes.length || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
-  const invalid = codes.find(code => !couponRegistry.has(code));
-  const claimed = codes.find(code => claimedCoupons.has(code));
-  if (invalid) return res.status(400).json({ ok: false, message: 'Invalid Coupon Code' });
-  if (claimed) return res.status(409).json({ ok: false, message: 'Coupon Expired / Already Used' });
-  const coupons = codes.map(code => ({ code, discountAmount: calculateCouponDiscount(code, subtotal) }));
-  return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
+  if (!codes.length || !reservationId || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+  if (codes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+  try {
+    if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+    const priorOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: codes } }, { 'couponApplied.code': { $in: codes } }] }).select('_id').lean();
+    if (priorOrder) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+    for (const code of codes) {
+      const existingClaim = await CouponClaimModel.findOne({ code }).lean();
+      if (existingClaim && (existingClaim.reservationId !== reservationId || existingClaim.state !== 'reserved')) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+      if (!existingClaim) {
+        try { await CouponClaimModel.create({ code, reservationId }); }
+        catch (claimError) { if (claimError.code === 11000) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' }); throw claimError; }
+      }
+    }
+    let remaining = subtotal;
+    const coupons = codes.map(code => { const discountAmount = calculateCouponDiscount(code, remaining); remaining -= discountAmount; return { code, discountAmount }; });
+    return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
+  } catch (error) {
+    console.error('COUPON VALIDATION ERROR:', error.message);
+    return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+  }
 });
 
 app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
@@ -276,17 +296,18 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
     const calculatedTotal = items.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
     const submittedCouponCodes = [...new Set((Array.isArray(body.couponCodes) ? body.couponCodes : [body.couponCode || body.couponApplied?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
     const invalidCoupon = submittedCouponCodes.find(code => !couponRegistry.has(code));
-    const claimedCoupon = submittedCouponCodes.find(code => claimedCoupons.has(code));
-    const couponDiscount = submittedCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, calculatedTotal), 0);
     const subtotal = calculatedTotal;
-    const gst = Math.round(Math.max(0, subtotal - couponDiscount) * 0.18);
-    const expectedTotal = Math.max(0, subtotal - couponDiscount + gst);
+    const bulkDiscount = Math.max(0, Number(body.bulkDiscount) || 0);
+    let remainingAfterBulk = Math.max(0, subtotal - bulkDiscount);
+    const couponDiscount = submittedCouponCodes.reduce((sum, code) => { const discount = calculateCouponDiscount(code, remainingAfterBulk); remainingAfterBulk -= discount; return sum + discount; }, 0);
+    const expectedTotal = remainingAfterBulk;
     const idempotencyKey = String(body.idempotencyKey || '').trim().slice(0, 100);
+    const claimToken = String(body.claimToken || idempotencyKey).trim().slice(0, 100);
     const latitude = Number(customer.location && customer.location.latitude);
     const longitude = Number(customer.location && customer.location.longitude);
 
     const validItems = items.length <= 50 && items.every((item) => item && typeof item === "object" && String(item.name || "").trim().length <= 160 && Number.isFinite(Number(item.price)) && Number(item.price) >= 0 && Number.isInteger(Number(item.qty)) && Number(item.qty) >= 1 && Number(item.qty) <= 999);
-    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || Math.abs(total - expectedTotal) > 0.01 || invalidCoupon || claimedCoupon || submittedCouponCodes.length > 2 || !["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    if (!name || name.length > 120 || !phone || phone.length > 30 || !address || address.length > 500 || !validItems || !Number.isFinite(total) || total < 0 || !Number.isFinite(calculatedTotal) || !Number.isFinite(bulkDiscount) || bulkDiscount > subtotal || Math.abs(total - expectedTotal) > 0.01 || invalidCoupon || submittedCouponCodes.length > 2 || !["COD", "UPI", "Netbanking", "PhonePe", "Razorpay", "GPay", "Paytm", "UPI QR Code"].includes(paymentMethod) || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
       return res.status(400).json({ ok: false, message: "Order total or cart items are invalid. Please refresh your cart and try again." });
     }
     if (phone.replace(/\D/g, "").length < 10) {
@@ -298,6 +319,11 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
     if (idempotencyKey) {
       const existingOrder = await OrderModel.findOne({ idempotencyKey }).lean();
       if (existingOrder) return res.status(200).json({ ok: true, orderId: existingOrder._id, duplicate: true, message: "Order already recorded" });
+    }
+    if (submittedCouponCodes.length) {
+      const priorCouponOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: submittedCouponCodes } }, { 'couponApplied.code': { $in: submittedCouponCodes } }] }).select('_id').lean();
+      const reservations = await CouponClaimModel.find({ code: { $in: submittedCouponCodes }, reservationId: claimToken, state: 'reserved' }).select('code').lean();
+      if (priorCouponOrder || reservations.length !== submittedCouponCodes.length) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
     }
 
     let order;
@@ -326,6 +352,7 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
         }
       })),
       subtotal,
+      bulkDiscount,
       total: expectedTotal,
       couponApplied: submittedCouponCodes.length ? { code: submittedCouponCodes[0], codes: submittedCouponCodes, discountAmount: couponDiscount } : undefined,
       isPrepaid: paymentStatus === 'paid' || ['UPI', 'PhonePe', 'Razorpay', 'GPay', 'Paytm', 'UPI QR Code'].includes(paymentMethod) && paymentStatus === 'paid',
@@ -340,7 +367,7 @@ app.post("/api/orders", sensitiveRouteRateLimit, async (req, res) => {
       idempotencyKey: idempotencyKey || undefined,
       orderType: "standard"
       });
-      submittedCouponCodes.forEach(code => claimedCoupons.add(code));
+      if (submittedCouponCodes.length) await CouponClaimModel.updateMany({ code: { $in: submittedCouponCodes }, reservationId: claimToken, state: 'reserved' }, { $set: { state: 'redeemed', orderId: order._id } });
     } catch (saveError) {
       console.error("ORDER SAVE ERROR:", saveError.stack || saveError);
       if (saveError.name === "ValidationError" || saveError.name === "CastError") {
@@ -372,10 +399,18 @@ app.post(["/api/payments/order", "/api/create-order"], async (req, res) => {
     const paymentItems = parsed.data.items;
     const subtotalAmount = paymentItems.reduce((sum, item) => sum + Math.max(0, Number(item.price) || 0) * Math.max(1, Math.min(999, Number(item.qty) || 1)), 0);
     const paymentCouponCodes = [...new Set((Array.isArray(parsed.data.couponCodes) ? parsed.data.couponCodes : [parsed.data.couponCode]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
-    if (paymentCouponCodes.some(code => !couponRegistry.has(code) || claimedCoupons.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or expired coupon' });
-    const couponDiscount = paymentCouponCodes.reduce((sum, code) => sum + calculateCouponDiscount(code, subtotalAmount), 0);
-    const gst = Math.round(Math.max(0, subtotalAmount - couponDiscount) * 0.18);
-    const calculatedAmount = Math.round(Math.max(0, subtotalAmount - couponDiscount + gst) * 100);
+    const bulkDiscount = Math.max(0, Number(parsed.data.bulkDiscount) || 0);
+    const claimToken = String(parsed.data.claimToken || parsed.data.idempotencyKey || '').trim().slice(0, 100);
+    if (bulkDiscount > subtotalAmount || paymentCouponCodes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid payment amount or coupon' });
+    if (paymentCouponCodes.length) {
+      if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+      const priorOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: paymentCouponCodes } }, { 'couponApplied.code': { $in: paymentCouponCodes } }] }).select('_id').lean();
+      const reservations = await CouponClaimModel.find({ code: { $in: paymentCouponCodes }, reservationId: claimToken, state: 'reserved' }).select('code').lean();
+      if (priorOrder || reservations.length !== paymentCouponCodes.length) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+    }
+    let payable = Math.max(0, subtotalAmount - bulkDiscount);
+    const couponDiscount = paymentCouponCodes.reduce((sum, code) => { const discount = calculateCouponDiscount(code, payable); payable -= discount; return sum + discount; }, 0);
+    const calculatedAmount = Math.round(payable * 100);
     const token = String((req.body && req.body.idempotencyKey) || '').trim().slice(0, 100);
     if (!paymentItems.length || calculatedAmount !== requestedAmount || !Number.isInteger(requestedAmount) || requestedAmount < 100 || requestedAmount > 100000000) {
       return res.status(400).json({ ok: false, message: "Invalid payment amount" });
