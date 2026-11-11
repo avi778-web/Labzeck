@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema(
     razorpayOrderId: { type: String, trim: true, maxlength: 120 },
     deliveryFee: { type: Number, min: 0, default: 0 },
     idempotencyKey: { type: String, trim: true, maxlength: 100, unique: true, sparse: true },
-    orderType: { type: String, enum: ["standard"], default: "standard" },
+    orderType: { type: String, enum: ["standard", "id_card_lanyard"], default: "standard" },
     status: { type: String, enum: ["received", "processing", "completed"], default: "received" }
   },
   { timestamps: true }
