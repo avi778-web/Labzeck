@@ -433,7 +433,7 @@
           if (!button) return;
           const action = button.dataset.supportAction;
           if (action === 'track') { addMessage('Track an order', 'user'); addMessage('Enter the mobile number used at checkout. I’ll look up your recent orders.'); orderForm.hidden = false; orderStatus.textContent = ''; orderInput.focus(); return; }
-          if (action === 'other') { addMessage('Other question', 'user'); addMessage('Type your question below and I’ll do my best to help.'); askForm.hidden = false; askInput.focus(); return; }
+          if (action === 'other') { askStatus.textContent = ''; addMessage('Other question', 'user'); addMessage('Type your question below and I’ll do my best to help.'); askForm.hidden = false; askInput.focus(); return; }
           const questions = { products: 'What products and pricing does SK Graphics offer?', delivery: 'How does delivery timing work for a custom printing order?', artwork: 'What artwork file types and print preparation do you recommend?', returns: 'How do returns, refunds, or exchanges work?' };
           const prompt = questions[action];
           if (prompt) await sendQuestion(prompt, true);

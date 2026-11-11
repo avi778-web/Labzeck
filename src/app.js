@@ -154,13 +154,25 @@ function indiaDayNumber(value) {
   const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
   return Math.floor(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)) / 86_400_000);
 }
+function indiaHourNumber(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  const hour = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", hourCycle: "h23" }).formatToParts(date).find(part => part.type === "hour")?.value;
+  return hour === undefined ? null : Number(hour);
+}
 function getDeliveryEstimate(order) {
   if (!order?.createdAt || order.status === "completed") return null;
   const orderDay = indiaDayNumber(order.createdAt);
   const today = indiaDayNumber(new Date());
   if (orderDay === null || today === null) return null;
   const ageInDays = today - orderDay;
-  if (ageInDays <= 0) return "Aapka order aaj raat 9:00 PM se pehle deliver ho jayega.";
+  if (ageInDays === 0) {
+    const currentHour = indiaHourNumber(new Date());
+    if (currentHour === null) return null;
+    return currentHour < 21
+      ? "Aapka order aaj raat 9:00 PM se pehle deliver ho jayega."
+      : "Aapka order aaj ka hai; 9:00 PM ke baad ke orders ke liye delivery timing hamari team confirm karegi.";
+  }
   if (ageInDays === 1) return "Aapka order agle 2-3 dino me deliver hoga.";
   return null;
 }
@@ -396,6 +408,7 @@ app.post("/api/support/orders", supportOrderLookupRateLimit, async (req, res) =>
 });
 
 app.post("/api/id-card/upload-token", artworkUploadRateLimit, async (req, res) => {
+  if (!getLiveRazorpayCredentials()) return res.status(503).json({ ok: false, message: "Live checkout is not configured yet. Please contact SK Graphics." });
   try {
     const result = await handleUpload({
       request: req,
@@ -555,18 +568,23 @@ app.post("/api/support/chat", async (req, res) => {
   const parsed = supportChatSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ ok: false, message: "Enter a question up to 600 characters." });
   const message = parsed.data.message;
+  const messageInHindi = /[\u0900-\u097F]/u.test(message);
   const phoneMatch = message.match(/(?:\+?\d[\d\s().-]{8,}\d)/);
   const phoneDigits = phoneMatch ? phoneMatch[0].replace(/\D/g, "") : "";
   if (phoneDigits.length >= 10 && phoneDigits.length <= 15) {
     if (!reserveSupportOrderLookup(req, res)) return res.status(429).json({ ok: false, message: "For your privacy, order lookups are limited. Please try again later or call our team." });
     try {
       const orders = await findSupportOrdersByPhone(phoneDigits);
-      if (!orders.length) return res.json({ ok: true, reply: "I couldn’t find an order with that mobile number. Check the number used at checkout, or contact our team at +91 84474 59316." });
-      const statusLabels = { received: "Order received", processing: "In production / packing", completed: "Marked complete" };
+      if (!orders.length) return res.json({ ok: true, reply: messageInHindi ? "इस मोबाइल नंबर से कोई ऑर्डर नहीं मिला। चेकआउट में दिया गया नंबर जाँचें या हमारी टीम से संपर्क करें: +91 84474 59316।" : "I couldn’t find an order with that mobile number. Check the number used at checkout, or contact our team at +91 84474 59316." });
+      const statusLabels = messageInHindi
+        ? { received: "ऑर्डर प्राप्त हुआ", processing: "प्रोडक्शन / पैकिंग में", completed: "पूरा हुआ" }
+        : { received: "Order received", processing: "In production / packing", completed: "Marked complete" };
       const reply = orders.slice(0, 3).map(order => {
         const items = order.items.map(item => `${item.name} × ${item.quantity}`).join(", ");
         const delivery = order.deliveryEstimate ? `\n${order.deliveryEstimate}` : "";
-        return `Order #${order.id}\nStatus: ${statusLabels[order.status] || order.status}\n${items}\nTotal: ₹${order.total}${delivery}`;
+        return messageInHindi
+          ? `ऑर्डर #${order.id}\nस्थिति: ${statusLabels[order.status] || order.status}\n${items}\nकुल: ₹${order.total}${delivery}`
+          : `Order #${order.id}\nStatus: ${statusLabels[order.status] || order.status}\n${items}\nTotal: ₹${order.total}${delivery}`;
       }).join("\n\n");
       return res.json({ ok: true, reply });
     } catch (error) {
@@ -575,8 +593,36 @@ app.post("/api/support/chat", async (req, res) => {
     }
   }
   const normalized = message.toLowerCase();
-  if (/\b(order|track|tracking|status|delivery|deliver|shipment|where)\b|ऑर्डर|आर्डर|स्टेटस|डिलीवरी|डिलीवर/u.test(normalized)) return res.json({ ok: true, reply: "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status." });
-  if (/\b(returns?|refunds?|exchanges?)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) return res.json({ ok: true, reply: "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order." });
+  if (/\b(returns?|refunds?|exchanges?)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "रिटर्न, रिफंड और एक्सचेंज के अनुरोध टीम हर मामले के आधार पर देखती है। कृपया ऑर्डर नंबर और संक्षिप्त जानकारी +91 84474 59316 या shubhprinters88@gmail.com पर भेजें; टीम उपलब्ध विकल्प बताएगी।"
+      : "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(price|pricing|cost|minimum|rate|how much)\b|कीमत|दाम|मूल्य|कितने|रेट/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "कस्टम आईडी कार्ड और ब्रांडेड लैनयार्ड ₹70 प्रति सेट है; न्यूनतम ऑर्डर 10 सेट (₹700) है। इस उत्पाद पर डिलीवरी निःशुल्क है। अन्य उत्पादों के कोट के लिए हमारी टीम से संपर्क करें।"
+      : "The custom ID card with branded lanyard is ₹70 per set, with a 10-set minimum (₹700). Free delivery is included. Contact our team for a quote on other products.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(artwork|design|logo|file|format|print-ready|upload)\b|आर्टवर्क|डिज़ाइन|डिजाइन|लोगो|फाइल|फ़ाइल/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "आईडी कार्ड के लिए फोटो/डिज़ाइन और लैनयार्ड के लिए अलग लोगो/आर्टवर्क अपलोड करें। PDF, AI, PSD, PNG, JPG या WEBP फाइलें 10 MB तक स्वीकार हैं; प्रिंट से पहले टीम प्रूफ की पुष्टि करेगी।"
+      : "Upload a photo or design for the ID card and a separate logo or artwork file for the lanyard. We accept PDF, AI, PSD, PNG, JPG, or WEBP files up to 10 MB each; our team confirms the proof before printing.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(delivery|shipping|ship|dispatch|arrival|arrive|deliver)\b|डिलीवरी|शिपिंग|पहुंच|पहुँच|भेज/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "इस उत्पाद पर डिलीवरी निःशुल्क है। पहुँचने का समय ऑर्डर की स्थिति पर निर्भर करता है; चेकआउट में इस्तेमाल किया गया मोबाइल नंबर भेजें, हमारी टीम हाल के ऑर्डर की स्थिति जाँच सकती है।"
+      : "Free delivery is included for this product. Exact arrival timing depends on order status; share the mobile number used at checkout and I can check recent orders.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(track|tracking|status|shipment)\b|\bwhere\b.*\b(order|shipment)\b|\b(order|shipment)\b.*\b(status|tracking)\b|ऑर्डर.*(स्टेटस|ट्रैक|स्थिति|कहाँ)|आर्डर.*(स्टेटस|ट्रैक|स्थिति|कहाँ)/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "कृपया चेकआउट में इस्तेमाल किया गया 10 अंकों का मोबाइल नंबर भेजें; हमारी टीम हाल के ऑर्डर की स्थिति जाँच सकती है।"
+      : "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status.";
+    return res.json({ ok: true, reply });
+  }
   try {
     const { generateText } = await import("ai");
     const result = await generateText({
@@ -587,7 +633,7 @@ app.post("/api/support/chat", async (req, res) => {
     const reply = String(result.text || "").trim().slice(0, 1500);
     return res.json({ ok: true, reply: reply || "I’m here to help. Please share a little more detail, or call +91 84474 59316." });
   } catch (error) {
-    console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError");
+    console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError", error.statusCode || error.status || "no-status");
     return res.json({ ok: true, reply: "Our live assistant is temporarily unavailable. Please share your question with our team at +91 84474 59316 or shubhprinters88@gmail.com, and we’ll help you shortly." });
   }
 });
