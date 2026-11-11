@@ -107,6 +107,19 @@ function sensitiveRouteRateLimit(req, res, next) {
   current.count += 1;
   return next();
 }
+function supportOrderLookupRateLimit(req, res, next) {
+  res.set("Cache-Control", "no-store");
+  const key = `support-order-lookup:${req.ip}`;
+  const now = Date.now();
+  const current = rateLimitState.get(key);
+  if (!current || now - current.startedAt >= 10 * 60_000) {
+    rateLimitState.set(key, { startedAt: now, count: 1 });
+    return next();
+  }
+  if (current.count >= 8) return res.status(429).json({ ok: false, message: "For your privacy, order lookups are limited. Please try again later or call our team." });
+  current.count += 1;
+  return next();
+}
 app.use(["/api/newsletter", "/api/uploads", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "70mb" }));
@@ -273,6 +286,41 @@ app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   } catch (error) {
     console.error('COUPON VALIDATION ERROR:', error.message);
     return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
+  }
+});
+
+app.post("/api/support/orders", supportOrderLookupRateLimit, async (req, res) => {
+  const phoneDigits = String(req.body?.phone || "").replace(/\D/g, "");
+  if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+    return res.status(400).json({ ok: false, message: "Enter the phone number used when placing your order." });
+  }
+
+  try {
+    if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: "Order status is temporarily unavailable. Please call our team." });
+    const lastTenDigits = phoneDigits.slice(-10);
+    const phonePattern = new RegExp(lastTenDigits.split("").join("\\D*"));
+    const orders = await OrderModel.find({ "customer.phone": { $regex: phonePattern } })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select({ _id: 1, status: 1, createdAt: 1, total: 1, "items.name": 1, "items.quantity": 1 })
+      .lean();
+
+    return res.json({
+      ok: true,
+      orders: orders.map((order) => ({
+        id: String(order._id).slice(-6).toUpperCase(),
+        status: order.status || "received",
+        createdAt: order.createdAt || null,
+        total: Number(order.total) || 0,
+        items: (order.items || []).slice(0, 5).map((item) => ({
+          name: String(item.name || "Printed item").slice(0, 100),
+          quantity: Math.max(1, Math.min(999, Number(item.quantity) || 1))
+        }))
+      }))
+    });
+  } catch (error) {
+    console.error("SUPPORT ORDER LOOKUP ERROR:", error.message);
+    return res.status(503).json({ ok: false, message: "Order status is temporarily unavailable. Please call our team." });
   }
 });
 

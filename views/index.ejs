@@ -552,6 +552,35 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
  .cat-link{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;background:#0f172a!important;color:#fff!important;border:0;border-radius:9px;padding:10px 14px;font-weight:800;text-decoration:none;opacity:1!important;transition:background-color .2s ease,transform .2s ease,box-shadow .2s ease}.cat-link:hover,.cat-link:focus-visible{background:#2563eb!important;color:#fff!important;transform:translateY(-1px);box-shadow:0 8px 18px rgba(37,99,235,.24);outline:none}.cat-link:active{transform:translateY(0)}
  .coupon-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.coupon-badge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#dcfce7;color:#168548;font-size:11px;font-weight:800}.order-success-panel{width:min(460px,calc(100vw - 28px));background:#fff;border-radius:18px;padding:26px;box-shadow:0 24px 70px rgba(15,23,42,.3);text-align:center}.order-success-panel h3{margin:10px 0 5px;font-size:24px}.order-success-icon{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#dcfce7;color:#168548;font-size:27px}.order-success-summary{margin:18px 0;padding:13px;border-radius:10px;background:#f7f8fc;text-align:left;white-space:pre-line;color:#475569;font-size:13px}.order-success-actions{display:flex;gap:8px}.order-success-actions .btn{flex:1}
 @media(max-width:700px){.search-results-active .cats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.order-success-actions{flex-direction:column}}
+
+    /* Website support chat */
+    .support-chat-toggle.wp-float { background:var(--primary); color:#fff; border:0; cursor:pointer; font-size:20px; }
+    .support-chat-toggle.wp-float:hover { background:var(--primary-dark); }
+    .support-chat-panel { position:fixed; z-index:1300; right:24px; bottom:144px; width:min(390px,calc(100vw - 32px)); height:min(620px,calc(100dvh - 180px)); min-height:390px; display:flex; flex-direction:column; overflow:hidden; border:1px solid #dbe3eb; border-radius:18px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.24); font-family:'Open Sans',sans-serif; }
+    .support-chat-panel[hidden] { display:none; }
+    .support-chat-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; color:#fff; background:#17324d; }
+    .support-chat-brand { display:flex; align-items:center; gap:11px; }
+    .support-chat-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; color:#17324d; background:#fff; font-weight:800; }
+    .support-chat-header h2 { margin:0; font-size:15px; font-weight:800; }
+    .support-chat-header p { margin:3px 0 0; color:#d9e6f2; font-size:11px; }
+    .support-chat-close { width:34px; height:34px; border:0; border-radius:9px; color:#fff; background:rgba(255,255,255,.12); cursor:pointer; font-size:20px; }
+    .support-chat-log { flex:1; min-height:0; display:flex; flex-direction:column; gap:10px; padding:16px; overflow:auto; overscroll-behavior:contain; background:#f5f8fb; }
+    .support-chat-message { max-width:92%; align-self:flex-start; padding:10px 12px; border:1px solid #e2e8f0; border-radius:4px 14px 14px 14px; background:#fff; color:#263648; font-size:13px; line-height:1.55; white-space:pre-line; overflow-wrap:anywhere; }
+    .support-chat-message.is-user { align-self:flex-end; border-color:#d8eaf7; border-radius:14px 4px 14px 14px; background:#eaf4fb; }
+    .support-chat-order-form { padding:12px 14px 8px; border-top:1px solid #e6ebf0; background:#fff; }
+    .support-chat-order-form[hidden] { display:none; }
+    .support-chat-order-form label { display:block; margin-bottom:6px; color:#344256; font-size:12px; font-weight:700; }
+    .support-chat-input-row { display:flex; gap:8px; }
+    .support-chat-input-row input { min-width:0; flex:1; height:42px; padding:0 11px; border:1px solid #cbd5e1; border-radius:9px; font:inherit; font-size:14px; }
+    .support-chat-input-row button { padding:0 14px; border:0; border-radius:9px; color:#fff; background:var(--primary); font:inherit; font-size:13px; font-weight:700; cursor:pointer; }
+    .support-chat-form-status { min-height:16px; margin:5px 0 0; color:#64748b; font-size:11px; }
+    .support-chat-menu { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:12px 14px; border-top:1px solid #e6ebf0; background:#fff; }
+    .support-chat-menu button { min-height:40px; padding:8px 9px; border:1px solid #dbe3eb; border-radius:10px; color:#24435e; background:#fff; font:inherit; font-size:12px; font-weight:700; text-align:left; cursor:pointer; transition:background .15s,border-color .15s; }
+    .support-chat-menu button:hover { border-color:#9fc3df; background:#f1f8fd; }
+    .support-chat-contact { padding:0 14px 12px; color:#64748b; background:#fff; font-size:11px; text-align:center; }
+    .support-chat-contact a { color:var(--primary-dark); font-weight:700; text-decoration:underline; }
+    @media(max-width:700px) { .support-chat-panel { right:12px; bottom:142px; width:calc(100vw - 24px); height:min(620px,calc(100dvh - 162px)); min-height:360px; } }
+    @media(prefers-reduced-motion:reduce) { .support-chat-panel *, .support-chat-toggle { scroll-behavior:auto; transition:none!important; } }
 </style>
 
 </head>
@@ -1071,10 +1100,37 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
 
 <div class="order-overlay" id="successOverlay" aria-hidden="true"><div class="order-success-panel" role="dialog" aria-modal="true" aria-labelledby="successTitle"><div class="order-success-icon"><i class="fas fa-check" aria-hidden="true"></i></div><h3 id="successTitle">Order confirmed</h3><p id="successOrderId"></p><div class="order-success-summary" id="successSummary"></div><div class="order-success-actions"><button class="btn btn-primary" id="successWhatsApp"><i class="fab fa-whatsapp"></i> Send to WhatsApp</button><button class="btn btn-outline" onclick="closeSuccessModal()">Continue shopping</button></div></div></div>
 
+<!-- WEBSITE SUPPORT CHAT -->
+<section class="support-chat-panel" id="supportChatPanel" role="dialog" aria-modal="false" aria-labelledby="supportChatTitle" hidden>
+  <header class="support-chat-header">
+    <div class="support-chat-brand">
+      <span class="support-chat-mark" aria-hidden="true">SK</span>
+      <div><h2 id="supportChatTitle">SK Graphics support</h2><p>Orders, products &amp; printing help</p></div>
+    </div>
+    <button class="support-chat-close" id="supportChatClose" type="button" aria-label="Close support chat">×</button>
+  </header>
+  <div class="support-chat-log" id="supportChatLog" role="log" aria-live="polite" aria-relevant="additions text"></div>
+  <form class="support-chat-order-form" id="supportOrderForm" hidden>
+    <label for="supportOrderPhone">Phone number used for your order</label>
+    <div class="support-chat-input-row">
+      <input id="supportOrderPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="e.g. 98765 43210" required>
+      <button type="submit" id="supportOrderSubmit">Check status</button>
+    </div>
+    <p class="support-chat-form-status" id="supportOrderStatus" aria-live="polite"></p>
+  </form>
+  <nav class="support-chat-menu" aria-label="Permanent support options">
+    <button type="button" data-support-action="track">Track an order</button>
+    <button type="button" data-support-action="products">Products &amp; printing</button>
+    <button type="button" data-support-action="delivery">Delivery &amp; timing</button>
+    <button type="button" data-support-action="artwork">Artwork help</button>
+  </nav>
+  <p class="support-chat-contact">Need a person? <a href="tel:+918447459316">Call</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
+</section>
+
 <!-- FLOATING BUTTONS -->
-<a href="https://wa.me/918447459316" target="_blank" class="wp-float" title="Chat on WhatsApp">
-  <i class="fab fa-whatsapp"></i>
-</a>
+<button type="button" class="wp-float support-chat-toggle" id="supportChatToggle" aria-label="Open SK Graphics support chat" aria-controls="supportChatPanel" aria-expanded="false" title="Open support chat">
+  <i class="fas fa-comments" aria-hidden="true"></i>
+</button>
 <button class="btt-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <i class="fas fa-chevron-up"></i>
 </button>
@@ -1383,6 +1439,103 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   function updateDriverLocation(lat, lng) {
     // Realtime driver update hook (WebSocket / Socket.io / Firebase)
   }
+
+  (() => {
+    const panel = document.getElementById('supportChatPanel');
+    const toggle = document.getElementById('supportChatToggle');
+    const closeButton = document.getElementById('supportChatClose');
+    const log = document.getElementById('supportChatLog');
+    const orderForm = document.getElementById('supportOrderForm');
+    const phoneInput = document.getElementById('supportOrderPhone');
+    const orderStatus = document.getElementById('supportOrderStatus');
+    const submitButton = document.getElementById('supportOrderSubmit');
+
+    function addSupportMessage(text, role = 'assistant') {
+      const message = document.createElement('div');
+      message.className = `support-chat-message${role === 'user' ? ' is-user' : ''}`;
+      message.textContent = text;
+      log.appendChild(message);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function setChatOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) closeButton.focus();
+      else toggle.focus();
+    }
+
+    addSupportMessage('Hello! I can help with order status, printing options, delivery timing, and artwork. Choose an option below to get started.');
+
+    toggle.addEventListener('click', () => setChatOpen(panel.hidden));
+    closeButton.addEventListener('click', () => setChatOpen(false));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) setChatOpen(false);
+    });
+
+    panel.querySelector('.support-chat-menu').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-support-action]');
+      if (!button) return;
+      const action = button.dataset.supportAction;
+      if (action === 'track') {
+        addSupportMessage('Track an order', 'user');
+        addSupportMessage('Enter the phone number used at checkout. I’ll show the latest order status and a short order summary.');
+        orderForm.hidden = false;
+        orderStatus.textContent = '';
+        phoneInput.focus();
+      } else if (action === 'products') {
+        addSupportMessage('Products & printing', 'user');
+        addSupportMessage('We offer custom business cards, flyers, brochures, banners, stickers, packaging, apparel, mugs, and more. Browse the product catalog on this page to see available options.');
+      } else if (action === 'delivery') {
+        addSupportMessage('Delivery & timing', 'user');
+        addSupportMessage('Turnaround and delivery depend on the product, quantity, and approval of the final artwork. For an exact estimate, call or email our team using the contact links below.');
+      } else if (action === 'artwork') {
+        addSupportMessage('Artwork help', 'user');
+        addSupportMessage('For crisp printing, send high-resolution artwork and carefully check text, colors, and sizing before approval. If you need help preparing a file, contact our team and tell us which product you’re ordering.');
+      }
+    });
+
+    orderForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const phone = phoneInput.value.trim();
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length < 10 || digits.length > 15) {
+        orderStatus.textContent = 'Enter a valid phone number with at least 10 digits.';
+        phoneInput.focus();
+        return;
+      }
+      submitButton.disabled = true;
+      orderStatus.textContent = 'Checking your recent orders…';
+      try {
+        const response = await fetch('/api/support/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Could not check order status.');
+        addSupportMessage('Check order status', 'user');
+        if (!result.orders.length) {
+          addSupportMessage('I couldn’t find an order with that phone number. Check the number used at checkout, or call our team for help.');
+        } else {
+          addSupportMessage(`I found ${result.orders.length} recent ${result.orders.length === 1 ? 'order' : 'orders'}. Order progress is shown below. Courier tracking IDs aren’t available in this order record.`);
+          const statusLabels = { received: 'Order received', processing: 'In production / packing', completed: 'Marked complete' };
+          result.orders.forEach((order) => {
+            const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date unavailable';
+            const items = (order.items || []).map((item) => `${item.name} × ${item.quantity}`).join(', ') || 'Order details unavailable';
+            const total = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(order.total);
+            addSupportMessage(`Order #${order.id} · ${date}\nStatus: ${statusLabels[order.status] || 'Order received'}\n${items}\nTotal: ${total}`);
+          });
+        }
+        orderStatus.textContent = '';
+        phoneInput.value = '';
+      } catch (error) {
+        orderStatus.textContent = error.message || 'Could not check order status. Please try again.';
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  })();
 </script>
 </body>
 </html>
