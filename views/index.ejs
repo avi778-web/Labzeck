@@ -397,6 +397,7 @@
     .option-group { margin-bottom:18px; }
     .option-group label { display:block; font-size:13px; font-weight:700; margin-bottom:8px; }
     .option-select { width:100%; min-height:44px; border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; color:var(--text); font:inherit; font-size:13px; }
+  .option-description { margin:8px 0 0; color:var(--text-light); font-size:12px; line-height:1.45; }
     .options-total { flex-shrink:0; margin:0 24px 12px; padding:12px; background:#f3faf7; display:flex; justify-content:space-between; border-radius:10px; }
     .options-confirm { flex-shrink:0; display:flex; width:calc(100% - 48px); margin:0 24px 18px; justify-content:center; min-height:46px; }
     .custom-fields { margin-top:18px; border-top:1px solid #e6eef3; padding-top:16px; }
@@ -679,8 +680,11 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
         <i class="fas fa-shopping-cart"></i>
         <span class="badge" id="cartBadge">0</span>
       </button>
-      <a href="https://wa.me/918447459316" target="_blank" class="hdr-icon-btn" title="WhatsApp" style="color:var(--wp-green)">
-        <i class="fab fa-whatsapp"></i>
+      <button class="hdr-icon-btn" type="button" id="supportChatHeaderOpen" title="AI Support" aria-label="Open AI Support" aria-controls="supportChatPanel" aria-expanded="false" style="color:var(--primary)">
+        <i class="fas fa-comments" aria-hidden="true"></i>
+      </button>
+      <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" class="hdr-icon-btn" title="WhatsApp" aria-label="WhatsApp support at +91 84474 59316" style="color:var(--wp-green)">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
       </a>
     </div>
 
@@ -1020,10 +1024,10 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
 <!-- PRODUCT OPTIONS MODAL -->
 <div class="options-overlay" id="optionsOverlay" onclick="if(event.target===this)closeProductOptions()">
   <div class="options-modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle">
-    <div class="om-hdr"><h3 id="optionsTitle">Select options</h3><button class="om-close" onclick="closeProductOptions()">×</button></div>
+    <div class="om-hdr"><h3 id="optionsTitle">Select options</h3><button class="om-close" type="button" aria-label="Close product options" onclick="closeProductOptions()">×</button></div>
     <div class="options-body" id="optionsBody"></div>
-    <div class="options-total"><span>Price</span><strong id="optionsPrice">₹0</strong></div>
-    <button class="btn btn-primary options-confirm" onclick="confirmProductOption()"><i class="fas fa-cart-plus"></i> Confirm &amp; Add to Cart</button>
+    <div class="options-total"><span id="optionsPriceLabel">Price</span><strong id="optionsPrice">₹0</strong></div>
+    <button class="btn btn-primary options-confirm" id="optionsConfirmButton" onclick="confirmProductOption()"><i class="fas fa-cart-plus"></i> Confirm &amp; Add to Cart</button>
   </div>
 </div>
 
@@ -1109,7 +1113,7 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
   <header class="support-chat-header">
     <div class="support-chat-brand">
       <span class="support-chat-mark" aria-hidden="true">SK</span>
-      <div><h2 id="supportChatTitle">SK Graphics support</h2><p>Orders, products &amp; printing help</p></div>
+      <div><h2 id="supportChatTitle">SK Graphics AI Support</h2><p>AI help for orders, products &amp; printing</p></div>
     </div>
     <button class="support-chat-close" id="supportChatClose" type="button" aria-label="Close support chat">×</button>
   </header>
@@ -1122,13 +1126,18 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
     </div>
     <p class="support-chat-form-status" id="supportOrderStatus" aria-live="polite"></p>
   </form>
+  <form class="support-chat-order-form" id="supportAskForm">
+    <label for="supportQuestion">Ask the AI assistant</label>
+    <div class="support-chat-input-row"><input id="supportQuestion" type="text" maxlength="600" placeholder="Ask about orders, printing or delivery" required><button type="submit" id="supportAskSubmit">Send</button></div>
+    <p class="support-chat-form-status" id="supportAskStatus" aria-live="polite"></p>
+  </form>
   <nav class="support-chat-menu" aria-label="Permanent support options">
     <button type="button" data-support-action="track">Track an order</button>
     <button type="button" data-support-action="products">Products &amp; printing</button>
     <button type="button" data-support-action="delivery">Delivery &amp; timing</button>
     <button type="button" data-support-action="artwork">Artwork help</button>
   </nav>
-  <p class="support-chat-contact">Need a person? <a href="tel:+918447459316">Call</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
+  <p class="support-chat-contact">Need a person? <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer">WhatsApp</a> · <a href="tel:+918447459316">Call</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
 </section>
 
 <!-- FLOATING BUTTONS -->
@@ -1307,24 +1316,38 @@ body.search-mode #products{position:static;margin-top:0;background:#fff}
   let optionChoices = [];
   function openProductOptions(name) {
     const isCards = name === 'Business Cards';
-    selectedOption = isCards ? { name, price: 399, bundle: '50 single-sided cards' } : { name, price: 600, bundle: '100 pamphlets' };
+    selectedOption = isCards ? { name, price: 399, bundle: '50 single-sided cards', finish: 'Standard', finishKind: 'standard', requiresQuote: false } : { name, price: 600, bundle: '100 pamphlets' };
     const singleChoices = [{label:'50 Cards', price:399, bundle:'50 single-sided cards'}, {label:'100 Cards', price:599, bundle:'100 single-sided cards'}, {label:'200 Cards', price:999, bundle:'200 single-sided cards'}];
     const doubleChoices = [{label:'100 Cards (Double-sided)', price:799, bundle:'100 double-sided cards'}, {label:'200 Cards (Double-sided)', price:1399, bundle:'200 double-sided cards'}];
     optionChoices = isCards ? singleChoices : [{label:'100 Pamphlets', price:600, bundle:'100 pamphlets'}];
     document.getElementById('optionsTitle').textContent = `${name} options`;
     const dropdowns = isCards ? `<div class="option-group"><label for="singleOption">Single-sided options</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${singleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div><div class="option-group"><label for="doubleOption">Double-sided options</label><select class="option-select" id="doubleOption" onchange="selectProductOption('double', this.value)"><option value="">Choose double-sided package</option>${doubleChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>` : `<div class="option-group"><label for="singleOption">Quantity</label><select class="option-select" id="singleOption" onchange="selectProductOption('single', this.value)">${optionChoices.map((choice, index) => `<option value="${index}">${choice.label} - ₹${choice.price}</option>`).join('')}</select></div>`;
     optionChoices = { single: singleChoices, double: doubleChoices };
-    document.getElementById('optionsBody').innerHTML = dropdowns;
+    const finishOptions = isCards ? `<div class="option-group"><label for="cardFinish">Card finish</label><select class="option-select" id="cardFinish" onchange="selectCardFinish(this.value)"><option value="standard">Standard finish · included</option><option value="uv-spot">UV Spot · request quote</option><option value="gold-foil">Gold Foil · request quote</option><option value="silver-foil">Silver Foil · request quote</option><option value="glossy-foil">Glossy Foil · request quote</option><option value="custom">Other finish · request quote</option></select><p class="option-description" id="cardFinishDescription" aria-live="polite">Standard finish is included in the listed package price.</p></div>` : '';
+    document.getElementById('optionsBody').innerHTML = dropdowns + finishOptions;
     document.getElementById('optionsBody').insertAdjacentHTML('beforeend', `<div class="custom-fields"><label class="custom-check"><input type="checkbox" id="hasDesign" onchange="toggleUploadField('designUpload', this.checked)"><span><strong>Already Have Your Design?</strong><small> Upload PNG, JPG or PDF artwork if it is print-ready.</small></span></label><label class="upload-zone" id="designUpload" hidden>Choose your design file<input type="file" id="designFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('designFile','designFileData','designPreview')"></label><input type="hidden" id="designFileData"><div class="file-preview" id="designPreview"></div><label class="custom-check"><input type="checkbox" id="addExtraAsset" onchange="toggleUploadField('extraUpload', this.checked)"><span><strong>Add Extra Photo or Logo?</strong><small> Add a secondary image or brand mark.</small></span></label><label class="upload-zone" id="extraUpload" hidden>Choose photo or logo<input type="file" id="extraFile" accept="image/png,image/jpeg,image/webp,application/pdf" onchange="readCustomizationFile('extraFile','extraFileData','extraPreview')"></label><input type="hidden" id="extraFileData"><div class="file-preview" id="extraPreview"></div><label for="fontStyle"><strong>Font style</strong><select id="fontStyle"><option>Arial</option><option>Cursive / Brush Script</option><option>Times New Roman</option><option>Montserrat</option><option>Poppins</option><option>Roboto</option><option>Great Vibes</option><option>Courier New</option><option>Georgia</option><option>Verdana</option><option>Comic Sans MS</option><option>Impact</option></select></label><label for="printText" style="display:block;margin-top:14px"><strong>What to Print</strong><textarea id="printText" placeholder="Type names, phone numbers, shop name or printing instructions..."></textarea></label></div>`); updateOptionsPrice(); document.getElementById('optionsOverlay').classList.add('open'); syncOverlayScrollLock();
   }
   function selectProductOption(side, value) { const choices = optionChoices[side] || []; if (value === '') { selectedOption = { ...selectedOption, price: choices[0]?.price || 0, bundle: choices[0]?.bundle || '' }; } else { selectedOption = { ...selectedOption, ...choices[Number(value)] }; } if (side === 'single' && document.getElementById('doubleOption')) document.getElementById('doubleOption').value = ''; if (side === 'double' && document.getElementById('singleOption')) document.getElementById('singleOption').value = ''; updateOptionsPrice(); }
-  function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
+  function selectCardFinish(value) {
+    const finishes = { standard: { finish: 'Standard', finishKind: 'standard', requiresQuote: false }, 'uv-spot': { finish: 'UV Spot', finishKind: 'uv-spot', requiresQuote: true }, 'gold-foil': { finish: 'Gold Foil', finishKind: 'gold-foil', requiresQuote: true }, 'silver-foil': { finish: 'Silver Foil', finishKind: 'silver-foil', requiresQuote: true }, 'glossy-foil': { finish: 'Glossy Foil', finishKind: 'glossy-foil', requiresQuote: true }, custom: { finish: 'Other custom finish', finishKind: 'custom', requiresQuote: true } };
+    selectedOption = { ...selectedOption, ...(finishes[value] || finishes.standard) };
+    updateOptionsPrice();
+  }
+  function updateOptionsPrice() {
+    const needsQuote = Boolean(selectedOption?.requiresQuote);
+    document.getElementById('optionsPriceLabel').textContent = needsQuote ? 'Finish pricing' : 'Package price';
+    document.getElementById('optionsPrice').textContent = needsQuote ? 'Confirm by WhatsApp' : `₹${selectedOption?.price || 0}`;
+    const description = document.getElementById('cardFinishDescription');
+    if (description) description.textContent = needsQuote ? `${selectedOption.finish} pricing depends on the artwork and quantity. Our team will confirm the final price before checkout.` : 'Standard finish is included in the listed package price.';
+    const confirmButton = document.getElementById('optionsConfirmButton');
+    confirmButton.innerHTML = needsQuote ? '<i class="fab fa-whatsapp" aria-hidden="true"></i> Request a finish quote' : '<i class="fas fa-cart-plus" aria-hidden="true"></i> Confirm &amp; Add to Cart';
+  }
   function toggleUploadField(id, visible) { document.getElementById(id).hidden = !visible; }
 async function readCustomizationFile(inputId, outputId, previewId) { const file = document.getElementById(inputId).files[0]; if (!file) return; const allowed = ['application/pdf','application/postscript','image/png','image/jpeg']; const extension = file.name.toLowerCase().split('.').pop(); if (!allowed.includes(file.type) && !['pdf','ai','psd','png','jpg','jpeg'].includes(extension)) { document.getElementById(inputId).value = ''; return alert('Only PDF, AI, PSD, PNG and JPG artwork files are allowed.'); } if (file.size > 15 * 1024 * 1024) { document.getElementById(inputId).value = ''; return alert('Please choose a file smaller than 15MB.'); } try { const dataUrl = file.type.startsWith('image/') ? await compressImage(file) : await readFileAsDataUrl(file); if (dataUrl.length > 70 * 1024 * 1024) throw new Error('Please choose a smaller file (maximum 50MB).'); const response = await fetch('/api/uploads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ data:dataUrl, mimeType:file.type }) }); const result = await parseResponse(response); if (!response.ok) throw new Error(result.message || 'Upload failed'); document.getElementById(outputId).value = result.url; const preview = document.getElementById(previewId); preview.innerHTML = `<img decoding="async" src="${file.type.startsWith('image/') ? dataUrl : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="64" height="50"%3E%3Crect width="64" height="50" rx="7" fill="%23edf7fd"/%3E%3Ctext x="32" y="30" text-anchor="middle" font-size="12" fill="%232579a9"%3EPDF%3C/text%3E%3C/svg%3E'}" alt="Uploaded file preview"><span>${escapeHtml(file.name)}</span><button type="button" onclick="clearCustomizationFile('${inputId}','${outputId}','${previewId}')">Remove</button>`; } catch (error) { document.getElementById(inputId).value = ''; alert(error.message || 'Could not upload file'); } }
 function readFileAsDataUrl(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
 function compressImage(file) { return new Promise((resolve, reject) => { const image = new Image(); const objectUrl = URL.createObjectURL(file); image.onload = () => { const scale = Math.min(1, 1600 / Math.max(image.width, image.height)); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale)); canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height); URL.revokeObjectURL(objectUrl); resolve(canvas.toDataURL('image/jpeg', 0.78)); }; image.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('Image could not be read')); }; image.src = objectUrl; }); }
 function clearCustomizationFile(inputId, outputId, previewId) { document.getElementById(inputId).value = ''; document.getElementById(outputId).value = ''; document.getElementById(previewId).innerHTML = ''; }
-function confirmProductOption() { if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
+function confirmProductOption() { if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.finish ? `${selectedOption.bundle} · ${selectedOption.finish}` : selectedOption.bundle, customization); closeProductOptions(); }
   function closeProductOptions() { document.getElementById('optionsOverlay').classList.remove('open'); syncOverlayScrollLock(); }
   function syncOverlayScrollLock() {
     const hasOpenOverlay = [...document.querySelectorAll('.cart-overlay, .order-overlay, .mug-overlay, .options-overlay, .mobile-nav-overlay')].some(overlay => overlay.classList.contains('open'));
@@ -1365,9 +1388,17 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   function readConfiguredValues() { const config = selectedOption?.config; const values = {}; config?.fields.forEach(([key]) => { values[key] = document.getElementById(`config-${key}`)?.value || ''; }); values.quantity = Number(document.getElementById('config-quantity')?.value || config?.qty[0] || 1); values.design = document.getElementById('config-design')?.value || 'upload'; values.sizeBreakdown = {}; document.querySelectorAll('[data-size]').forEach(input => { values.sizeBreakdown[input.dataset.size] = Math.max(0, Math.min(999, Number(input.value) || 0)); }); const matrixTotal = Object.values(values.sizeBreakdown).reduce((sum, value) => sum + value, 0); if (config?.matrix && matrixTotal > 0) values.quantity = matrixTotal; return values; }
   function updateConfiguredOption() { if (!selectedOption?.config) return; const values = readConfiguredValues(); const config = selectedOption.config; const chosen = Object.values(values).join(' ').toLowerCase(); const tierQty = [...config.qty].reverse().find(value => values.quantity >= value) || config.qty[0]; let multiplier = 1; if (chosen.includes('250 gsm') || chosen.includes('museum') || chosen.includes('luxury') || chosen.includes('metallic') || chosen.includes('gift box')) multiplier += .35; if (chosen.includes('double') || chosen.includes('both') || chosen.includes('full wrap')) multiplier += .25; if (chosen.includes('designer')) multiplier += 199 / Math.max(config.base * values.quantity, 1); const areaMatch = String(values.size || '').match(/(\d+(?:\.\d+)?)x(\d+(?:\.\d+)?)/); const areaMultiplier = nameIs('Posters & Banners') && areaMatch ? Math.max(1, Number(areaMatch[1]) * Number(areaMatch[2]) / 6) : 1; const unitPrice = config.tierPrices?.[tierQty] || config.base; const total = Math.max(1, Math.round((unitPrice * values.quantity * multiplier) + (config.setupFee || 0))); selectedOption = { ...selectedOption, price: total, bundle: `${values.quantity} ${config.unitLabel || 'units'}`, configValues: values }; updateOptionsPrice(); const savings = config.tierPrices ? Math.max(0, Math.round((config.base - unitPrice) * values.quantity)) : (values.quantity >= 1000 ? Math.round(total * .25) : values.quantity >= 500 ? Math.round(total * .15) : 0); const savingNode = document.getElementById('bulkSaving'); if (savingNode) savingNode.textContent = `${config.bonus ? config.bonus + ' · ' : ''}${savings ? `Bulk discount: ₹${savings} saved` : 'Bulk discount unlocks at the next quantity tier'}`; }
   function nameIs(name) { return selectedOption?.name === name; }
-  function updateOptionsPrice() { document.getElementById('optionsPrice').textContent = `₹${selectedOption?.price || 0}`; }
-  function confirmConfiguredProductOption() { if (!selectedOption) return; const config = selectedOption.config; const values = readConfiguredValues(); const designer = values.design === 'designer'; const customization = { hasDesign: !designer, addExtraAsset: Boolean(document.getElementById('extraFileData')?.value), fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: [document.getElementById('printText')?.value, designer ? `Company: ${document.getElementById('companyName')?.value || ''}; Theme: ${document.getElementById('colorTheme')?.value || ''}; ${document.getElementById('designInstructions')?.value || ''}` : ''].filter(Boolean).join(' ').slice(0, 2000), designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '', options: values, tierDiscount: config.tierPrices ? Math.max(0, Math.round((config.base * values.quantity) - selectedOption.price + (config.setupFee || 0))) : 0 }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
-  function confirmProductOption() { if (selectedOption?.config) return confirmConfiguredProductOption(); if (!selectedOption) return; const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.bundle, customization); closeProductOptions(); }
+  function updateOptionsPrice() {
+    const needsQuote = Boolean(selectedOption?.requiresQuote);
+    document.getElementById('optionsPriceLabel').textContent = needsQuote ? 'Finish pricing' : 'Package price';
+    document.getElementById('optionsPrice').textContent = needsQuote ? 'Confirm by WhatsApp' : `₹${selectedOption?.price || 0}`;
+    const description = document.getElementById('cardFinishDescription');
+    if (description) description.textContent = needsQuote ? `${selectedOption.finish} pricing depends on the artwork and quantity. Our team will confirm the final price before checkout.` : 'Standard finish is included in the listed package price.';
+    const confirmButton = document.getElementById('optionsConfirmButton');
+    confirmButton.innerHTML = needsQuote ? '<i class="fab fa-whatsapp" aria-hidden="true"></i> Request a finish quote' : '<i class="fas fa-cart-plus" aria-hidden="true"></i> Confirm &amp; Add to Cart';
+  }
+  function confirmConfiguredProductOption() { if (!selectedOption) return; const config = selectedOption.config; const values = readConfiguredValues(); const designer = values.design === 'designer'; const customization = { hasDesign: !designer, addExtraAsset: Boolean(document.getElementById('extraFileData')?.value), fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: [document.getElementById('printText')?.value, designer ? `Company: ${document.getElementById('companyName')?.value || ''}; Theme: ${document.getElementById('colorTheme')?.value || ''}; ${document.getElementById('designInstructions')?.value || ''}` : ''].filter(Boolean).join(' ').slice(0, 2000), designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '', options: values, tierDiscount: config.tierPrices ? Math.max(0, Math.round((config.base * values.quantity) - selectedOption.price + (config.setupFee || 0))) : 0 }; addToCart(selectedOption.name, selectedOption.price, selectedOption.finish ? `${selectedOption.bundle} · ${selectedOption.finish}` : selectedOption.bundle, customization); closeProductOptions(); }
+  function confirmProductOption() { if (selectedOption?.config) return confirmConfiguredProductOption(); if (!selectedOption) return; if (selectedOption.requiresQuote) { const message = `Hello SK Graphics, please quote ${selectedOption.bundle} business cards with ${selectedOption.finish} finish. Please confirm the final price and availability.`; window.open(`https://wa.me/918447459316?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer'); closeProductOptions(); return; } const customization = { hasDesign: document.getElementById('hasDesign')?.checked || false, addExtraAsset: document.getElementById('addExtraAsset')?.checked || false, fontStyle: document.getElementById('fontStyle')?.value || 'Arial', printText: document.getElementById('printText')?.value.trim() || '', designFile: document.getElementById('designFileData')?.value || '', extraAsset: document.getElementById('extraFileData')?.value || '' }; addToCart(selectedOption.name, selectedOption.price, selectedOption.finish ? `${selectedOption.bundle} · ${selectedOption.finish}` : selectedOption.bundle, customization); closeProductOptions(); }
   let verifiedPayment = null;
   let paymentInProgress = false;
   let orderSubmissionInProgress = false;
@@ -1447,12 +1478,17 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
   (() => {
     const panel = document.getElementById('supportChatPanel');
     const toggle = document.getElementById('supportChatToggle');
+    const headerTrigger = document.getElementById('supportChatHeaderOpen');
     const closeButton = document.getElementById('supportChatClose');
     const log = document.getElementById('supportChatLog');
     const orderForm = document.getElementById('supportOrderForm');
     const phoneInput = document.getElementById('supportOrderPhone');
     const orderStatus = document.getElementById('supportOrderStatus');
     const submitButton = document.getElementById('supportOrderSubmit');
+    const askForm = document.getElementById('supportAskForm');
+    const askInput = document.getElementById('supportQuestion');
+    const askStatus = document.getElementById('supportAskStatus');
+    const askButton = document.getElementById('supportAskSubmit');
 
     function addSupportMessage(text, role = 'assistant') {
       const message = document.createElement('div');
@@ -1462,16 +1498,21 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
       log.scrollTop = log.scrollHeight;
     }
 
-    function setChatOpen(open) {
+    let activeTrigger = toggle;
+    function setChatOpen(open, trigger = toggle) {
+      if (open) activeTrigger = trigger;
       panel.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
+      headerTrigger?.setAttribute('aria-expanded', String(open));
       if (open) closeButton.focus();
-      else toggle.focus();
+      else activeTrigger.focus();
     }
 
     addSupportMessage('Hello! I can help with order status, printing options, delivery timing, and artwork. Choose an option below to get started.');
+    if (new URLSearchParams(window.location.search).get('support') === 'ai') setChatOpen(true, toggle);
 
-    toggle.addEventListener('click', () => setChatOpen(panel.hidden));
+    toggle.addEventListener('click', () => setChatOpen(panel.hidden, toggle));
+    headerTrigger?.addEventListener('click', () => setChatOpen(true, headerTrigger));
     closeButton.addEventListener('click', () => setChatOpen(false));
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && !panel.hidden) setChatOpen(false);
@@ -1496,6 +1537,27 @@ function confirmProductOption() { if (!selectedOption) return; const customizati
       } else if (action === 'artwork') {
         addSupportMessage('Artwork help', 'user');
         addSupportMessage('For crisp printing, send high-resolution artwork and carefully check text, colors, and sizing before approval. If you need help preparing a file, contact our team and tell us which product you’re ordering.');
+      }
+    });
+
+    askForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const message = askInput.value.trim();
+      if (!message) return;
+      addSupportMessage(message, 'user');
+      askInput.value = '';
+      askButton.disabled = true;
+      askStatus.textContent = 'Checking that for you…';
+      try {
+        const response = await fetch('/api/support/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message }) });
+        const result = await parseResponse(response);
+        if (!response.ok || !result.ok) throw new Error(result.message || 'AI support is temporarily unavailable.');
+        addSupportMessage(result.reply);
+        askStatus.textContent = '';
+      } catch (error) {
+        askStatus.textContent = error.message || 'AI support is temporarily unavailable. Please use WhatsApp or call our team.';
+      } finally {
+        askButton.disabled = false;
       }
     });
 
