@@ -60,6 +60,7 @@ const paymentVerificationSchema = z.object({
 const idCardOrderSchema = z.object({
   idempotencyKey: z.string().trim().uuid(),
   quantity: z.coerce.number().int().min(10).max(5000),
+  finish: z.enum(["standard"]).optional().default("standard"),
   name: z.string().trim().min(1).max(120),
   organizationName: z.string().trim().min(1).max(160),
   cardHolderText: z.string().trim().min(1).max(120),
@@ -549,6 +550,7 @@ app.post("/api/id-card/orders", async (req, res) => {
         extraAsset: body.uploads.lanyardLogo.pathname,
         options: {
           cardHolderText: body.cardHolderText,
+          cardFinish: body.finish,
           organizationName: body.organizationName,
           studentFiles: verifiedStudentFiles,
           designation: body.designation,

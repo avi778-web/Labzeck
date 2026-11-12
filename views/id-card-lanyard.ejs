@@ -21,11 +21,32 @@
     @media(max-width:420px){.shell{width:calc(100% - 24px)}.nav-actions .contact-link{display:none}.product-copy h1{font-size:34px}.price-main strong{font-size:32px}.upload-grid{grid-template-columns:1fr}.upload-card{min-height:125px}.form-grid{grid-template-columns:1fr;gap:0}.quantity-row{align-items:flex-start}.stepper{flex:none}.footer-inner{flex-direction:column}.success-actions{flex-direction:column}.floating-support{right:14px;bottom:15px;width:52px;height:52px}.support-panel{right:10px;bottom:76px;width:calc(100vw - 20px);height:min(580px,calc(100dvh - 92px))}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
     .bulk-upload-card{grid-column:1/-1}
+    .whatsapp-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;border-radius:9px;background:#168c57;color:#fff!important;text-decoration:none;font-weight:700}
+    .finish-dialog{display:flex;flex-direction:column;overflow:hidden;width:min(620px,calc(100vw - 24px));max-width:none;max-height:min(88vh,760px);margin:auto;padding:0;border:0;border-radius:20px;color:var(--ink);box-shadow:0 24px 80px rgba(10,27,46,.28)}
+    .finish-dialog::backdrop{background:rgba(10,27,46,.58);backdrop-filter:blur(3px)}
+    .finish-dialog-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:22px 24px 16px;border-bottom:1px solid var(--line)}
+    .finish-dialog-header h2{margin:2px 0 6px;font-size:24px;line-height:1.2}
+    .finish-dialog-header p{margin:0;color:var(--muted);font-size:13px}
+    .finish-dialog-close{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:23px;line-height:1}
+    .finish-options{display:grid;gap:9px;min-height:0;max-height:min(40vh,233px);overflow-y:auto;overscroll-behavior:contain;width:100%;min-inline-size:0;margin:0;border:0;padding:18px 24px 8px}
+    .finish-option{display:flex;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s,background .15s}
+    .finish-option.selected{border-color:var(--blue);background:#f2f8fd}
+    .finish-option input{margin:4px 0 0;accent-color:var(--blue)}
+    .finish-option-copy{display:grid;gap:2px}
+    .finish-option-copy strong{font-size:13px}
+    .finish-option-copy small{color:var(--muted);font-size:11px;line-height:1.4}
+    .finish-description{margin:0 24px 10px;color:var(--muted);font-size:13px;line-height:1.5}
+    .finish-price{display:flex;justify-content:space-between;gap:12px;margin:10px 24px 18px;padding:13px;border-radius:11px;background:var(--surface);font-size:13px}
+    .finish-price strong{text-align:right}
+    .finish-dialog-actions{display:flex;gap:10px;padding:0 24px 22px}
+    .finish-dialog-actions>*{flex:1;min-height:46px}
+    .finish-dialog-actions [hidden],#finishQuoteButton[hidden]{display:none!important}
+    @media(max-width:700px){.whatsapp-link{padding:7px 9px;font-size:11px}.finish-dialog{width:100%;max-height:90vh;margin:auto 0 0;border-radius:18px 18px 0 0}.finish-dialog-header{padding:18px 16px 14px}.finish-options{padding:14px 16px 6px}.finish-price{margin:10px 16px 14px}.finish-dialog-actions{padding:0 16px 16px;flex-direction:column}}
   </style>
 </head>
 <body>
   <div class="topline"><div class="shell topline-inner"><span>Custom printing, made easy</span><span>Free delivery on this product · Secure online checkout</span></div></div>
-  <header class="site-header"><div class="shell header-inner"><a class="brand" href="/" aria-label="SK Graphics home"><strong>SK Graphics</strong><span>Custom printing &amp; branding</span></a><nav class="nav-actions" aria-label="Main navigation"><a href="/#products">All products</a><a href="#track-order">Track order</a><button class="support-link" id="supportHeaderOpen" type="button">AI support</button><a class="contact-link" href="tel:+918447459316">Talk to our team</a></nav></div></header>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="/" aria-label="SK Graphics home"><strong>SK Graphics</strong><span>Custom printing &amp; branding</span></a><nav class="nav-actions" aria-label="Main navigation"><a href="/#products">All products</a><a href="#track-order">Track order</a><button class="support-link" id="supportHeaderOpen" type="button">AI Support</button><a class="whatsapp-link" href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp support at +91 84474 59316">WhatsApp</a><a class="contact-link" href="tel:+918447459316">Talk to our team</a></nav></div></header>
 
   <main>
     <section class="hero"><div class="shell">
@@ -39,10 +60,10 @@
           <p class="eyebrow">Custom printed · Team-ready</p>
           <h1>Custom ID Card with Branded Lanyard</h1>
           <p class="product-intro">Give your team a polished, consistent look with personalized ID cards and a lanyard branded for your business.</p>
-          <div class="price-panel"><div><div class="price-main"><strong>₹70</strong><span>per piece</span></div></div><div class="minimum-note">Minimum order<br><strong>10 pieces · ₹700</strong></div></div>
+          <div class="price-panel"><div><div class="price-main"><strong id="heroUnitPrice">₹70</strong><span id="heroUnitLabel">per set</span></div></div><div class="minimum-note" id="minimumNote">Minimum order<br><strong>10 pieces · ₹700</strong></div></div>
           <div class="quantity-row"><div class="quantity-copy"><strong>Choose your quantity</strong><span>Live price updates as you order</span></div><div class="stepper" role="group" aria-label="Quantity selector"><button type="button" id="quantityDown" aria-label="Decrease quantity">−</button><input id="quantity" type="number" min="10" max="5000" step="1" value="10" aria-label="Quantity in pieces"><button type="button" id="quantityUp" aria-label="Increase quantity">+</button></div></div>
           <div class="shipping-line"><span>Shipping</span><del>₹750</del><span class="free-pill">FREE DELIVERY</span><span>across India</span></div>
-          <a class="primary-button hero-cta" href="#custom-order">Customize your order <span aria-hidden="true">→</span></a>
+          <button class="primary-button hero-cta" id="openCustomization" type="button">Customize your order <span aria-hidden="true">→</span></button>
           <div class="secure-note"><span aria-hidden="true">▣</span><span>Secure payment powered by Razorpay · No payment details stored here</span></div>
         </div>
       </div>
@@ -74,21 +95,37 @@
           <div class="field upload-text"><label for="lanyardText">Lanyard text (optional)</label><input id="lanyardText" name="lanyardText" type="text" maxlength="160" placeholder="Add a company name or short line"></div>
           <div class="field"><label for="instructions">Special instructions for printing *</label><textarea id="instructions" name="instructions" maxlength="1000" placeholder="Share any color, layout, or print preferences." required></textarea><small>Artwork proof approval is confirmed with you before production begins.</small></div>
           <div class="privacy-note"><span class="privacy-mark" aria-hidden="true">▣</span><span>Your artwork is uploaded to private storage and linked to this order only. Please upload files you have permission to use.</span></div>
-          <div class="summary-box" aria-label="Order price summary"><div class="summary-line"><span><span id="summaryQuantity">10</span> ID card sets × ₹70</span><strong id="summaryItems">₹700</strong></div><div class="summary-line"><span>Delivery</span><strong>FREE <del style="color:#8b96a2;font-weight:500">₹750</del></strong></div><div class="summary-line summary-total"><span>Total to pay</span><strong id="summaryTotal">₹700</strong></div></div>
+          <div class="summary-box" aria-label="Order price summary"><div class="summary-line"><span><span id="summaryQuantity">10</span> ID card sets × <span id="summaryUnitPrice">₹70</span></span><strong id="summaryItems">₹700</strong></div><div class="summary-line"><span>Delivery</span><strong>FREE <del style="color:#8b96a2;font-weight:500">₹750</del></strong></div><div class="summary-line summary-total"><span>Total to pay</span><strong id="summaryTotal">₹700</strong></div></div>
           <button class="primary-button pay-button" id="payButton" type="submit" disabled>Pay ₹700 securely with Razorpay <span aria-hidden="true">→</span></button>
+          <a class="secondary-button" id="finishQuoteButton" href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" hidden>Request a finish quote on WhatsApp</a>
           <p class="form-status" id="formStatus" aria-live="polite"></p>
         </form>
 
         <aside class="supporting-column">
           <div class="info-card"><h3>What happens next</h3><ul class="benefit-list"><li><span aria-hidden="true">1</span><span>Upload your ID card artwork, lanyard logo, and optional staff roster/photos.</span></li><li><span aria-hidden="true">2</span><span>Pay securely. Your order is saved after payment is verified.</span></li><li><span aria-hidden="true">3</span><span>Our team reviews the artwork and coordinates the proof.</span></li></ul></div>
           <div class="track-card" id="track-order"><h3>Already ordered?</h3><p>Use the mobile number from checkout to see recent orders.</p><form id="trackForm"><label class="sr-only" for="trackPhone">Mobile number used for the order</label><div class="track-row"><input id="trackPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="Enter mobile number" required><button type="submit" id="trackButton">Track</button></div></form><div class="history-message" id="trackStatus" aria-live="polite"></div><div class="history-results" id="trackResults" aria-live="polite"></div></div>
-          <div class="info-card"><h3>Need a hand?</h3><ul class="benefit-list"><li><span aria-hidden="true">✓</span><span>Ask our support assistant about artwork, delivery, returns, or printing.</span></li><li><span aria-hidden="true">✓</span><span>Prefer a person? <a href="tel:+918447459316">Call +91 84474 59316</a>.</span></li></ul><button class="secondary-button support-inline-button" id="supportInlineOpen" type="button">Open AI support</button></div>
+          <div class="info-card"><h3>Need a hand?</h3><ul class="benefit-list"><li><span aria-hidden="true">✓</span><span>Ask our support assistant about artwork, delivery, returns, or printing.</span></li><li><span aria-hidden="true">✓</span><span>Prefer a person? <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer">WhatsApp +91 84474 59316</a> or <a href="tel:+918447459316">call</a>.</span></li></ul><button class="secondary-button support-inline-button" id="supportInlineOpen" type="button">Open AI support</button></div>
         </aside>
       </div>
     </div></section>
 
     <section class="section"><div class="shell"><div class="section-heading"><p class="eyebrow">Questions, answered</p><h2>Ordering made clear</h2><p>Get the essentials before you send your artwork.</p></div><div class="faq-grid"><details><summary>What is included in the ₹70 price?</summary><p>Each set includes one custom-printed ID card and one branded lanyard. The minimum order is 10 sets.</p></details><details><summary>What file types can I upload?</summary><p>We accept PDF, AI, PSD, PNG, JPG, and WEBP artwork up to 10 MB per file. Add up to 10 staff photos or one ZIP roster (50 MB maximum, 100 MB total). Files are checked on the server before upload.</p></details><details><summary>When will printing begin?</summary><p>Our team reviews the artwork and coordinates a proof before production. We do not begin final printing until the artwork is approved.</p></details><details><summary>How do I ask about an exchange or refund?</summary><p>Contact SK Graphics with your order number and a short description. The team will review the request and confirm the available options.</p></details></div></div></section>
   </main>
+
+  <dialog class="finish-dialog" id="finishDialog" aria-labelledby="finishDialogTitle">
+    <header class="finish-dialog-header"><div><p class="eyebrow">Customize your order</p><h2 id="finishDialogTitle">Choose your card finish</h2><p>Select a finish to see the available price path.</p></div><button class="finish-dialog-close" id="closeFinishDialog" type="button" aria-label="Close customization">×</button></header>
+    <div class="finish-options" id="finishOptions" role="radiogroup" aria-labelledby="finishOptionsLabel"><span class="sr-only" id="finishOptionsLabel">Card finish options</span>
+      <label class="finish-option selected"><input type="radio" name="cardFinish" value="standard" checked><span class="finish-option-copy"><strong>Standard</strong><small>Classic print finish, included at ₹70 per set.</small></span></label>
+      <label class="finish-option"><input type="radio" name="cardFinish" value="uv-spot"><span class="finish-option-copy"><strong>UV Spot</strong><small>Gloss highlights on selected areas. Final price confirmed by our team.</small></span></label>
+      <label class="finish-option"><input type="radio" name="cardFinish" value="gold-foil"><span class="finish-option-copy"><strong>Gold Foil</strong><small>Metallic gold foil accents. Final price confirmed by our team.</small></span></label>
+      <label class="finish-option"><input type="radio" name="cardFinish" value="silver-foil"><span class="finish-option-copy"><strong>Silver Foil</strong><small>Metallic silver foil accents. Final price confirmed by our team.</small></span></label>
+      <label class="finish-option"><input type="radio" name="cardFinish" value="glossy-foil"><span class="finish-option-copy"><strong>Glossy Foil</strong><small>High-gloss foil effect. Final price confirmed by our team.</small></span></label>
+      <label class="finish-option"><input type="radio" name="cardFinish" value="custom"><span class="finish-option-copy"><strong>Other custom finish</strong><small>Tell us what you have in mind and we’ll confirm availability and pricing.</small></span></label>
+    </div>
+    <p class="finish-description" id="finishDescription" aria-live="polite">Standard finish is available for instant checkout at ₹70 per set.</p>
+    <div class="finish-price" aria-live="polite"><span>Price for <span id="finishQuantity">10</span> sets</span><strong id="finishPrice">₹700</strong></div>
+    <div class="finish-dialog-actions"><button class="primary-button" id="finishContinue" type="button">Continue with Standard</button><a class="primary-button whatsapp-link" id="finishQuoteAction" href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer" hidden>Get a WhatsApp quote</a></div>
+  </dialog>
 
   <footer class="site-footer"><div class="shell footer-inner"><span>© 2026 SK Graphics · Custom printing &amp; branding</span><span><a href="/">Back to shop</a> · <a href="mailto:shubhprinters88@gmail.com">Email support</a></span></div></footer>
 
@@ -99,7 +136,7 @@
     <form class="support-order-form" id="supportOrderForm" hidden><label for="supportPhone">Mobile number used at checkout</label><div class="chat-input-row"><input id="supportPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="10-digit mobile number" required><button type="submit" id="supportOrderButton">Check</button></div><p class="chat-form-status" id="supportOrderStatus" aria-live="polite"></p></form>
     <form class="support-ask-form" id="supportAskForm" hidden><label for="supportQuestion">Ask us anything</label><div class="chat-input-row"><input id="supportQuestion" type="text" maxlength="600" placeholder="Type your question…" required><button type="submit" id="supportSendButton">Send</button></div><p class="chat-form-status" id="supportAskStatus" aria-live="polite"></p></form>
     <nav class="support-menu" aria-label="Support topics"><button type="button" data-support-action="track">Track an order</button><button type="button" data-support-action="products">Products &amp; pricing</button><button type="button" data-support-action="delivery">Delivery timing</button><button type="button" data-support-action="artwork">Artwork help</button><button type="button" data-support-action="returns">Returns / refunds</button><button type="button" data-support-action="other">Other question</button></nav>
-    <p class="support-contact">Need a person? <a href="tel:+918447459316">Call us</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
+    <p class="support-contact">Need a person? <a href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer">WhatsApp</a> · <a href="tel:+918447459316">Call</a> · <a href="mailto:shubhprinters88@gmail.com">Email</a></p>
   </section>
 
   <div class="modal-backdrop" id="successOverlay" role="presentation"><section class="success-modal" role="dialog" aria-modal="true" aria-labelledby="successTitle"><div class="success-mark" aria-hidden="true">✓</div><h2 id="successTitle" tabindex="-1">Payment confirmed</h2><p>Your order has been saved and is ready for artwork review.</p><div class="success-details" id="successDetails"></div><div class="success-actions"><a class="primary-button" id="successWhatsApp" href="https://wa.me/918447459316" target="_blank" rel="noopener noreferrer">Message the team</a><button class="secondary-button" id="successClose" type="button">Continue shopping</button></div></section></div>
@@ -110,6 +147,15 @@
       const pricePerPiece = 70;
       const minimumQuantity = 10;
       const maximumQuantity = 5000;
+      const finishCatalog = {
+        standard: { label: 'Standard', unitPrice: 70, description: 'Standard finish is available for instant checkout at ₹70 per set.' },
+        'uv-spot': { label: 'UV Spot', unitPrice: null, description: 'UV Spot adds glossy highlights to selected areas. Our team will confirm the finish surcharge before you pay.' },
+        'gold-foil': { label: 'Gold Foil', unitPrice: null, description: 'Gold foil adds metallic accents. Our team will confirm availability and the surcharge before you pay.' },
+        'silver-foil': { label: 'Silver Foil', unitPrice: null, description: 'Silver foil adds metallic accents. Our team will confirm availability and the surcharge before you pay.' },
+        'glossy-foil': { label: 'Glossy Foil', unitPrice: null, description: 'Glossy foil creates a bright, reflective finish. Our team will confirm availability and the surcharge before you pay.' },
+        custom: { label: 'Other custom finish', unitPrice: null, description: 'Tell our team which finish you need. We will confirm availability and the final price before checkout.' }
+      };
+      let selectedFinish = 'standard';
       const quantityInput = document.getElementById('quantity');
       const summaryQuantity = document.getElementById('summaryQuantity');
       const summaryItems = document.getElementById('summaryItems');
@@ -131,7 +177,60 @@
         summaryItems.textContent = money(quantity * pricePerPiece);
         summaryTotal.textContent = money(quantity * pricePerPiece);
         payButton.innerHTML = `Pay ${money(quantity * pricePerPiece)} securely with Razorpay <span aria-hidden="true">→</span>`;
+        updateFinishPricing();
       };
+      const finishDialog = document.getElementById('finishDialog');
+      const finishQuoteAction = document.getElementById('finishQuoteAction');
+      const finishQuoteButton = document.getElementById('finishQuoteButton');
+      function getFinishQuoteUrl() {
+        const quantity = Math.max(minimumQuantity, Number(quantityInput.value) || minimumQuantity);
+        const finish = finishCatalog[selectedFinish];
+        const message = `Hello SK Graphics, please quote ${quantity} custom ID card sets with ${finish.label} finish. Please confirm the final price and availability.`;
+        return `https://wa.me/918447459316?text=${encodeURIComponent(message)}`;
+      }
+      function updateFinishPricing() {
+        const finish = finishCatalog[selectedFinish];
+        const isStandard = finish.unitPrice !== null;
+        const quantity = Math.max(minimumQuantity, Number(quantityInput.value) || minimumQuantity);
+        const total = quantity * (finish.unitPrice || 0);
+        document.getElementById('heroUnitPrice').textContent = isStandard ? money(finish.unitPrice) : 'Quote';
+        document.getElementById('heroUnitLabel').textContent = isStandard ? 'per set' : 'custom finish';
+        document.getElementById('minimumNote').innerHTML = isStandard ? `Minimum order<br><strong>${minimumQuantity} sets · ${money(minimumQuantity * finish.unitPrice)}</strong>` : `Minimum order<br><strong>${minimumQuantity} sets · quote required</strong>`;
+        document.getElementById('summaryUnitPrice').textContent = isStandard ? money(finish.unitPrice) : 'Quote';
+        summaryItems.textContent = isStandard ? money(total) : 'Quote required';
+        summaryTotal.textContent = isStandard ? money(total) : 'Quote required';
+        document.getElementById('finishQuantity').textContent = quantity.toLocaleString('en-IN');
+        document.getElementById('finishPrice').textContent = isStandard ? `${money(finish.unitPrice)} per set · ${money(total)} total` : 'Final price confirmed by our team';
+        document.getElementById('finishDescription').textContent = finish.description;
+        document.querySelectorAll('.finish-option').forEach(option => option.classList.toggle('selected', option.querySelector('input')?.value === selectedFinish));
+        document.getElementById('finishContinue').hidden = !isStandard;
+        finishQuoteAction.hidden = isStandard;
+        finishQuoteAction.href = getFinishQuoteUrl();
+        finishQuoteButton.hidden = isStandard;
+        finishQuoteButton.href = getFinishQuoteUrl();
+        if (isStandard) payButton.innerHTML = `Pay ${money(total)} securely with Razorpay <span aria-hidden="true">→</span>`;
+        else payButton.textContent = 'Premium finish · quote required';
+        updatePayAvailability();
+      }
+      document.getElementById('openCustomization').addEventListener('click', () => finishDialog.showModal());
+      document.getElementById('closeFinishDialog').addEventListener('click', () => finishDialog.close());
+      finishDialog.addEventListener('click', event => { if (event.target === finishDialog) finishDialog.close(); });
+      let focusOrderFormAfterClose = false;
+      finishDialog.addEventListener('close', () => {
+        if (focusOrderFormAfterClose) {
+          focusOrderFormAfterClose = false;
+          document.getElementById('name').focus({ preventScroll: true });
+          return;
+        }
+        document.getElementById('openCustomization').focus();
+      });
+      document.querySelectorAll('input[name="cardFinish"]').forEach(input => input.addEventListener('change', () => { selectedFinish = input.value; updateFinishPricing(); }));
+      document.getElementById('finishContinue').addEventListener('click', () => {
+        focusOrderFormAfterClose = true;
+        finishDialog.close();
+        document.getElementById('custom-order').scrollIntoView({ behavior: 'smooth' });
+      });
+      finishQuoteAction.addEventListener('click', () => finishDialog.close());
       quantityInput.addEventListener('input', () => setQuantity(quantityInput.value));
       quantityInput.addEventListener('change', () => setQuantity(quantityInput.value));
       document.getElementById('quantityDown').addEventListener('click', () => setQuantity(Number(quantityInput.value) - 1));
@@ -271,7 +370,7 @@
         studentFilesInput.files = transfer.files;
         uploadStudentFiles(studentFilesInput, studentFilesStatus);
       });
-      function updatePayAvailability() { payButton.disabled = paymentInProgress || bulkUploadInProgress || !fileRefs.cardDesign || !fileRefs.lanyardLogo; }
+      function updatePayAvailability() { payButton.disabled = paymentInProgress || bulkUploadInProgress || selectedFinish !== 'standard' || !fileRefs.cardDesign || !fileRefs.lanyardLogo; }
 
       async function parseResponse(response) {
         const text = await response.text();
@@ -293,7 +392,7 @@
       }
       function setPaymentState(isBusy) {
         paymentInProgress = isBusy;
-        payButton.disabled = isBusy || !fileRefs.cardDesign || !fileRefs.lanyardLogo;
+        payButton.disabled = isBusy || selectedFinish !== 'standard' || !fileRefs.cardDesign || !fileRefs.lanyardLogo;
         payButton.setAttribute('aria-busy', String(isBusy));
         if (!isBusy) setQuantity(quantityInput.value);
       }
@@ -318,6 +417,7 @@
         event.preventDefault();
         formStatus.textContent = '';
         formStatus.className = 'form-status';
+        if (selectedFinish !== 'standard') { formStatus.textContent = 'This finish needs a confirmed quote. Use the WhatsApp quote button or choose Standard for online checkout.'; return; }
         if (!form.reportValidity()) return;
         if (!fileRefs.cardDesign || !fileRefs.lanyardLogo) {
           formStatus.textContent = 'Upload both the ID card artwork and lanyard artwork before checkout.';
@@ -343,6 +443,7 @@
             body: JSON.stringify({
               idempotencyKey: checkoutToken,
               quantity,
+              finish: selectedFinish,
               name: document.getElementById('name').value.trim(),
               organizationName: document.getElementById('organizationName').value.trim(),
               cardHolderText: document.getElementById('cardHolderText').value.trim(),
