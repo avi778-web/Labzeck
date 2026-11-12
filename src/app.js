@@ -61,6 +61,7 @@ const idCardOrderSchema = z.object({
   idempotencyKey: z.string().trim().uuid(),
   quantity: z.coerce.number().int().min(10).max(5000),
   name: z.string().trim().min(1).max(120),
+  organizationName: z.string().trim().min(1).max(160),
   cardHolderText: z.string().trim().min(1).max(120),
   designation: z.string().trim().max(80).optional().default(""),
   phone: z.string().trim().min(10).max(30),
@@ -69,7 +70,13 @@ const idCardOrderSchema = z.object({
   instructions: z.string().trim().min(1).max(1000),
   uploads: z.object({
     cardDesign: z.object({ pathname: z.string().trim().min(1).max(300), signature: z.string().trim().regex(/^[a-f0-9]{64}$/i) }),
-    lanyardLogo: z.object({ pathname: z.string().trim().min(1).max(300), signature: z.string().trim().regex(/^[a-f0-9]{64}$/i) })
+    lanyardLogo: z.object({ pathname: z.string().trim().min(1).max(300), signature: z.string().trim().regex(/^[a-f0-9]{64}$/i) }),
+    studentFiles: z.array(z.object({
+      pathname: z.string().trim().min(1).max(300),
+      signature: z.string().trim().regex(/^[a-f0-9]{64}$/i),
+      name: z.string().trim().min(1).max(120),
+      size: z.coerce.number().int().min(1).max(50 * 1024 * 1024)
+    })).max(10).optional().default([])
   })
 });
 const idCardPaymentVerificationSchema = paymentVerificationSchema.extend({ orderRecordId: z.string().trim().regex(/^[a-f0-9]{24}$/i) });
@@ -154,13 +161,25 @@ function indiaDayNumber(value) {
   const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
   return Math.floor(Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day)) / 86_400_000);
 }
+function indiaHourNumber(value) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  const hour = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", hourCycle: "h23" }).formatToParts(date).find(part => part.type === "hour")?.value;
+  return hour === undefined ? null : Number(hour);
+}
 function getDeliveryEstimate(order) {
   if (!order?.createdAt || order.status === "completed") return null;
   const orderDay = indiaDayNumber(order.createdAt);
   const today = indiaDayNumber(new Date());
   if (orderDay === null || today === null) return null;
   const ageInDays = today - orderDay;
-  if (ageInDays <= 0) return "Aapka order aaj raat 9:00 PM se pehle deliver ho jayega.";
+  if (ageInDays === 0) {
+    const currentHour = indiaHourNumber(new Date());
+    if (currentHour === null) return null;
+    return currentHour < 21
+      ? "Aapka order aaj raat 9:00 PM se pehle deliver ho jayega."
+      : "Aapka order aaj ka hai; 9:00 PM ke baad ke orders ke liye delivery timing hamari team confirm karegi.";
+  }
   if (ageInDays === 1) return "Aapka order agle 2-3 dino me deliver hoga.";
   return null;
 }
@@ -196,7 +215,7 @@ function artworkUploadRateLimit(req, res, next) {
     rateLimitState.set(key, { startedAt: now, count: 1 });
     return next();
   }
-  if (current.count >= 10) return res.status(429).json({ ok: false, message: "Too many artwork uploads. Please try again later." });
+  if (current.count >= 60) return res.status(429).json({ ok: false, message: "Too many artwork uploads. Please try again later." });
   current.count += 1;
   return next();
 }
@@ -205,15 +224,30 @@ function createIdCardUploadSignature(pathname) {
   if (!credentials) return null;
   return crypto.createHmac("sha256", credentials.keySecret).update(pathname).digest("hex");
 }
+const uploadContentTypes = { pdf: "application/pdf", ai: "application/postscript", psd: "image/vnd.adobe.photoshop", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", zip: "application/zip" };
+function getIdCardUploadInfo(pathname) {
+  const match = String(pathname || "").match(/^id-card-lanyard\/(card-design|lanyard-logo|student-data)\/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.([a-z0-9]+)$/i);
+  if (!match) return null;
+  const category = match[1].toLowerCase();
+  const extension = match[2].toLowerCase();
+  const allowedExtensions = category === "student-data"
+    ? ["zip", "png", "jpg", "jpeg", "webp"]
+    : ["pdf", "ai", "psd", "png", "jpg", "jpeg", "webp"];
+  return allowedExtensions.includes(extension) ? { category, extension } : null;
+}
+function maximumArtworkSize(info) {
+  return info.category === "student-data" && info.extension === "zip" ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+}
 function isValidIdCardUpload(pathname, signature, category) {
-  if (typeof pathname !== "string" || !pathname.startsWith(`id-card-lanyard/${category}/`) || !/^[a-f0-9]{64}$/i.test(String(signature || ""))) return false;
+  const info = getIdCardUploadInfo(pathname);
+  if (!info || info.category !== category || !/^[a-f0-9]{64}$/i.test(String(signature || ""))) return false;
   const expected = createIdCardUploadSignature(pathname);
   if (!expected) return false;
   const expectedBuffer = Buffer.from(expected, "hex");
   const receivedBuffer = Buffer.from(String(signature), "hex");
   return expectedBuffer.length === receivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
 }
-app.use(["/api/newsletter", "/api/uploads", "/api/id-card/upload-token", "/api/id-card/sign-upload", "/api/id-card/orders", "/api/id-card/verify", "/api/id-card/artwork", "/api/support/chat", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
+app.use(["/api/newsletter", "/api/uploads", "/api/id-card/upload-token", "/api/id-card/sign-upload", "/api/id-card/orders", "/api/id-card/verify", "/api/id-card/artwork", "/api/support/chat", "/api/orders/lookup", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "70mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
@@ -383,9 +417,9 @@ app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   }
 });
 
-app.post("/api/support/orders", supportOrderLookupRateLimit, async (req, res) => {
+async function handleOrderLookup(req, res, phone) {
   try {
-    const orders = await findSupportOrdersByPhone(req.body?.phone);
+    const orders = await findSupportOrdersByPhone(phone);
     return res.json({ ok: true, orders });
   } catch (error) {
     const invalidPhone = error.message === "Enter the phone number used when placing your order.";
@@ -393,9 +427,14 @@ app.post("/api/support/orders", supportOrderLookupRateLimit, async (req, res) =>
     console.error("SUPPORT ORDER LOOKUP ERROR:", error.message);
     return res.status(503).json({ ok: false, message: "Order status is temporarily unavailable. Please call our team." });
   }
-});
+}
+app.post("/api/support/orders", supportOrderLookupRateLimit, (req, res) => handleOrderLookup(req, res, req.body?.phone));
+// Browser lookups use POST so phone numbers stay out of CDN request URLs.
+app.post("/api/orders/lookup", supportOrderLookupRateLimit, (req, res) => handleOrderLookup(req, res, req.body?.phone));
+app.get("/api/orders/lookup/:phone", supportOrderLookupRateLimit, (req, res) => handleOrderLookup(req, res, req.params.phone));
 
 app.post("/api/id-card/upload-token", artworkUploadRateLimit, async (req, res) => {
+  if (!getLiveRazorpayCredentials()) return res.status(503).json({ ok: false, message: "Live checkout is not configured yet. Please contact SK Graphics." });
   try {
     const result = await handleUpload({
       request: req,
@@ -403,10 +442,9 @@ app.post("/api/id-card/upload-token", artworkUploadRateLimit, async (req, res) =
       onBeforeGenerateToken: async (pathname, clientPayload) => {
         let payload;
         try { payload = JSON.parse(clientPayload || "{}"); } catch (_) { throw new Error("Invalid artwork upload request"); }
-        const match = pathname.match(/^id-card-lanyard\/(card-design|lanyard-logo)\/([a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12})\.(pdf|ai|psd|png|jpe?g|webp)$/i);
-        if (!match || match[1] !== payload.category) throw new Error("Invalid artwork path");
-        const contentTypes = { pdf: "application/pdf", ai: "application/postscript", psd: "image/vnd.adobe.photoshop", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" };
-        return { allowedContentTypes: [contentTypes[match[3].toLowerCase()]], maximumSizeInBytes: 10 * 1024 * 1024, addRandomSuffix: false, tokenPayload: JSON.stringify({ category: match[1] }) };
+        const info = getIdCardUploadInfo(pathname);
+        if (!info || info.category !== payload.category) throw new Error("Invalid artwork path");
+        return { allowedContentTypes: [uploadContentTypes[info.extension]], maximumSizeInBytes: maximumArtworkSize(info), addRandomSuffix: false, tokenPayload: JSON.stringify({ category: info.category }) };
       }
     });
     return res.json(result);
@@ -419,14 +457,16 @@ app.post("/api/id-card/upload-token", artworkUploadRateLimit, async (req, res) =
 app.post("/api/id-card/sign-upload", artworkUploadRateLimit, async (req, res) => {
   const pathname = String(req.body?.pathname || "");
   const category = String(req.body?.category || "");
-  const match = pathname.match(/^id-card-lanyard\/(card-design|lanyard-logo)\/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\.(pdf|ai|psd|png|jpe?g|webp)$/i);
-  if (!match || match[1] !== category) return res.status(400).json({ ok: false, message: "Artwork upload could not be verified. Please upload the file again." });
+  const info = getIdCardUploadInfo(pathname);
+  if (!info || info.category !== category) return res.status(400).json({ ok: false, message: "Artwork upload could not be verified. Please upload the file again." });
   try {
     const metadata = await head(pathname, { access: "private" });
-    if (metadata.size > 10 * 1024 * 1024) return res.status(413).json({ ok: false, message: "Artwork must be 10 MB or smaller." });
+    if (metadata.size > maximumArtworkSize(info)) return res.status(413).json({ ok: false, message: "This file is too large for the selected upload type." });
+    const acceptedContentType = metadata.contentType === uploadContentTypes[info.extension] || (info.extension === "zip" && metadata.contentType === "application/x-zip-compressed");
+    if (!acceptedContentType) return res.status(400).json({ ok: false, message: "The uploaded file type does not match its file extension." });
     const signature = createIdCardUploadSignature(metadata.pathname);
     if (!signature) return res.status(503).json({ ok: false, message: "Live checkout is not configured yet. Please contact SK Graphics." });
-    return res.json({ ok: true, pathname: metadata.pathname, signature });
+    return res.json({ ok: true, pathname: metadata.pathname, signature, size: metadata.size, contentType: metadata.contentType });
   } catch (error) {
     console.error("ID CARD BLOB SIGN ERROR:", error.name || "BlobError");
     return res.status(400).json({ ok: false, message: "Artwork upload could not be verified. Please upload the file again." });
@@ -436,7 +476,8 @@ app.post("/api/id-card/sign-upload", artworkUploadRateLimit, async (req, res) =>
 app.get("/api/id-card/artwork", async (req, res) => {
   const pathname = String(req.query?.pathname || "");
   const signature = String(req.query?.signature || "");
-  const category = pathname.startsWith("id-card-lanyard/card-design/") ? "card-design" : pathname.startsWith("id-card-lanyard/lanyard-logo/") ? "lanyard-logo" : "";
+  const info = getIdCardUploadInfo(pathname);
+  const category = info?.category || "";
   if (!category || !isValidIdCardUpload(pathname, signature, category)) return res.status(404).json({ ok: false, message: "Artwork not found." });
   try {
     const result = await get(pathname, { access: "private" });
@@ -459,6 +500,34 @@ app.post("/api/id-card/orders", async (req, res) => {
     const credentials = getLiveRazorpayCredentials();
     if (!credentials) return res.status(503).json({ ok: false, message: "Live Razorpay checkout is not configured. Please contact SK Graphics." });
     if (!isValidIdCardUpload(body.uploads.cardDesign.pathname, body.uploads.cardDesign.signature, "card-design") || !isValidIdCardUpload(body.uploads.lanyardLogo.pathname, body.uploads.lanyardLogo.signature, "lanyard-logo")) return res.status(400).json({ ok: false, message: "Artwork upload expired or could not be verified. Please upload both files again." });
+    const studentFileRefs = body.uploads.studentFiles || [];
+    const zipFileCount = studentFileRefs.filter(file => getIdCardUploadInfo(file.pathname)?.extension === "zip").length;
+    if (zipFileCount > 0 && studentFileRefs.length !== 1) return res.status(400).json({ ok: false, message: "Upload one ZIP file or multiple staff photos, not both." });
+    if (studentFileRefs.some(file => !isValidIdCardUpload(file.pathname, file.signature, "student-data"))) return res.status(400).json({ ok: false, message: "A staff photo or ZIP upload could not be verified. Please upload it again." });
+    let verifiedStudentFiles = [];
+    if (studentFileRefs.length) {
+      try {
+        const metadata = await Promise.all(studentFileRefs.map(file => head(file.pathname, { access: "private" })));
+        const totalSize = metadata.reduce((sum, file) => sum + Number(file.size || 0), 0);
+        const invalidFile = metadata.some((file, index) => {
+          const info = getIdCardUploadInfo(studentFileRefs[index].pathname);
+          const expectedType = uploadContentTypes[info.extension];
+          const acceptedType = file.contentType === expectedType || (info.extension === "zip" && file.contentType === "application/x-zip-compressed");
+          return !info || !acceptedType || Number(file.size) !== Number(studentFileRefs[index].size) || Number(file.size) > maximumArtworkSize(info);
+        });
+        if (invalidFile || totalSize > 100 * 1024 * 1024) return res.status(413).json({ ok: false, message: "Staff files must match their upload types and stay within the 100 MB total limit." });
+        verifiedStudentFiles = metadata.map((file, index) => ({
+          pathname: file.pathname,
+          signature: studentFileRefs[index].signature,
+          name: String(studentFileRefs[index].name).replace(/[\\/\u0000-\u001f\u007f]/g, "_").trim().slice(0, 120) || `staff-file-${index + 1}`,
+          size: file.size,
+          contentType: file.contentType
+        }));
+      } catch (error) {
+        console.error("ID CARD BULK FILE VERIFY ERROR:", error.name || "BlobError");
+        return res.status(400).json({ ok: false, message: "A staff photo or ZIP upload could not be verified. Please upload it again." });
+      }
+    }
     if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: "The order service is reconnecting. Please try again shortly." });
     const total = body.quantity * 70;
     const existing = await OrderModel.findOne({ idempotencyKey: body.idempotencyKey }).lean();
@@ -471,7 +540,7 @@ app.post("/api/id-card/orders", async (req, res) => {
     const receipt = `idc${body.idempotencyKey.replace(/-/g, "").slice(0, 30)}`;
     const razorpayOrder = await razorpay.orders.create({ amount: total * 100, currency: "INR", receipt, notes: { product: "Custom ID Card with Branded Lanyard", quantity: String(body.quantity) } });
     const order = await OrderModel.create({
-      customer: { name: body.name, phone: body.phone, address: body.address },
+      customer: { name: body.name, phone: body.phone, address: body.address, organizationName: body.organizationName },
       items: [{ name: "Custom ID Card with Branded Lanyard", price: 70, quantity: body.quantity, customization: {
         hasDesign: true,
         addExtraAsset: true,
@@ -480,6 +549,8 @@ app.post("/api/id-card/orders", async (req, res) => {
         extraAsset: body.uploads.lanyardLogo.pathname,
         options: {
           cardHolderText: body.cardHolderText,
+          organizationName: body.organizationName,
+          studentFiles: verifiedStudentFiles,
           designation: body.designation,
           lanyardText: body.lanyardText,
           cardDesignPath: body.uploads.cardDesign.pathname,
@@ -555,18 +626,23 @@ app.post("/api/support/chat", async (req, res) => {
   const parsed = supportChatSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ ok: false, message: "Enter a question up to 600 characters." });
   const message = parsed.data.message;
+  const messageInHindi = /[\u0900-\u097F]/u.test(message);
   const phoneMatch = message.match(/(?:\+?\d[\d\s().-]{8,}\d)/);
   const phoneDigits = phoneMatch ? phoneMatch[0].replace(/\D/g, "") : "";
   if (phoneDigits.length >= 10 && phoneDigits.length <= 15) {
     if (!reserveSupportOrderLookup(req, res)) return res.status(429).json({ ok: false, message: "For your privacy, order lookups are limited. Please try again later or call our team." });
     try {
       const orders = await findSupportOrdersByPhone(phoneDigits);
-      if (!orders.length) return res.json({ ok: true, reply: "I couldn’t find an order with that mobile number. Check the number used at checkout, or contact our team at +91 84474 59316." });
-      const statusLabels = { received: "Order received", processing: "In production / packing", completed: "Marked complete" };
+      if (!orders.length) return res.json({ ok: true, reply: messageInHindi ? "इस मोबाइल नंबर से कोई ऑर्डर नहीं मिला। चेकआउट में दिया गया नंबर जाँचें या हमारी टीम से संपर्क करें: +91 84474 59316।" : "I couldn’t find an order with that mobile number. Check the number used at checkout, or contact our team at +91 84474 59316." });
+      const statusLabels = messageInHindi
+        ? { received: "ऑर्डर प्राप्त हुआ", processing: "प्रोडक्शन / पैकिंग में", completed: "पूरा हुआ" }
+        : { received: "Order received", processing: "In production / packing", completed: "Marked complete" };
       const reply = orders.slice(0, 3).map(order => {
         const items = order.items.map(item => `${item.name} × ${item.quantity}`).join(", ");
         const delivery = order.deliveryEstimate ? `\n${order.deliveryEstimate}` : "";
-        return `Order #${order.id}\nStatus: ${statusLabels[order.status] || order.status}\n${items}\nTotal: ₹${order.total}${delivery}`;
+        return messageInHindi
+          ? `ऑर्डर #${order.id}\nस्थिति: ${statusLabels[order.status] || order.status}\n${items}\nकुल: ₹${order.total}${delivery}`
+          : `Order #${order.id}\nStatus: ${statusLabels[order.status] || order.status}\n${items}\nTotal: ₹${order.total}${delivery}`;
       }).join("\n\n");
       return res.json({ ok: true, reply });
     } catch (error) {
@@ -575,8 +651,36 @@ app.post("/api/support/chat", async (req, res) => {
     }
   }
   const normalized = message.toLowerCase();
-  if (/\b(order|track|tracking|status|delivery|deliver|shipment|where)\b|ऑर्डर|आर्डर|स्टेटस|डिलीवरी|डिलीवर/u.test(normalized)) return res.json({ ok: true, reply: "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status." });
-  if (/\b(returns?|refunds?|exchanges?)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) return res.json({ ok: true, reply: "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order." });
+  if (/\b(returns?|refunds?|exchanges?)\b|रिटर्न|रिफंड|एक्सचेंज/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "रिटर्न, रिफंड और एक्सचेंज के अनुरोध टीम हर मामले के आधार पर देखती है। कृपया ऑर्डर नंबर और संक्षिप्त जानकारी +91 84474 59316 या shubhprinters88@gmail.com पर भेजें; टीम उपलब्ध विकल्प बताएगी।"
+      : "We review return, refund, and exchange requests case by case. Please share your order number and a brief description with our team at +91 84474 59316 or shubhprinters88@gmail.com; they’ll confirm the options available for your order.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(price|pricing|cost|minimum|rate|how much)\b|कीमत|दाम|मूल्य|कितने|रेट/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "कस्टम आईडी कार्ड और ब्रांडेड लैनयार्ड ₹70 प्रति सेट है; न्यूनतम ऑर्डर 10 सेट (₹700) है। इस उत्पाद पर डिलीवरी निःशुल्क है। अन्य उत्पादों के कोट के लिए हमारी टीम से संपर्क करें।"
+      : "The custom ID card with branded lanyard is ₹70 per set, with a 10-set minimum (₹700). Free delivery is included. Contact our team for a quote on other products.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(artwork|design|logo|file|format|print-ready|upload)\b|आर्टवर्क|डिज़ाइन|डिजाइन|लोगो|फाइल|फ़ाइल/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "आईडी कार्ड के लिए फोटो/डिज़ाइन और लैनयार्ड के लिए अलग लोगो/आर्टवर्क अपलोड करें। PDF, AI, PSD, PNG, JPG या WEBP फाइलें 10 MB तक स्वीकार हैं; प्रिंट से पहले टीम प्रूफ की पुष्टि करेगी।"
+      : "Upload a photo or design for the ID card and a separate logo or artwork file for the lanyard. We accept PDF, AI, PSD, PNG, JPG, or WEBP files up to 10 MB each; our team confirms the proof before printing.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(delivery|shipping|ship|dispatch|arrival|arrive|deliver)\b|डिलीवरी|शिपिंग|पहुंच|पहुँच|भेज/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "इस उत्पाद पर डिलीवरी निःशुल्क है। पहुँचने का समय ऑर्डर की स्थिति पर निर्भर करता है; चेकआउट में इस्तेमाल किया गया मोबाइल नंबर भेजें, हमारी टीम हाल के ऑर्डर की स्थिति जाँच सकती है।"
+      : "Free delivery is included for this product. Exact arrival timing depends on order status; share the mobile number used at checkout and I can check recent orders.";
+    return res.json({ ok: true, reply });
+  }
+  if (/\b(track|tracking|status|shipment)\b|\bwhere\b.*\b(order|shipment)\b|\b(order|shipment)\b.*\b(status|tracking)\b|ऑर्डर.*(स्टेटस|ट्रैक|स्थिति|कहाँ)|आर्डर.*(स्टेटस|ट्रैक|स्थिति|कहाँ)/u.test(normalized)) {
+    const reply = messageInHindi
+      ? "कृपया चेकआउट में इस्तेमाल किया गया 10 अंकों का मोबाइल नंबर भेजें; हमारी टीम हाल के ऑर्डर की स्थिति जाँच सकती है।"
+      : "Please share the 10-digit mobile number used at checkout, and I’ll look up your recent order status.";
+    return res.json({ ok: true, reply });
+  }
   try {
     const { generateText } = await import("ai");
     const result = await generateText({
@@ -587,7 +691,7 @@ app.post("/api/support/chat", async (req, res) => {
     const reply = String(result.text || "").trim().slice(0, 1500);
     return res.json({ ok: true, reply: reply || "I’m here to help. Please share a little more detail, or call +91 84474 59316." });
   } catch (error) {
-    console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError");
+    console.error("AI SUPPORT GENERATION ERROR:", error.name || "AIError", error.statusCode || error.status || "no-status");
     return res.json({ ok: true, reply: "Our live assistant is temporarily unavailable. Please share your question with our team at +91 84474 59316 or shubhprinters88@gmail.com, and we’ll help you shortly." });
   }
 });
