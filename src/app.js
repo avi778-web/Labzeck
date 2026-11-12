@@ -6,16 +6,29 @@ const fs = require("fs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const Razorpay = require("razorpay");
-const { get, head } = require("@vercel/blob");
+const { get, head, put } = require("@vercel/blob");
 const { handleUpload } = require("@vercel/blob/client");
 const { z } = require("zod");
 const { cloudinaryConfigured, uploadToCloudinary } = require("./cloudinary");
+const productPricing = require("../assets/product-pricing");
 
 const newsletterSchema = z.object({ email: z.string().trim().email().max(254) });
 const itemSchema = z.object({
   name: z.string().trim().min(1).max(160),
   price: z.coerce.number().finite().nonnegative(),
-  qty: z.coerce.number().int().min(1).max(999)
+  qty: z.coerce.number().int().min(1).max(999),
+  customization: z.object({
+    hasDesign: z.boolean().optional(),
+    addExtraAsset: z.boolean().optional(),
+    fontStyle: z.string().trim().max(80).optional(),
+    printText: z.string().trim().max(2000).optional(),
+    designFile: z.string().trim().max(2500).optional(),
+    imageUrl: z.string().trim().max(2500).optional(),
+    imageLink: z.string().trim().max(2500).optional(),
+    extraAsset: z.string().trim().max(2500).optional(),
+    options: z.record(z.string(), z.unknown()).optional(),
+    tierDiscount: z.coerce.number().nonnegative().optional()
+  }).passthrough().optional()
 }).passthrough();
 const orderSchema = z.object({
   customer: z.object({
@@ -42,11 +55,18 @@ const COUPON_DATABASE = [
 ];
 const couponRegistry = new Map(COUPON_DATABASE.map(({ code, discount }) => [code, discount]));
 const normalizeCoupon = (value) => String(value || '').trim().toUpperCase();
+const normalizePhoneDigits = (value) => String(value || "").replace(/\D/g, "");
+const couponPhoneKey = (value) => normalizePhoneDigits(value).slice(-10);
 const calculateCouponDiscount = (code, subtotal) => Math.min(Math.max(0, subtotal), couponRegistry.get(code) || 0);
 const paymentOrderSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
   items: z.array(itemSchema).min(1).max(50),
-  idempotencyKey: z.string().trim().max(100).optional()
+  idempotencyKey: z.string().trim().max(100).optional(),
+  customer: orderSchema.shape.customer,
+  couponCodes: z.array(z.string().trim().max(40)).max(2).optional(),
+  bulkDiscount: z.coerce.number().nonnegative().optional(),
+  notes: z.string().trim().max(1000).optional(),
+  paymentMethod: z.string().trim().max(40).optional()
 }).passthrough();
 const qrPaymentSchema = z.object({
   amount: z.coerce.number().int().min(100).max(100000000),
@@ -248,7 +268,67 @@ function isValidIdCardUpload(pathname, signature, category) {
   const receivedBuffer = Buffer.from(String(signature), "hex");
   return expectedBuffer.length === receivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
 }
-app.use(["/api/newsletter", "/api/uploads", "/api/id-card/upload-token", "/api/id-card/sign-upload", "/api/id-card/orders", "/api/id-card/verify", "/api/id-card/artwork", "/api/support/chat", "/api/orders/lookup", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
+function getArtworkSigningSecret() {
+  return process.env.ARTWORK_SIGNING_SECRET || process.env.BLOB_READ_WRITE_TOKEN || getRazorpayCredentials()?.keySecret || "";
+}
+function createArtworkSignature(pathname) {
+  const secret = getArtworkSigningSecret();
+  return secret ? crypto.createHmac("sha256", secret).update(pathname).digest("hex") : null;
+}
+function isValidArtworkSignature(pathname, signature) {
+  if (!/^sk-graphics-artwork\/[a-f0-9-]+\.[a-z0-9]{1,8}$/i.test(String(pathname || "")) || !/^[a-f0-9]{64}$/i.test(String(signature || ""))) return false;
+  const expected = createArtworkSignature(pathname);
+  if (!expected) return false;
+  const expectedBuffer = Buffer.from(expected, "hex");
+  const receivedBuffer = Buffer.from(String(signature), "hex");
+  return expectedBuffer.length === receivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
+}
+function getPublicBaseUrl(req) {
+  const configuredHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  if (configuredHost && /^[a-z0-9.-]+(?::\d+)?$/i.test(configuredHost)) return `https://${configuredHost}`;
+  const host = String(req.get("host") || "");
+  if (!/^(?:localhost(?::\d+)?|[a-z0-9.-]+(?::\d+)?)$/i.test(host)) return "";
+  return `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
+}
+function absoluteRequestUrl(req, relativeUrl) {
+  const base = getPublicBaseUrl(req);
+  return base ? new URL(relativeUrl, base).toString() : relativeUrl;
+}
+function getIdCardArtworkUrl(req, pathname, signature) {
+  return absoluteRequestUrl(req, `/api/id-card/artwork?pathname=${encodeURIComponent(pathname)}&signature=${encodeURIComponent(signature)}`);
+}
+function resolveOrderArtworkUrl(req, value) {
+  const raw = String(value || "").trim();
+  if (!raw || raw.length > 2500 || /^data:/i.test(raw)) return null;
+  try {
+    const url = new URL(raw, getPublicBaseUrl(req) || "http://localhost");
+    if (url.hostname === "res.cloudinary.com" && url.protocol === "https:") return url.toString();
+    if (url.pathname === "/api/artwork" && isValidArtworkSignature(url.searchParams.get("pathname"), url.searchParams.get("signature"))) return absoluteRequestUrl(req, `${url.pathname}${url.search}`);
+    if (url.pathname === "/api/id-card/artwork") {
+      const pathname = url.searchParams.get("pathname") || "";
+      const info = getIdCardUploadInfo(pathname);
+      if (info && isValidIdCardUpload(pathname, url.searchParams.get("signature"), info.category)) return absoluteRequestUrl(req, `${url.pathname}${url.search}`);
+    }
+    if (!process.env.VERCEL && url.pathname.startsWith("/uploads/") && !url.pathname.includes("..")) return absoluteRequestUrl(req, `${url.pathname}${url.search}`);
+  } catch (_) {}
+  return null;
+}
+function collectOrderArtwork(req, items) {
+  const seen = new Set();
+  const links = [];
+  for (const item of items || []) {
+    const customization = item?.customization || {};
+    for (const [kind, value] of [["design", customization.designFile], ["logo", customization.extraAsset], ["photo", customization.imageUrl], ["artwork", customization.imageLink]]) {
+      const url = resolveOrderArtworkUrl(req, value);
+      if (url && !seen.has(url)) {
+        seen.add(url);
+        links.push({ url, kind });
+      }
+    }
+  }
+  return links;
+}
+app.use(["/api/newsletter", "/api/uploads", "/api/artwork", "/api/id-card/upload-token", "/api/id-card/sign-upload", "/api/id-card/orders", "/api/id-card/verify", "/api/id-card/artwork", "/api/support/chat", "/api/orders/lookup", "/api/create-order", "/api/payments/order", "/api/payments/qr", "/api/verify-payment", "/api/payments/verify"], sensitiveRouteRateLimit);
 
 app.use(express.json({ limit: "70mb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
@@ -266,24 +346,53 @@ app.use("/uploads", express.static(uploadsDirectory));
 app.post("/api/uploads", async (req, res) => {
   try {
     const { data, mimeType } = req.body || {};
-    if (typeof data !== "string" || !/^data:(image\/(png|jpeg)|application\/pdf|application\/postscript|application\/illustrator|application\/x-photoshop|image\/vnd\.adobe\.photoshop);base64,/.test(data)) {
-      return res.status(400).json({ ok: false, message: "Only PNG, JPG, PDF, AI, or PSD files are supported" });
+    const dataUrlMatch = typeof data === "string" && data.match(/^data:([^;,]+);base64,/i);
+    const allowedTypes = new Set(["image/png", "image/jpeg", "image/webp", "application/pdf", "application/postscript", "application/illustrator", "image/vnd.adobe.photoshop", "application/x-photoshop"]);
+    const detectedType = dataUrlMatch?.[1]?.toLowerCase();
+    if (!dataUrlMatch || !allowedTypes.has(detectedType) || (mimeType && String(mimeType).toLowerCase() !== detectedType)) {
+      return res.status(400).json({ ok: false, message: "Only PNG, JPG, WEBP, PDF, AI, or PSD files are supported." });
     }
-    const raw = data.split(",")[1];
+    const raw = data.slice(dataUrlMatch[0].length);
     const buffer = Buffer.from(raw, "base64");
-    if (!buffer.length || buffer.length > 15 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 50MB." });
+    if (!buffer.length || buffer.length > 15 * 1024 * 1024) return res.status(413).json({ ok: false, message: "File is too large. Maximum upload size is 15 MB." });
     if (cloudinaryConfigured()) {
       const upload = await uploadToCloudinary(data, { folder: "sk-graphics/artwork" });
       return res.status(201).json({ ok: true, url: upload.secureUrl, imageUrl: upload.secureUrl, publicId: upload.publicId, storage: "cloudinary" });
     }
-    const extension = mimeType === "application/pdf" ? "pdf" : mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
-    const filename = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}.${extension}`;
+    const extensionByType = { "application/pdf": "pdf", "application/postscript": "ai", "application/illustrator": "ai", "image/vnd.adobe.photoshop": "psd", "application/x-photoshop": "psd", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+    const extension = extensionByType[detectedType];
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const pathname = `sk-graphics-artwork/${crypto.randomUUID()}.${extension}`;
+      const blob = await put(pathname, buffer, { access: "private", contentType: detectedType, addRandomSuffix: false });
+      const signature = createArtworkSignature(blob.pathname);
+      if (!signature) throw new Error("Artwork download signing is not configured");
+      const url = absoluteRequestUrl(req, `/api/artwork?pathname=${encodeURIComponent(blob.pathname)}&signature=${encodeURIComponent(signature)}`);
+      return res.status(201).json({ ok: true, url, imageUrl: url, pathname: blob.pathname, storage: "vercel-blob-private" });
+    }
+    if (process.env.VERCEL) return res.status(503).json({ ok: false, message: "Artwork storage is temporarily unavailable. Please try again shortly." });
+    const filename = `${crypto.randomUUID()}.${extension}`;
     fs.writeFileSync(path.join(uploadsDirectory, filename), buffer, { flag: "wx" });
-    return res.status(201).json({ ok: true, url: `/uploads/${filename}`, imageUrl: `/uploads/${filename}`, storage: "local-fallback" });
+    const url = `/uploads/${filename}`;
+    return res.status(201).json({ ok: true, url, imageUrl: url, storage: "local-development" });
   } catch (error) {
-    console.error("UPLOAD ERROR:", error.message);
-    const status = error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode : 500;
-    return res.status(status).json({ ok: false, message: error.message || "Could not save upload" });
+    console.error("ARTWORK UPLOAD ERROR:", error.stack || error);
+    const status = error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode : 503;
+    return res.status(status).json({ ok: false, message: status === 413 ? "File is too large. Maximum upload size is 15 MB." : "Could not save this artwork. Please try again." });
+  }
+});
+
+app.get("/api/artwork", async (req, res) => {
+  const pathname = String(req.query?.pathname || "");
+  const signature = String(req.query?.signature || "");
+  if (!isValidArtworkSignature(pathname, signature)) return res.status(404).json({ ok: false, message: "Artwork not found." });
+  try {
+    const result = await get(pathname, { access: "private" });
+    if (!result || result.statusCode !== 200) return res.status(404).json({ ok: false, message: "Artwork not found." });
+    res.set({ "Content-Type": result.blob.contentType, "Content-Disposition": "attachment", "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff" });
+    return require("stream").Readable.fromWeb(result.stream).pipe(res);
+  } catch (error) {
+    console.error("ARTWORK DOWNLOAD ERROR:", error.stack || error);
+    return res.status(503).json({ ok: false, message: "Artwork is temporarily unavailable." });
   }
 });
 
@@ -394,26 +503,45 @@ app.post("/api/newsletter", async (req, res) => {
 app.post('/api/coupons/validate', sensitiveRouteRateLimit, async (req, res) => {
   const subtotal = Number(req.body?.subtotal);
   const reservationId = String(req.body?.reservationId || '').trim().slice(0, 100);
+  const phoneDigits = normalizePhoneDigits(req.body?.phone);
+  const phoneKey = couponPhoneKey(phoneDigits);
   const codes = [...new Set((Array.isArray(req.body?.codes) ? req.body.codes : [req.body?.code]).map(normalizeCoupon).filter(Boolean))].slice(0, 2);
-  if (!codes.length || !reservationId || !Number.isFinite(subtotal) || subtotal < 0) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
-  if (codes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+  if (!codes.length || !reservationId || !Number.isFinite(subtotal) || subtotal < 0 || phoneDigits.length < 10 || phoneDigits.length > 15) {
+    return res.status(400).json({ ok: false, message: 'Enter your valid mobile number and a valid coupon code.' });
+  }
+  if (codes.some(code => !couponRegistry.has(code))) return res.status(400).json({ ok: false, message: 'Invalid coupon code.' });
   try {
     if (!(await ensureDatabase())) return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
-    const priorOrder = await OrderModel.findOne({ $or: [{ 'couponApplied.codes': { $in: codes } }, { 'couponApplied.code': { $in: codes } }] }).select('_id').lean();
-    if (priorOrder) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
     for (const code of codes) {
-      const existingClaim = await CouponClaimModel.findOne({ code }).lean();
-      if (existingClaim && (existingClaim.reservationId !== reservationId || existingClaim.state !== 'reserved')) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' });
-      if (!existingClaim) {
-        try { await CouponClaimModel.create({ code, reservationId }); }
-        catch (claimError) { if (claimError.code === 11000) return res.status(409).json({ ok: false, message: 'Invalid or Already Used Coupon' }); throw claimError; }
+      const usedClaim = await CouponClaimModel.findOne({ code, phoneDigits: phoneKey, state: 'redeemed' }).select('_id').lean();
+      if (usedClaim) return res.status(409).json({ ok: false, message: 'You have already used this coupon code.' });
+      let claim = await CouponClaimModel.findOne({ code, phoneDigits: phoneKey }).lean();
+      if (claim?.state === 'reserved' && claim.reservationId === reservationId && claim.expiresAt > now) continue;
+      if (claim?.state === 'reserved' && claim.expiresAt <= now) {
+        const refreshed = await CouponClaimModel.updateOne(
+          { _id: claim._id, state: 'reserved', expiresAt: { $lte: now } },
+          { $set: { reservationId, expiresAt, updatedAt: now } }
+        );
+        if (refreshed.modifiedCount === 1) continue;
+        claim = await CouponClaimModel.findOne({ code, phoneDigits: phoneKey }).lean();
+      }
+      if (claim) return res.status(409).json({ ok: false, message: 'This coupon is currently being used in another checkout. Please try again shortly.' });
+      try {
+        await CouponClaimModel.create({ code, phoneDigits: phoneKey, reservationId, expiresAt, state: 'reserved' });
+      } catch (claimError) {
+        if (claimError.code !== 11000) throw claimError;
+        const racedClaim = await CouponClaimModel.findOne({ code, phoneDigits: phoneKey }).lean();
+        if (racedClaim?.state === 'redeemed') return res.status(409).json({ ok: false, message: 'You have already used this coupon code.' });
+        if (racedClaim?.reservationId !== reservationId || racedClaim?.expiresAt <= now) return res.status(409).json({ ok: false, message: 'This coupon is currently being used in another checkout. Please try again shortly.' });
       }
     }
     let remaining = subtotal;
     const coupons = codes.map(code => { const discountAmount = calculateCouponDiscount(code, remaining); remaining -= discountAmount; return { code, discountAmount }; });
     return res.json({ ok: true, coupons, discountAmount: coupons.reduce((sum, coupon) => sum + coupon.discountAmount, 0), deliveryFee: 0 });
   } catch (error) {
-    console.error('COUPON VALIDATION ERROR:', error.message);
+    console.error('COUPON VALIDATION ERROR:', error.stack || error);
     return res.status(503).json({ ok: false, message: 'Coupon service is temporarily unavailable.' });
   }
 });
