@@ -20,6 +20,7 @@
     @media(max-width:700px){.shell{width:min(100% - 28px,560px)}.topline-inner{justify-content:center}.topline-inner span:last-child{display:none}.header-inner{min-height:64px}.nav-actions{gap:12px}.nav-actions a{font-size:11px}.nav-actions a:first-child{display:none}.brand strong{font-size:19px}.hero{padding:24px 0 34px}.hero-grid{grid-template-columns:1fr;gap:22px}.product-copy{grid-row:1}.product-visual{grid-row:2;min-height:265px}.product-visual img{min-height:265px}.trust-row{grid-row:3;gap:7px}.trust-item{justify-content:center;flex-direction:column;min-height:70px;text-align:center;font-size:9px}.trust-check{width:20px;height:20px}.product-copy h1{font-size:38px}.product-intro{margin:11px 0 16px;font-size:13px}.section{padding:46px 0}.details-grid{grid-template-columns:1fr}.supporting-column{grid-row:1}.order-card{grid-row:2}.faq-grid{grid-template-columns:1fr}.track-card{padding:16px}.form-grid{gap:10px}.order-card{padding:17px}.card-heading h3{font-size:19px}}
     @media(max-width:420px){.shell{width:calc(100% - 24px)}.nav-actions .contact-link{display:none}.product-copy h1{font-size:34px}.price-main strong{font-size:32px}.upload-grid{grid-template-columns:1fr}.upload-card{min-height:125px}.form-grid{grid-template-columns:1fr;gap:0}.quantity-row{align-items:flex-start}.stepper{flex:none}.footer-inner{flex-direction:column}.success-actions{flex-direction:column}.floating-support{right:14px;bottom:15px;width:52px;height:52px}.support-panel{right:10px;bottom:76px;width:calc(100vw - 20px);height:min(580px,calc(100dvh - 92px))}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+    .bulk-upload-card{grid-column:1/-1}
   </style>
 </head>
 <body>
@@ -53,7 +54,11 @@
         <form class="order-card" id="idCardOrderForm" novalidate>
           <div class="card-heading"><div><h3>Your print details</h3><p>All fields marked * are required.</p></div><span class="step-chip">Custom order</span></div>
           <div class="form-grid">
-            <div class="field"><label for="cardHolderText">Full name on the ID card *</label><input id="cardHolderText" name="cardHolderText" type="text" maxlength="120" autocomplete="name" placeholder="e.g. Aanya Sharma" required></div>
+            <div class="field"><label for="name">Full name *</label><input id="name" name="name" type="text" maxlength="120" autocomplete="name" placeholder="Name of the order contact" required></div>
+            <div class="field"><label for="organizationName">School / organization name *</label><input id="organizationName" name="organizationName" type="text" maxlength="160" autocomplete="organization" placeholder="School, company, or organization" required></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label for="cardHolderText">Name on the ID card *</label><input id="cardHolderText" name="cardHolderText" type="text" maxlength="120" placeholder="Primary card name or sample" required></div>
             <div class="field"><label for="designation">Designation / department</label><input id="designation" name="designation" type="text" maxlength="80" placeholder="e.g. Operations"></div>
           </div>
           <div class="form-grid">
@@ -64,6 +69,7 @@
           <div class="upload-grid">
             <label class="upload-card" id="cardUploadDrop" for="cardDesignFile"><input id="cardDesignFile" type="file" accept=".pdf,.ai,.psd,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp" required><span class="upload-icon" aria-hidden="true">↑</span><strong>ID card design or photo *</strong><small>Drop your print-ready file here or browse to choose one</small><span class="upload-status" id="cardUploadStatus" aria-live="polite">No file selected</span></label>
             <label class="upload-card" id="lanyardUploadDrop" for="lanyardLogoFile"><input id="lanyardLogoFile" type="file" accept=".pdf,.ai,.psd,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp" required><span class="upload-icon" aria-hidden="true">↑</span><strong>Lanyard logo / artwork *</strong><small>Upload the logo or artwork you want printed on the lanyard</small><span class="upload-status" id="lanyardUploadStatus" aria-live="polite">No file selected</span></label>
+            <label class="upload-card bulk-upload-card" id="studentFilesDrop" for="studentFiles"><input id="studentFiles" type="file" accept=".zip,.png,.jpg,.jpeg,.webp,application/zip,image/png,image/jpeg,image/webp" multiple><span class="upload-icon" aria-hidden="true">↑</span><strong>Student / staff photos or roster (optional)</strong><small>Choose up to 10 images, or upload one ZIP. Up to 100 MB total.</small><span class="upload-status" id="studentFilesStatus" aria-live="polite">No additional files selected</span></label>
           </div>
           <div class="field upload-text"><label for="lanyardText">Lanyard text (optional)</label><input id="lanyardText" name="lanyardText" type="text" maxlength="160" placeholder="Add a company name or short line"></div>
           <div class="field"><label for="instructions">Special instructions for printing *</label><textarea id="instructions" name="instructions" maxlength="1000" placeholder="Share any color, layout, or print preferences." required></textarea><small>Artwork proof approval is confirmed with you before production begins.</small></div>
@@ -74,14 +80,14 @@
         </form>
 
         <aside class="supporting-column">
-          <div class="info-card"><h3>What happens next</h3><ul class="benefit-list"><li><span aria-hidden="true">1</span><span>Upload your ID card artwork and lanyard logo.</span></li><li><span aria-hidden="true">2</span><span>Pay securely. Your order is saved after payment is verified.</span></li><li><span aria-hidden="true">3</span><span>Our team reviews the artwork and coordinates the proof.</span></li></ul></div>
+          <div class="info-card"><h3>What happens next</h3><ul class="benefit-list"><li><span aria-hidden="true">1</span><span>Upload your ID card artwork, lanyard logo, and optional staff roster/photos.</span></li><li><span aria-hidden="true">2</span><span>Pay securely. Your order is saved after payment is verified.</span></li><li><span aria-hidden="true">3</span><span>Our team reviews the artwork and coordinates the proof.</span></li></ul></div>
           <div class="track-card" id="track-order"><h3>Already ordered?</h3><p>Use the mobile number from checkout to see recent orders.</p><form id="trackForm"><label class="sr-only" for="trackPhone">Mobile number used for the order</label><div class="track-row"><input id="trackPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="Enter mobile number" required><button type="submit" id="trackButton">Track</button></div></form><div class="history-message" id="trackStatus" aria-live="polite"></div><div class="history-results" id="trackResults" aria-live="polite"></div></div>
           <div class="info-card"><h3>Need a hand?</h3><ul class="benefit-list"><li><span aria-hidden="true">✓</span><span>Ask our support assistant about artwork, delivery, returns, or printing.</span></li><li><span aria-hidden="true">✓</span><span>Prefer a person? <a href="tel:+918447459316">Call +91 84474 59316</a>.</span></li></ul><button class="secondary-button support-inline-button" id="supportInlineOpen" type="button">Open AI support</button></div>
         </aside>
       </div>
     </div></section>
 
-    <section class="section"><div class="shell"><div class="section-heading"><p class="eyebrow">Questions, answered</p><h2>Ordering made clear</h2><p>Get the essentials before you send your artwork.</p></div><div class="faq-grid"><details><summary>What is included in the ₹70 price?</summary><p>Each set includes one custom-printed ID card and one branded lanyard. The minimum order is 10 sets.</p></details><details><summary>What file types can I upload?</summary><p>We accept PDF, AI, PSD, PNG, JPG, and WEBP artwork up to 10 MB per file. Files are checked on the server before upload.</p></details><details><summary>When will printing begin?</summary><p>Our team reviews the artwork and coordinates a proof before production. We do not begin final printing until the artwork is approved.</p></details><details><summary>How do I ask about an exchange or refund?</summary><p>Contact SK Graphics with your order number and a short description. The team will review the request and confirm the available options.</p></details></div></div></section>
+    <section class="section"><div class="shell"><div class="section-heading"><p class="eyebrow">Questions, answered</p><h2>Ordering made clear</h2><p>Get the essentials before you send your artwork.</p></div><div class="faq-grid"><details><summary>What is included in the ₹70 price?</summary><p>Each set includes one custom-printed ID card and one branded lanyard. The minimum order is 10 sets.</p></details><details><summary>What file types can I upload?</summary><p>We accept PDF, AI, PSD, PNG, JPG, and WEBP artwork up to 10 MB per file. Add up to 10 staff photos or one ZIP roster (50 MB maximum, 100 MB total). Files are checked on the server before upload.</p></details><details><summary>When will printing begin?</summary><p>Our team reviews the artwork and coordinates a proof before production. We do not begin final printing until the artwork is approved.</p></details><details><summary>How do I ask about an exchange or refund?</summary><p>Contact SK Graphics with your order number and a short description. The team will review the request and confirm the available options.</p></details></div></div></section>
   </main>
 
   <footer class="site-footer"><div class="shell footer-inner"><span>© 2026 SK Graphics · Custom printing &amp; branding</span><span><a href="/">Back to shop</a> · <a href="mailto:shubhprinters88@gmail.com">Email support</a></span></div></footer>
@@ -111,7 +117,7 @@
       const payButton = document.getElementById('payButton');
       const form = document.getElementById('idCardOrderForm');
       const formStatus = document.getElementById('formStatus');
-      const fileRefs = { cardDesign: null, lanyardLogo: null };
+      const fileRefs = { cardDesign: null, lanyardLogo: null, studentFiles: [] };
       let paymentInProgress = false;
       let checkoutToken = null;
       let razorpayLoaderPromise = null;
@@ -139,47 +145,45 @@
           return (character === 'x' ? random : (random & 3 | 8)).toString(16);
         });
       }
-      const extensionTypes = { pdf: 'application/pdf', ai: 'application/postscript', psd: 'image/vnd.adobe.photoshop', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
+      const extensionTypes = { pdf: 'application/pdf', ai: 'application/postscript', psd: 'image/vnd.adobe.photoshop', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', zip: 'application/zip' };
+      const allowedExtensions = {
+        'card-design': new Set(['pdf', 'ai', 'psd', 'png', 'jpg', 'jpeg', 'webp']),
+        'lanyard-logo': new Set(['pdf', 'ai', 'psd', 'png', 'jpg', 'jpeg', 'webp']),
+        'student-data': new Set(['zip', 'png', 'jpg', 'jpeg', 'webp'])
+      };
+      const bulkFileLimit = 10;
+      const bulkTotalSizeLimit = 100 * 1024 * 1024;
+      let bulkUploadInProgress = false;
+      async function uploadPrivateFile(file, category, onProgress) {
+        const extension = file.name.split('.').pop().toLowerCase();
+        const contentType = extensionTypes[extension];
+        if (!contentType || !allowedExtensions[category]?.has(extension)) throw new Error('Use supported artwork, or choose images or one ZIP for staff files.');
+        const maxFileSize = category === 'student-data' && extension === 'zip' ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+        if (!file.size || file.size > maxFileSize) throw new Error(extension === 'zip' ? 'ZIP files must be 50 MB or smaller.' : 'Each image or artwork file must be 10 MB or smaller.');
+        const pathname = `id-card-lanyard/${category}/${createUploadId()}.${extension}`;
+        const blob = await upload(pathname, file, {
+          access: 'private',
+          handleUploadUrl: '/api/id-card/upload-token',
+          clientPayload: JSON.stringify({ category }),
+          contentType,
+          multipart: file.size > 5 * 1024 * 1024,
+          onUploadProgress: progress => onProgress?.(progress)
+        });
+        const signResponse = await fetch('/api/id-card/sign-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pathname: blob.pathname, category }) });
+        const result = await parseResponse(signResponse);
+        if (!signResponse.ok || !result.ok) throw new Error(result.message || 'Upload could not be verified. Please try again.');
+        return { pathname: result.pathname, signature: result.signature, name: file.name.replace(/[\\/\u0000-\u001f\u007f]/g, '_').slice(0, 120), size: Number(result.size) || file.size };
+      }
       async function uploadArtwork(file, category, statusNode, inputNode) {
         const key = category === 'card-design' ? 'cardDesign' : 'lanyardLogo';
         const label = category === 'card-design' ? 'ID card artwork' : 'Lanyard artwork';
         if (!file) { fileRefs[key] = null; statusNode.textContent = 'No file selected'; statusNode.className = 'upload-status'; updatePayAvailability(); return; }
-        if (file.size > 10 * 1024 * 1024) {
-          fileRefs[key] = null;
-          statusNode.textContent = 'Choose a file under 10 MB.';
-          statusNode.className = 'upload-status error';
-          inputNode.value = '';
-          updatePayAvailability();
-          return;
-        }
-        const extension = file.name.split('.').pop().toLowerCase();
-        const contentType = extensionTypes[extension];
-        if (!contentType) {
-          fileRefs[key] = null;
-          statusNode.textContent = 'Use a PDF, AI, PSD, PNG, JPG, or WEBP file.';
-          statusNode.className = 'upload-status error';
-          inputNode.value = '';
-          updatePayAvailability();
-          return;
-        }
         fileRefs[key] = null;
         statusNode.textContent = `Uploading ${label.toLowerCase()} privately…`;
         statusNode.className = 'upload-status';
         updatePayAvailability();
         try {
-          const pathname = `id-card-lanyard/${category}/${createUploadId()}.${extension}`;
-          const blob = await upload(pathname, file, {
-            access: 'private',
-            handleUploadUrl: '/api/id-card/upload-token',
-            clientPayload: JSON.stringify({ category }),
-            contentType,
-            multipart: file.size > 5 * 1024 * 1024,
-            onUploadProgress: progress => { statusNode.textContent = `Uploading privately… ${Math.round(progress.percentage)}%`; }
-          });
-          const signResponse = await fetch('/api/id-card/sign-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pathname: blob.pathname, category }) });
-          const result = await signResponse.json();
-          if (!signResponse.ok || !result.ok) throw new Error(result.message || 'Upload could not be verified. Please try again.');
-          fileRefs[key] = { pathname: result.pathname, signature: result.signature };
+          fileRefs[key] = await uploadPrivateFile(file, category, progress => { statusNode.textContent = `Uploading privately… ${Math.round(progress.percentage)}%`; });
           statusNode.textContent = `Ready · ${file.name} · ${formatSize(file.size)}`;
           statusNode.className = 'upload-status ready';
         } catch (error) {
@@ -207,9 +211,67 @@
           uploadArtwork(file, category, status, input);
         });
       }
+      async function uploadStudentFiles(input, statusNode) {
+        const files = Array.from(input.files || []);
+        fileRefs.studentFiles = [];
+        if (!files.length) { statusNode.textContent = 'No additional files selected'; statusNode.className = 'upload-status'; updatePayAvailability(); return; }
+        const zipCount = files.filter(file => file.name.toLowerCase().endsWith('.zip')).length;
+        const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+        const invalidFile = files.some(file => {
+          const extension = file.name.split('.').pop().toLowerCase();
+          return !allowedExtensions['student-data'].has(extension) || !file.size || file.size > (extension === 'zip' ? 50 : 10) * 1024 * 1024;
+        });
+        if (files.length > bulkFileLimit || (zipCount && files.length !== 1) || invalidFile || totalSize > bulkTotalSizeLimit) {
+          statusNode.textContent = zipCount && files.length > 1 ? 'Upload one ZIP by itself, or choose multiple images.' : 'Choose up to 10 images or one ZIP (100 MB total; 50 MB max for a ZIP).';
+          statusNode.className = 'upload-status error';
+          input.value = '';
+          updatePayAvailability();
+          return;
+        }
+        bulkUploadInProgress = true;
+        input.disabled = true;
+        statusNode.className = 'upload-status';
+        updatePayAvailability();
+        const uploadedFiles = [];
+        try {
+          for (const [index, file] of files.entries()) {
+            statusNode.textContent = `Uploading ${index + 1} of ${files.length} privately…`;
+            const uploadedFile = await uploadPrivateFile(file, 'student-data', progress => { statusNode.textContent = `Uploading ${index + 1} of ${files.length} privately… ${Math.round(progress.percentage)}%`; });
+            uploadedFiles.push(uploadedFile);
+          }
+          fileRefs.studentFiles = uploadedFiles;
+          statusNode.textContent = `Ready · ${uploadedFiles.length} ${uploadedFiles.length === 1 ? 'file' : 'files'} · ${formatSize(totalSize)}`;
+          statusNode.className = 'upload-status ready';
+        } catch (error) {
+          fileRefs.studentFiles = [];
+          statusNode.textContent = error.message || 'Staff files could not be uploaded. Please try again.';
+          statusNode.className = 'upload-status error';
+          input.value = '';
+        } finally {
+          bulkUploadInProgress = false;
+          input.disabled = false;
+          updatePayAvailability();
+        }
+      }
       setupUpload('cardDesignFile', 'cardUploadDrop', 'cardUploadStatus', 'card-design');
       setupUpload('lanyardLogoFile', 'lanyardUploadDrop', 'lanyardUploadStatus', 'lanyard-logo');
-      function updatePayAvailability() { payButton.disabled = paymentInProgress || !fileRefs.cardDesign || !fileRefs.lanyardLogo; }
+      const studentFilesInput = document.getElementById('studentFiles');
+      const studentFilesDrop = document.getElementById('studentFilesDrop');
+      const studentFilesStatus = document.getElementById('studentFilesStatus');
+      studentFilesInput.addEventListener('change', () => uploadStudentFiles(studentFilesInput, studentFilesStatus));
+      studentFilesDrop.addEventListener('dragover', event => { event.preventDefault(); studentFilesDrop.classList.add('dragging'); });
+      studentFilesDrop.addEventListener('dragleave', () => studentFilesDrop.classList.remove('dragging'));
+      studentFilesDrop.addEventListener('drop', event => {
+        event.preventDefault();
+        studentFilesDrop.classList.remove('dragging');
+        const files = Array.from(event.dataTransfer?.files || []);
+        if (!files.length) return;
+        const transfer = new DataTransfer();
+        files.forEach(file => transfer.items.add(file));
+        studentFilesInput.files = transfer.files;
+        uploadStudentFiles(studentFilesInput, studentFilesStatus);
+      });
+      function updatePayAvailability() { payButton.disabled = paymentInProgress || bulkUploadInProgress || !fileRefs.cardDesign || !fileRefs.lanyardLogo; }
 
       async function parseResponse(response) {
         const text = await response.text();
@@ -261,7 +323,7 @@
           formStatus.textContent = 'Upload both the ID card artwork and lanyard artwork before checkout.';
           return;
         }
-        if (paymentInProgress) return;
+        if (paymentInProgress || bulkUploadInProgress) return;
         const phone = document.getElementById('phone').value.trim();
         const phoneDigits = phone.replace(/\D/g, '');
         if (phoneDigits.length < 10 || phoneDigits.length > 15) {
@@ -281,7 +343,8 @@
             body: JSON.stringify({
               idempotencyKey: checkoutToken,
               quantity,
-              name: document.getElementById('cardHolderText').value.trim(),
+              name: document.getElementById('name').value.trim(),
+              organizationName: document.getElementById('organizationName').value.trim(),
               cardHolderText: document.getElementById('cardHolderText').value.trim(),
               designation: document.getElementById('designation').value.trim(),
               phone,
@@ -301,7 +364,7 @@
             name: 'SK Graphics',
             description: `${quantity} custom ID card sets with branded lanyards`,
             order_id: order.razorpayOrderId,
-            prefill: { name: document.getElementById('cardHolderText').value.trim(), contact: phone },
+            prefill: { name: document.getElementById('name').value.trim(), contact: phone },
             notes: { product: 'Custom ID Card with Branded Lanyard', quantity: String(quantity) },
             theme: { color: '#2167b2' },
             handler: async payment => {
@@ -358,7 +421,7 @@
         statusNode.textContent = 'Checking recent orders…';
         resultsNode.replaceChildren();
         try {
-          const response = await fetch('/api/support/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
+          const response = await fetch('/api/orders/lookup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone }) });
           const result = await parseResponse(response);
           if (!response.ok || !result.ok) throw new Error(result.message || 'Could not check order status.');
           if (!result.orders.length) statusNode.textContent = 'No orders found for this number. Check the mobile used at checkout or contact our team.';
